@@ -25,7 +25,8 @@ public:
     MOCK_METHOD1(glfwSwapBuffers, void(GLFWwindow* window));
     MOCK_METHOD0(glfwTerminate, void());
     MOCK_METHOD0(glfwPollEvents, void());
-    MOCK_METHOD1(glfwWindowShouldClose, int(GLFWwindow* window));
+    MOCK_METHOD2(glfwGetKey, int(GLFWwindow* window, int key));
+    MOCK_METHOD2(glfwSetWindowShouldClose, void(GLFWwindow* window, int value));
 
     MOCK_METHOD2(glCreateVertexArrays, void(GLsizei, GLuint *));
     MOCK_METHOD2(glCreateBuffers, void(GLsizei, GLuint *));

@@ -32,11 +32,12 @@ void AudioSpectrumAnalyzer::init()
 
 void AudioSpectrumAnalyzer::samplesUpdater()
 {
+    const uint32_t noOfSamplesToBeCollectedFromHwEachTime{128};
     const std::string processName{"samplesUpdater"};
     StatsManager statsManager(processName);
 
     SamplesCollector samplesCollector(audioConfigFile.c_str());
-    samplesCollector.initialize(config.numberOfSamples,config.samplingRate);
+    samplesCollector.initialize(noOfSamplesToBeCollectedFromHwEachTime, config.samplingRate);
 
     while(shouldProceed)
     {
@@ -87,10 +88,8 @@ void AudioSpectrumAnalyzer::processing()
     std::deque<Data> fftDataQueue;
     std::deque<Data> averagedDataQueue;
 
-    DataAverager dataAverager(config.numberOfSamples, config.numberOfSignalsForAveraging);
     DataMaxHolder dataMaxHolder(config.numberOfSamples, config.numberOfSignalsForMaxHold);
-
-    std::vector<float> lastAveragedData(config.numberOfSamples, 0);
+    DataAverager dataAverager(config.numberOfSamples, config.numberOfSignalsForAveraging);
 
     while(shouldProceed)
     {
@@ -105,19 +104,18 @@ void AudioSpectrumAnalyzer::processing()
 
         auto power = calculatePower(*fftResult);
 
-        dataAverager.push_back(power);
+        dataMaxHolder.push_back(power);
+        auto dataWithMaxValue = dataMaxHolder.calculateWithMoving();
 
-        auto averagedData = dataAverager.calculateWithMoving();
-
-        if(not averagedData.empty())
+        if(not dataWithMaxValue.empty())
         {
-            dataMaxHolder.push_back(averagedData);
-            auto dataWithMaxValue = dataMaxHolder.calculateWithMoving();
+            dataAverager.push_back(dataWithMaxValue);
 
-            if(not dataWithMaxValue.empty())
+            auto averagedData = dataAverager.calculateWithMoving();
+
+            if(not averagedData.empty())
             {
-                lastAveragedData = dataWithMaxValue;
-                processedDataExchanger.push_back(std::make_unique<Data>(std::move(dataWithMaxValue)));
+                processedDataExchanger.push_back(std::make_unique<Data>(std::move(averagedData)));
             }
         }
 
@@ -160,7 +158,7 @@ void AudioSpectrumAnalyzer::drafter()
 
         if(window.checkIfWindowShouldBeClosed())
         {
-            break;
+            shouldProceed.store(false);
         }
     }
 
@@ -181,11 +179,10 @@ void AudioSpectrumAnalyzer::statsPrinter()
 
        auto numberOfFramesPerSecond = statsForDrafter.getNumberOfCallsInLast(1000ms);
 
-
        if(numberOfFramesPerSecond > 1)
        {
-           std::cout<<"Samples are updated: "<<statsForSamplesUpdater.getNumberOfCallsInLast(1000ms)<<" per second"<<std::endl;
-           std::cout<<"Plots are updated: "<<numberOfFramesPerSecond<<" per second"<<std::endl;
+           std::cout<<"Samples are updated: "<<statsForSamplesUpdater.getNumberOfCallsInLast(1000ms)<<" per second"<< " queue size: "<<dataExchanger.getSize()<<std::endl;
+           std::cout<<"Plots are updated: "<<numberOfFramesPerSecond<<" per second"<<" queue size: "<<processedDataExchanger.getSize()<<std::endl;
            timeWhenProgramWillBeClosed.reset();
            continue;
        }

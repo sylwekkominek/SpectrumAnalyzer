@@ -9,29 +9,29 @@ def getVerticalSize():
     return 1080
     
 def getNumberOfSamples():
-    return 2048
+    return 4096
     
 def getSamplingRate():
     return 44100
 
 def getOverlapping():
-    return 0.6
+    return 0.8
     
 def getNumberOfSignalsForAveraging():
-    return 2
+    return 4
 
 def getNumberOfSignalsForMaxHold():
-    return 6
+    return 7
     
 def getMaxQueueSize():
-    return 50
+    return 100
 
 def getFrequencies():
-    return (20,60,120,180,240,300,360,460,600,720,860,1000,1500,2000,2500,3000,3500,4000,4500,5000,5500,6000,6500,7000,7500,8000,8500,9000,9500,10000,10500,11000,11500,12000,12500,13000,13500,14000,14500,15000)  
+    return (30,60,90,120,150,180,240,300,480,600,720,840,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200,3400,3600,3800,4000,4200,4400,4600,4800,5000,5500,6000,6500,7000,7500,8000)
 
     
 def getScalingFactor():
-    return 1
+    return 1.2
     
 def getOffsetFactor():
     return 0
@@ -40,7 +40,7 @@ def getSmallRectanglesVisibilityState():
     return True
 
 def getSpeedOfFalling():
-    return 600
+    return 900
 
 def getAccelerationStateOfFalling():
     return True

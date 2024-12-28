@@ -56,7 +56,8 @@ std::function<void(GLbitfield)> glClearFunction;
 std::function<void(GLFWwindow* window)> glfwSwapBuffersFunction;
 std::function<void()> glfwTerminateFunction;
 std::function<void()> glfwPollEventsFunction;
-std::function<int(GLFWwindow* window)> glfwWindowShouldCloseFunction;
+std::function<int(GLFWwindow* window, int key)> glfwGetKeyFunction;
+std::function<void(GLFWwindow* window, int value)> glfwSetWindowShouldCloseFunction;
 
 int glfwInit()
 {
@@ -109,9 +110,14 @@ void glfwPollEvents()
     glfwPollEventsFunction();
 }
 
-int glfwWindowShouldClose(GLFWwindow* window)
+int glfwGetKey(GLFWwindow* window, int key)
 {
-    return glfwWindowShouldCloseFunction(window);
+    return glfwGetKeyFunction(window, key);
+}
+
+void glfwSetWindowShouldClose(GLFWwindow* window, int value)
+{
+    glfwSetWindowShouldCloseFunction(window, value);
 }
 
 void glCreateProgramPipelinesMock(GLsizei n, GLuint *pipelines)
@@ -254,11 +260,15 @@ OpenGlMock::OpenGlMock()
         this->glfwPollEvents();
     };
 
-    glfwWindowShouldCloseFunction = [this](GLFWwindow* window)
+    glfwGetKeyFunction = [this](GLFWwindow* window, int key)
     {
-        return this->glfwWindowShouldClose(window);
+        return this->glfwGetKey(window, key);
     };
 
+    glfwSetWindowShouldCloseFunction = [this](GLFWwindow* window, int value)
+    {
+        this->glfwSetWindowShouldClose(window, value);
+    };
 
 
     ::glad_glCreateProgramPipelines = glCreateProgramPipelinesMock;

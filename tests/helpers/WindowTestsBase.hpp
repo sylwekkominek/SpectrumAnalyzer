@@ -103,7 +103,16 @@ struct WindowTestsBase
     void expectCheckIfWindowShouldBeClosed(const bool returnValue=true)
     {
         EXPECT_CALL(openGL, glfwPollEvents()).Times(1);
-        EXPECT_CALL(openGL, glfwWindowShouldClose(_)).WillOnce(Return(returnValue));
+
+        if(returnValue)
+        {
+            EXPECT_CALL(openGL, glfwGetKey(_,_)).WillOnce(Return(GLFW_PRESS));
+            EXPECT_CALL(openGL, glfwSetWindowShouldClose(_,_)).Times(1);
+        }
+        else
+        {
+            EXPECT_CALL(openGL, glfwGetKey(_,_)).WillOnce(Return(GLFW_KEY_UNKNOWN));
+        }
     }
 
     void expectDestroyWindow()

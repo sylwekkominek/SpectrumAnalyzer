@@ -5,6 +5,7 @@
  */
 
 #include "Window.hpp"
+#include <algorithm>
 #include <iostream>
 
 Window::Rectangle::Rectangle(float xBegin, float xEnd, float yBegin,float yEnd, const ColorsOrRectanglePerVertices &colorsOfRectangle)
@@ -122,7 +123,14 @@ void Window::draw(const std::vector<float> &positions, const std::vector<float> 
 bool Window::checkIfWindowShouldBeClosed()
 {
     glfwPollEvents();
-    return glfwWindowShouldClose(window);
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+        return true;
+    }
+
+    return false;
 }
 
 Window::~Window()
@@ -152,12 +160,12 @@ void Window::initializeRectangles(std::vector<Rectangle> &rectangles, float yBeg
 
 float Window::percentToPositon(float percent)
 {
-    return (percent/50) -2;
+    return (std::min<float>(percent, 100)/50) -2;
 }
 
 float Window::percentToPositonSmallElement(float percent)
 {
-    return (percent/50) -1.01;
+    return (std::min<float>(percent, 100)/50) -1.01;
 }
 
 

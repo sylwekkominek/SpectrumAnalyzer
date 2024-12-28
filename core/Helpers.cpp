@@ -7,9 +7,8 @@
 #include "Helpers.hpp"
 #include <cmath>
 #include <iostream>
-#include <cstdint>
 #include <algorithm>
-
+#include <cstdint>
 
 std::vector<float> getAverage(const std::vector<float> &left, const std::vector<float> &right)
 {
@@ -33,7 +32,7 @@ std::vector<float> getAverage(const std::vector<float> &left, const std::vector<
 
 void zoomData(std::vector<float> &data, const float factor, const float offset)
 {
-    for(auto &&el:data)
+    for(auto &el:data)
     {
         el = factor*(el-offset);
     }
@@ -63,11 +62,4 @@ std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftDat
 
     return outputData;
 }
-
-
-
-
-
-
-
 
