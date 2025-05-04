@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -51,8 +51,8 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glUseProgramStages(_,_,_)).Times(2);
 
         EXPECT_CALL(openGL, glCreateVertexArrays(_,_)).Times(numberOfExpectCalls);
-        EXPECT_CALL(openGL, glCreateBuffers(_,_)).Times(numberOfExpectCalls);
-        EXPECT_CALL(openGL, glNamedBufferStorage(_,_,_,_)).Times(numberOfExpectCalls);
+        EXPECT_CALL(openGL, glCreateBuffers(_,_)).Times(2*numberOfExpectCalls);
+        EXPECT_CALL(openGL, glNamedBufferStorage(_,_,_,_)).Times(2*numberOfExpectCalls);
 
         EXPECT_CALL(openGL, glEnableVertexArrayAttrib(_,_)).Times(2*numberOfExpectCalls);
         EXPECT_CALL(openGL, glVertexArrayAttribFormat(_,_,_,_,_,_)).Times(2*numberOfExpectCalls);

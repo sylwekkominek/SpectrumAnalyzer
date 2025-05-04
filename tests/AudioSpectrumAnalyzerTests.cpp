@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -99,6 +99,7 @@ public:
         config.overlapping = 0.0;
         config.numberOfSignalsForAveraging = 1;
         config.numberOfSignalsForMaxHold = 1;
+        config.alphaFactor = 1;
         config.maxQueueSize = 100;
         return config;
     }
@@ -191,9 +192,11 @@ public:
         config.overlapping = 0.0;
         config.numberOfSignalsForAveraging = 1;
         config.numberOfSignalsForMaxHold = 1;
+        config.alphaFactor = 1;
         config.maxQueueSize = 5;
         config.smallRectanglesVisibilityState = true;
         config.scalingFactor = 1.0;
+        config.gapWidthInRelationToRectangleWidth = 0;
         config.colorsOfRectangle = {{0,{1,1,1}}, {1,{1,1,1}}, {2,{1,1,1}}, {3,{1,1,1}}};
         config.colorsOfSmallRectangle = config.colorsOfRectangle;
         return config;

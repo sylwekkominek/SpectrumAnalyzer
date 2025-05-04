@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -27,13 +27,18 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_EQ(config.numberOfSamples, 3);
     EXPECT_EQ(config.samplingRate, 4);
     EXPECT_NEAR(config.overlapping, 5.1, marginOfError);
+    EXPECT_NEAR(config.gapWidthInRelationToRectangleWidth, 5.2, marginOfError);
     EXPECT_EQ(config.numberOfSignalsForAveraging, 6);
     EXPECT_EQ(config.numberOfSignalsForMaxHold, 7);
     EXPECT_EQ(config.maxQueueSize, 8);
+    EXPECT_NEAR(config.alphaFactor, 8.1, marginOfError);
     EXPECT_EQ(config.scalingFactor, 9);
     EXPECT_EQ(config.offsetFactor, 10);
+    EXPECT_NEAR(config.smallRectangleHeightInPercentOfScreenSize, 10.1, marginOfError);
     EXPECT_EQ(config.speedOfFalling, 11);
     EXPECT_EQ(config.smallRectanglesVisibilityState, true);
+    EXPECT_EQ(config.advancedColorSettingEnabled, true);
+    EXPECT_EQ(config.advancedColorSettings, std::string("test"));
 
     valueChecker({1,2,3}, config.frequencies);
 

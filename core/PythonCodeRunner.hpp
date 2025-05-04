@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -25,6 +25,7 @@ protected:
     void updateMapOfPointersToPythonFunctions();
     PyObject * getPointerToFunction(const char* functionName);
     bool getBooleanValue(PyObject *pointerToPythonFunction);
+    std::string getStringValue(PyObject *pointerToPythonFunction);
     double getValue(PyObject *pointerToPythonFunction, PyObject *args=nullptr);
     std::vector<float> getValues(PyObject *pointerToPythonFunction, PyObject *args=nullptr);
 

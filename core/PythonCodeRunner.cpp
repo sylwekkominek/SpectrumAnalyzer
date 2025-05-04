@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -106,6 +106,27 @@ bool PythonCodeRunner::getBooleanValue(PyObject *pointerToPythonFunction)
 
     std::string error("Call failed");
     throw std::runtime_error(error);
+    }
+    return value;
+}
+
+std::string PythonCodeRunner::getStringValue(PyObject *pointerToPythonFunction)
+{
+    std::string value{};
+    PyObject *pValue = PyObject_CallObject(pointerToPythonFunction, nullptr);
+
+    if (pValue != nullptr)
+    {
+        value = std::string(PyUnicode_AsUTF8(pValue));
+        Py_DECREF(pValue);
+    }
+    else
+    {
+        Py_DECREF(pointerToPythonFunction);
+        Py_DECREF(pModule);
+
+        std::string error("Call failed");
+        throw std::runtime_error(error);
     }
     return value;
 }

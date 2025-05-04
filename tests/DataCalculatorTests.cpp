@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -35,10 +35,10 @@ TEST_F(DataCalculatorTest, dataAveragerTest)
         dataAverager.push_back(Signal(numberOfSamples, i));
     }
 
-    valueChecker(-1, numberOfSamples, dataAverager.calculateWithMoving());
-    valueChecker(0, numberOfSamples, dataAverager.calculateWithMoving());
-    valueChecker(1, numberOfSamples, dataAverager.calculateWithMoving());
-    valueChecker(2, 0, dataAverager.calculateWithMoving());
+    valueChecker(-1, numberOfSamples, dataAverager.calculate());
+    valueChecker(0, numberOfSamples, dataAverager.calculate());
+    valueChecker(1, numberOfSamples, dataAverager.calculate());
+    valueChecker(2, 0, dataAverager.calculate());
 }
 
 TEST_F(DataCalculatorTest, dataAveragerTest2)
@@ -53,7 +53,7 @@ TEST_F(DataCalculatorTest, dataAveragerTest2)
         dataAverager.push_back(signal);
     }
 
-    const auto signal = dataAverager.calculateWithMoving();
+    const auto signal = dataAverager.calculate();
 
     valueChecker(signal, {0,1,2});
 }
@@ -70,10 +70,10 @@ TEST_F(DataCalculatorTest, dataMaxHolderTest)
         dataMaxHolder.push_back(Signal(numberOfSamples, i));
     }
 
-    dataMaxHolder.calculateWithMoving();
-    valueChecker(1, numberOfSamples, dataMaxHolder.calculateWithMoving());
-    valueChecker(2, numberOfSamples, dataMaxHolder.calculateWithMoving());
-    valueChecker(3, 0, dataMaxHolder.calculateWithMoving());
+    valueChecker(0, numberOfSamples, dataMaxHolder.calculate());
+    valueChecker(1, numberOfSamples, dataMaxHolder.calculate());
+    valueChecker(2, numberOfSamples, dataMaxHolder.calculate());
+    valueChecker(3, 0, dataMaxHolder.calculate());
 }
 
 TEST_F(DataCalculatorTest, dataMaxHolderTest2)
@@ -88,7 +88,44 @@ TEST_F(DataCalculatorTest, dataMaxHolderTest2)
         dataMaxHolder.push_back(signal);
     }
 
-    const auto signal = dataMaxHolder.calculateWithMoving();
+    const auto signal = dataMaxHolder.calculate();
 
     valueChecker(signal, {1,2,3});
+}
+
+TEST_F(DataCalculatorTest, dataSmootherTest)
+{
+    const uint numberOfSamples{3};
+    const float alphaFactor{0.1};
+
+    DataSmoother dataSmoother(numberOfSamples, alphaFactor);
+
+    for(int i=firstValueIndex;i<=lastValueIndex;++i)
+    {
+        dataSmoother.push_back(Signal(numberOfSamples, i));
+    }
+
+    valueChecker(-0.2, numberOfSamples, dataSmoother.calculate());
+    valueChecker(-0.28, numberOfSamples, dataSmoother.calculate());
+    valueChecker(-0.252, numberOfSamples, dataSmoother.calculate());
+    valueChecker(-0.1268, numberOfSamples, dataSmoother.calculate());
+    valueChecker(0.08588, numberOfSamples, dataSmoother.calculate());
+}
+
+TEST_F(DataCalculatorTest, dataSmootherTest2)
+{
+
+    const uint numberOfSamples{3};
+    const float alphaFactor{0.1};
+
+    DataSmoother dataSmoother(numberOfSamples, alphaFactor);
+
+    for(const auto &signal: signals)
+    {
+        dataSmoother.push_back(signal);
+    }
+
+    const auto signal = dataSmoother.calculate();
+
+    valueChecker(signal, {-0.1, 0,0.1});
 }

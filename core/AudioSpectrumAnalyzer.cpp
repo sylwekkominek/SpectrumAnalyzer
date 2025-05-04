@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -81,6 +81,7 @@ void AudioSpectrumAnalyzer::fftCalculator()
     fftDataExchanger.stop();
 }
 
+
 void AudioSpectrumAnalyzer::processing()
 {
     const std::string processName{"processing"};
@@ -90,6 +91,8 @@ void AudioSpectrumAnalyzer::processing()
 
     DataMaxHolder dataMaxHolder(config.numberOfSamples, config.numberOfSignalsForMaxHold);
     DataAverager dataAverager(config.numberOfSamples, config.numberOfSignalsForAveraging);
+    DataSmoother dataSmoother(config.numberOfSamples, config.alphaFactor);
+
 
     while(shouldProceed)
     {
@@ -105,20 +108,22 @@ void AudioSpectrumAnalyzer::processing()
         auto power = calculatePower(*fftResult);
 
         dataMaxHolder.push_back(power);
-        auto dataWithMaxValue = dataMaxHolder.calculateWithMoving();
+        auto dataWithMaxValue = dataMaxHolder.calculate();
 
         if(not dataWithMaxValue.empty())
         {
             dataAverager.push_back(dataWithMaxValue);
 
-            auto averagedData = dataAverager.calculateWithMoving();
+            auto averagedData = dataAverager.calculate();
 
             if(not averagedData.empty())
             {
-                processedDataExchanger.push_back(std::make_unique<Data>(std::move(averagedData)));
+                dataSmoother.push_back(averagedData);
+                auto smoothedData = dataSmoother.calculate();
+
+                processedDataExchanger.push_back(std::make_unique<Data>(smoothedData));
             }
         }
-
     }
 
     processedDataExchanger.stop();
@@ -128,7 +133,18 @@ void AudioSpectrumAnalyzer::drafter()
 {
     const std::string processName{"drafter"};
     StatsManager statsManager(processName);
-    Window window(config.horizontalSize, config.verticalSize, config.numberOfRectangles, config.colorsOfRectangle, config.colorsOfSmallRectangle);
+
+    const WindowConfig windowConfig{config.horizontalSize,
+                              config.verticalSize,
+                              config.numberOfRectangles,
+                              config.gapWidthInRelationToRectangleWidth,
+                              config.smallRectangleHeightInPercentOfScreenSize,
+                              config.advancedColorSettingEnabled,
+                              config.colorsOfRectangle,
+                              config.colorsOfSmallRectangle,
+                              config.advancedColorSettings};
+
+    Window window(windowConfig);
     window.initializeGPU();
 
     IndexSelector indexSelector(config.samplingRate, config.numberOfSamples, config.frequencies);
