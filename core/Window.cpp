@@ -95,18 +95,9 @@ void Window::initializeGPU()
 {
     const float fullScreenSizeInPercents{100};
 
-    if(windowConfig.advancedColorSettingEnabled)
-    {
-        prepareShaders(getVertexShaderForAdvancedColorSettings(), getFragmentShaderForAdvancedColorSettings());
-        initializeRectangles(rectanglesInsideGpu, rectanglesFactory(fullScreenSizeInPercents));
-        initializeRectangles(smallRectanglesInsideGpu, rectanglesFactory(windowConfig.smallRectangleHeightInPercentOfScreenSize));
-    }
-    else
-    {
-        prepareShaders(getVertexShaderForColorsProvidedByUser(), getFragmentShaderForColorsProvidedByUser());
-        initializeRectangles(rectanglesInsideGpu, rectanglesFactory(fullScreenSizeInPercents), windowConfig.colorsOfRectangle);
-        initializeRectangles(smallRectanglesInsideGpu, rectanglesFactory(windowConfig.smallRectangleHeightInPercentOfScreenSize), windowConfig.colorsOfSmallRectangle);
-    }
+    prepareShaders(getVertexShader(), getFragmentShader());
+    initializeRectangles(rectanglesInsideGpu, rectanglesFactory(fullScreenSizeInPercents), windowConfig.colorsOfRectangle);
+    initializeRectangles(smallRectanglesInsideGpu, rectanglesFactory(windowConfig.smallRectangleHeightInPercentOfScreenSize), windowConfig.colorsOfSmallRectangle);
 
     glBindProgramPipeline(pipeline);
 }
@@ -200,20 +191,23 @@ float Window::percentToPositonSmallElement(float percent)
     return (std::min<float>(percent, 100)/50) -1.01;
 }
 
-
-const char* Window::getVertexShaderForColorsProvidedByUser()
+const char* Window::getVertexShader()
 {
     const char* shaderUsedWithColorsProvidedByUser = R"(#version 330 core
     #extension GL_ARB_explicit_uniform_location : require
     layout (location = 0) in vec2 inPos;
     layout (location = 1) in vec3 inColor;
 
+
     layout (location = 0) uniform vec2 posOffset;
     out vec3 vertColor;
+    out vec4 calculatedPosition;
+
 
     void main()
     {
         gl_Position = vec4(inPos+posOffset, 0.f, 1.f);
+        calculatedPosition = vec4(inPos+posOffset, 0.f, 1.f);
         vertColor = inColor;
     })";
 
@@ -221,40 +215,7 @@ const char* Window::getVertexShaderForColorsProvidedByUser()
 
 }
 
-const char* Window::getFragmentShaderForColorsProvidedByUser()
-{
-    const char* shaderUsedWithColorsProvidedByUser = R"(#version 330 core
-
-    in vec3 vertColor;
-    out vec4 Color;
-
-    void main()
-    {
-        Color = vec4(vertColor, 1.f);
-    })";
-
-    return shaderUsedWithColorsProvidedByUser;
-}
-
-const char* Window::getVertexShaderForAdvancedColorSettings()
-{
-    const char* advancedColorSettingsShader = R"(#version 330 core
-    #extension GL_ARB_explicit_uniform_location : require
-    layout (location = 0) in vec2 inPos;
-
-    layout (location = 0) uniform vec2 posOffset;
-    out vec4 calculatedPosition;
-
-    void main()
-    {
-        gl_Position = vec4(inPos+posOffset, 0.f, 1.f);
-        calculatedPosition = vec4(inPos+posOffset, 0.f, 1.f);
-    })";
-
-    return advancedColorSettingsShader;
-}
-
-const char* Window::getFragmentShaderForAdvancedColorSettings()
+const char* Window::getFragmentShader()
 {
     return windowConfig.advancedColorSetting.c_str();
 }
@@ -292,7 +253,6 @@ SmallRectanglesPositionCalculator::SmallRectanglesPositionCalculator(uint number
         previousTimes[i] = high_resolution_clock::now();
     }
 }
-
 
 std::vector<float> SmallRectanglesPositionCalculator::getPositions(const std::vector<float> &dataToBePrinted)
 {

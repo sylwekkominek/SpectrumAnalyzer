@@ -139,7 +139,6 @@ void AudioSpectrumAnalyzer::drafter()
                               config.numberOfRectangles,
                               config.gapWidthInRelationToRectangleWidth,
                               config.smallRectangleHeightInPercentOfScreenSize,
-                              config.advancedColorSettingEnabled,
                               config.colorsOfRectangle,
                               config.colorsOfSmallRectangle,
                               config.advancedColorSettings};

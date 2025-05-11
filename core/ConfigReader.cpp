@@ -47,7 +47,6 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
     }
     os <<std::endl;
 
-    os<<"advancedColorSettingEnabled: "<<config.advancedColorSettingEnabled<<std::endl;
     os <<"colorsOfRectangle: "<<std::endl;
     colorsPrinter(config.colorsOfRectangle);
     os <<"colorsOfSmallRectangle: "<<std::endl;
@@ -75,7 +74,6 @@ ConfigReader::ConfigReader(const char *moduleName):
                  "getSmallRectangleHeightInPercentOfScreenSize",
                  "getSpeedOfFalling",
                  "getAccelerationStateOfFalling",
-                 "getAdvancedColorSettingEnabled",
                  "getColorsOfRectangle",
                  "getColorsOfSmallRectangle",
                  "getAdvancedColorSettings"
@@ -105,7 +103,6 @@ Configuration ConfigReader::getConfig()
         config.smallRectangleHeightInPercentOfScreenSize = getSmallRectangleHeightInPercentOfScreenSize();
         config.speedOfFalling = getSpeedOfFalling();
         config.accelerationStateOfFalling = getAccelerationStateOfFalling();
-        config.advancedColorSettingEnabled = getAdvancedColorSettingEnabled();
         config.colorsOfRectangle =  getColorsOfRectangle();
         config.colorsOfSmallRectangle =  getColorsOfSmallRectangle();
         config.advancedColorSettings = getAdvancedColorSettings();
@@ -197,11 +194,6 @@ double ConfigReader::getSpeedOfFalling()
 }
 
 bool ConfigReader::getAccelerationStateOfFalling()
-{
-    return getBooleanValue(pointersToPythonFunctions.at(__func__));
-}
-
-bool ConfigReader::getAdvancedColorSettingEnabled()
 {
     return getBooleanValue(pointersToPythonFunctions.at(__func__));
 }

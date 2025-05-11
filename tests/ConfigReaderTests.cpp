@@ -37,7 +37,6 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_NEAR(config.smallRectangleHeightInPercentOfScreenSize, 10.1, marginOfError);
     EXPECT_EQ(config.speedOfFalling, 11);
     EXPECT_EQ(config.smallRectanglesVisibilityState, true);
-    EXPECT_EQ(config.advancedColorSettingEnabled, true);
     EXPECT_EQ(config.advancedColorSettings, std::string("test"));
 
     valueChecker({1,2,3}, config.frequencies);

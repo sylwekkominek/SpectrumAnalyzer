@@ -54,9 +54,6 @@ def getSpeedOfFalling():
 def getAccelerationStateOfFalling():
     return True
 
-def getAdvancedColorSettingEnabled():
-    return True
-
 def getColorsOfRectangle(vertex):
     match vertex:
         case 0:

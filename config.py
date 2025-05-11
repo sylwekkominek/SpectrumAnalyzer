@@ -18,7 +18,7 @@ def getOverlapping():
     return 0.8
 
 def getGapWidthInRelationToRectangleWidth():
-    return 0.2
+    return 0.0
 
 def getNumberOfSignalsForAveraging():
     return 1
@@ -33,7 +33,7 @@ def getMaxQueueSize():
     return 100
 
 def getFrequencies():
-    return (30,60,90,120,150,180,240,300,360, 480,600,720,840,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900, 2000,2200,2400,2600,2800,3000,3200,3400,3600,3800,4000,4200,4400,4600,4800,5000,5500,6000,6500,7000,7500,8000)
+    return (20,40,60,80,100,120,150,180,220,250,300,330,360,400,440, 480,520,560,600,720,840,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900, 2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800,3900,4000,4100,4200,4300,4400,4500,4600,4700,4800,4900,5000,5100,5200,5300,5400,5500,5600,5700,5800,5900,6000,6100,6200,6300,6400,6500,6600,6700,6800,6900,7000,7100,7200,7300,7400,7500,7600,7700,7800,7900,8000)
 
 def getScalingFactor():
     return 1.2
@@ -42,7 +42,7 @@ def getOffsetFactor():
     return 0
     
 def getSmallRectanglesVisibilityState():
-    return True
+    return False
 
 def getSmallRectangleHeightInPercentOfScreenSize():
     return 1.0
@@ -53,64 +53,63 @@ def getSpeedOfFalling():
 def getAccelerationStateOfFalling():
     return True
 
-#when enabled getAdvancedColorSettings function is used instead of getColorsOfRectangle/getColorsOfSmallRectangle
-def getAdvancedColorSettingEnabled():
-    return True
-
 def getColorsOfRectangle(vertex):
     match vertex:
         case 0:
-            return (0.0, 0.0, 1.0)
+            return (0.61, 0.61, 0.61)
         case 1:
-            return (0.0, 0.0, 0.2)
+            return (0,0,0)
         case 2:
-            return (0.0, 0.0, 0.2)
+            return (0,0,0)
         case 3:
-            return (0.0, 0.0, 1.0)
- 
-def getColorsOfSmallRectangle(vertex):
-    match vertex:
-        case 0:
-            return (0.0, 0.0, 1.0)
-        case 1:
-            return (0.0, 0.0, 0.2)
-        case 2:
-            return (0.0, 0.0, 0.2)
-        case 3:
-            return (0.0, 0.0, 1.0)  
-    
+            return (0.61, 0.61, 0.61)
 
+
+def getColorsOfSmallRectangle(vertex):
+        match vertex:
+            case 0:
+                return (0.61, 0.61, 0.61)
+            case 1:
+                return (0,0,0)
+            case 2:
+                return (0,0,0)
+            case 3:
+                return (0.61, 0.61, 0.61)
+
+
+#if you get errors after modification please find following log with error msg: "VS log:"
 def getAdvancedColorSettings():
     return '''#version 330 core
 
-in vec4 calculatedPosition;
-out vec4 Color;
+        in vec4 calculatedPosition;
+        in vec3 vertColor;
+        out vec4 Color;
 
-void main()
-{
-    if(calculatedPosition.y >= 1)
-    {
-        Color = vec4(1, 0 , 0 , 1.f);
-    }
-    else if((calculatedPosition.y<= 1) && (calculatedPosition.y > 0.5))
-    {
-        Color = vec4(1, -2 * calculatedPosition.y + 2 , 0 , 1.f);
-    }
-    else if((calculatedPosition.y<= 0.5) && (calculatedPosition.y > 0))
-    {
-        Color = vec4(2 * calculatedPosition.y, 1 , 0 , 1.f);
-    }
-    else if((calculatedPosition.y<= 0) && (calculatedPosition.y > -0.5))
-    {
-        Color = vec4(0, 1 , -2 * calculatedPosition.y , 1.f);
-    }
-    else if((calculatedPosition.y >= -1) && (calculatedPosition.y < -0.5))
-    {
-        Color = vec4(0, 2 * calculatedPosition.y + 2 , 1 , 1.f);
-    }
-    else
-    {
-        Color = vec4(0, 0, 1, 1.f);
-    }
+        void main()
+        {
+            vec3 tmpColor;
 
-}'''
+            float t = clamp(calculatedPosition.y, -1.0, 1.0);
+
+            //Move position from [-1,1] to [0,1]
+            float y = (t + 1.0) * 0.5;
+
+            vec3 red    = vec3(1.0, 0.0, 0.0);
+            vec3 yellow = vec3(1.0, 1.0, 0.0);
+            vec3 green  = vec3(0.0, 1.0, 0.0);
+            vec3 cyan   = vec3(0.0, 1.0, 1.0);
+            vec3 blue   = vec3(0.0, 0.0, 1.0);
+
+            //Use 5 segments: [0,0.25), [0.25,0.5), [0.5,0.75), [0.75,1.0]
+
+            tmpColor = mix(blue, cyan, smoothstep(0.0, 0.25, y));
+            tmpColor = mix(tmpColor ,green, smoothstep(0.25,0.5, y));
+            tmpColor = mix(tmpColor ,yellow, smoothstep(0.5,0.75, y));
+            tmpColor = mix(tmpColor ,red, smoothstep(0.75,1, y));
+
+            // mix tmpColor with those returned by getColorsOfRectangle / getColorsOfSmallRectangle
+            Color = vec4(mix(tmpColor, vertColor, 0.4) , 1.0);
+
+        }
+        '''
+

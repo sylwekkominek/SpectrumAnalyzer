@@ -66,7 +66,6 @@ private:
     double getSmallRectangleHeightInPercentOfScreenSize();
     double getSpeedOfFalling();
     bool getAccelerationStateOfFalling();
-    bool getAdvancedColorSettingEnabled();
     ColorsOfRectanglePerVertices getColorsOfRectangle();
     ColorsOfRectanglePerVertices getColorsOfSmallRectangle();
     ColorsOfRectanglePerVertices getColorsOfRectangleHelper(const std::string& functionName);

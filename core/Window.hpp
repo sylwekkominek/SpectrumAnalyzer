@@ -20,7 +20,6 @@ struct WindowConfig
     uint16_t numberOfRectangles;
     double gapWidthInRelationToRectangleWidth;
     float smallRectangleHeightInPercentOfScreenSize;
-    bool advancedColorSettingEnabled;
     ColorsOfRectanglePerVertices colorsOfRectangle;
     ColorsOfRectanglePerVertices colorsOfSmallRectangle;
     std::string advancedColorSetting;
@@ -75,10 +74,8 @@ private:
     float percentToPositon(float percent);
     float percentToPositonSmallElement(float percent);
 
-    const char* getVertexShaderForColorsProvidedByUser();
-    const char* getFragmentShaderForColorsProvidedByUser();
-    const char* getVertexShaderForAdvancedColorSettings();
-    const char* getFragmentShaderForAdvancedColorSettings();
+    const char* getVertexShader();
+    const char* getFragmentShader();
 
     void prepareShaders(const char *vsConfig, const char *fsConfig);
     GLuint compileShader(const GLchar* source, GLenum stage, const std::string& msg);
