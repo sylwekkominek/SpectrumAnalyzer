@@ -11,7 +11,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 Please see the LICENSE file for details on copying and usage.
-
+This project uses PyAudio distributed under the MIT License.
 
 **Description:**
 
