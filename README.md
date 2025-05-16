@@ -22,6 +22,9 @@ it will be possible to read data from other device (for example: SPI acceleromet
 The file config.py can be used to update such parameters as:
 number of strips, frequencies, colors, speed and so on.
 What is important recompilation of app is not needed even after updating config.py/audioConfig.py files. 
+
+![spectrumAnalyzer](https://github.com/user-attachments/assets/7df13dbb-58de-47f7-8432-3631ef989950)
+
 ![Spectrum Analyzer](https://github.com/user-attachments/assets/56436a83-ddf8-4308-8448-989e2c6d4f9b)
 
 
