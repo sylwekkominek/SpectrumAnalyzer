@@ -47,6 +47,7 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
     }
     os <<std::endl;
 
+    os <<"signalWindow size: "<<config.signalWindow.size()<<std::endl;
     os <<"colorsOfRectangle: "<<std::endl;
     colorsPrinter(config.colorsOfRectangle);
     os <<"colorsOfSmallRectangle: "<<std::endl;
@@ -68,6 +69,7 @@ ConfigReader::ConfigReader(const char *moduleName):
                  "getAlphaFactorForSmoothing",
                  "getMaxQueueSize",
                  "getFrequencies",
+                 "getSignalWindow",
                  "getScalingFactor",
                  "getOffsetFactor",
                  "getSmallRectanglesVisibilityState",
@@ -96,6 +98,7 @@ Configuration ConfigReader::getConfig()
         config.alphaFactor = getAlphaFactorForSmoothing();
         config.maxQueueSize = getMaxQueueSize();
         config.frequencies = getFrequencies();
+        config.signalWindow = getSignalWindow();
         config.numberOfRectangles = config.frequencies.size();
         config.scalingFactor = getScalingFactor();
         config.offsetFactor = getOffsetFactor();
@@ -114,6 +117,11 @@ Configuration ConfigReader::getConfig()
 }
 
 Frequencies ConfigReader::getFrequencies()
+{
+    return getValues(pointersToPythonFunctions.at(__func__));
+}
+
+std::vector<float> ConfigReader::getSignalWindow()
 {
     return getValues(pointersToPythonFunctions.at(__func__));
 }

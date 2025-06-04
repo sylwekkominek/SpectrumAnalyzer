@@ -8,7 +8,6 @@
 #include "SamplesCollector.hpp"
 #include "ConfigReader.hpp"
 #include "Window.hpp"
-#include "ChebWindow.hpp"
 #include "IndexSelector.hpp"
 #include "Stats.hpp"
 #include "Helpers.hpp"
@@ -59,7 +58,7 @@ void AudioSpectrumAnalyzer::fftCalculator()
     const std::string processName{"fftCalculator"};
     StatsManager statsManager(processName);
 
-    WelchCalculator fft(config.numberOfSamples, config.overlapping, getChebWindow(config.numberOfSamples));
+    WelchCalculator fft(config.numberOfSamples, config.overlapping, config.signalWindow);
 
     using namespace std::chrono;
 

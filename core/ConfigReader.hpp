@@ -17,6 +17,7 @@ using ColorsOfRectanglePerVertices = std::map<uint, std::vector<float>>;
 struct Configuration
 {
     Frequencies frequencies;
+    std::vector<float> signalWindow;
     uint16_t horizontalSize;
     uint16_t verticalSize;
     uint16_t numberOfRectangles;
@@ -50,6 +51,7 @@ public:
     Configuration getConfig();
 private:
     Frequencies getFrequencies();
+    std::vector<float> getSignalWindow();
     double getHorizontalSize();
     double getVerticalSize();
     double getGapWidthInRelationToRectangleWidth();

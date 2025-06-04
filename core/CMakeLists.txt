@@ -9,7 +9,6 @@ add_library(spectrum-analyzer-core STATIC
     Window.cpp
     IndexSelector.cpp
     DataCalculator.cpp
-    ChebWindow.cpp
     Stats.cpp
     AudioSpectrumAnalyzer.cpp
     Helpers.cpp

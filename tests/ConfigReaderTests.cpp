@@ -40,6 +40,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_EQ(config.advancedColorSettings, std::string("test"));
 
     valueChecker({1,2,3}, config.frequencies);
+    valueChecker({4,5,6}, config.signalWindow);
 
     valueChecker({1.1, 1.2, 1.3}, config.colorsOfRectangle.at(0));
     valueChecker({2.1, 2.2, 2.3}, config.colorsOfRectangle.at(1));

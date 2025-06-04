@@ -78,3 +78,17 @@ std::vector<float> generateNoise(uint N, float minValue, float MaxValue)
     return data;
 }
 
+//function returns Blackman window as we need low side lobes in tests
+std::vector<float> getSignalWindow(uint numberOfSamples)
+{
+    std::vector<float> signalWindow(numberOfSamples);
+
+    for (uint i = 0; i < numberOfSamples; ++i)
+    {
+        const float ratio = static_cast<float>(i) / (numberOfSamples - 1);
+
+        signalWindow.at(i) = 0.42 - 0.5 * std::cos(2.0 * M_PI * ratio) + 0.08 * std::cos(4.0 * M_PI * ratio);
+    }
+
+    return signalWindow;
+}

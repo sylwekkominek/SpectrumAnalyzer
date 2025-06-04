@@ -35,7 +35,10 @@ def getAlphaFactorForSmoothing():
 
 def getFrequencies():
     return (1,2,3)  
-    
+
+def getSignalWindow():
+    return (4,5,6)
+
 def getScalingFactor():
     return 9
     
