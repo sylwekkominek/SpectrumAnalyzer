@@ -21,7 +21,8 @@ public:
         shouldProceed(true),
         dataExchanger(configuration.maxQueueSize),
         fftDataExchanger(configuration.maxQueueSize),
-        processedDataExchanger(configuration.maxQueueSize)
+        processedDataExchanger(configuration.maxQueueSize),
+        flowControlDataExchanger(maxQueueSizeForFlowController)
     {
     }
 
@@ -41,7 +42,7 @@ public:
     virtual void fftCalculator() =0;
     virtual void processing() =0;
     virtual void drafter() =0;
-    virtual void statsPrinter() =0;
+    virtual void flowController() =0;
 
     virtual ~SpectrumAnalyzerBase()
     {
@@ -56,5 +57,8 @@ protected:
     DataExchanger<std::unique_ptr<Data>> dataExchanger;
     DataExchanger<std::unique_ptr<FFTResult>> fftDataExchanger;
     DataExchanger<std::unique_ptr<Data>> processedDataExchanger;
+    DataExchanger<float> flowControlDataExchanger;
     std::vector<std::thread> threads;
+private:
+    static constexpr uint maxQueueSizeForFlowController = 1;
 };

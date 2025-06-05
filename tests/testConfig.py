@@ -15,11 +15,11 @@ def getNumberOfSamples():
 def getSamplingRate():
     return 4
 
-def getOverlapping():
-    return 5.1
+def getDesiredFrameRate():
+    return 5
 
 def getGapWidthInRelationToRectangleWidth():
-    return 5.2
+    return 5.1
     
 def getNumberOfSignalsForAveraging():
     return 6

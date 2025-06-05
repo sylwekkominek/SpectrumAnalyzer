@@ -24,7 +24,7 @@ struct Configuration
     double gapWidthInRelationToRectangleWidth;
     uint numberOfSamples;
     uint samplingRate;
-    float overlapping;
+    float desiredFrameRate;
     uint numberOfSignalsForAveraging;
     uint numberOfSignalsForMaxHold;
     float alphaFactor;
@@ -57,7 +57,7 @@ private:
     double getGapWidthInRelationToRectangleWidth();
     double getNumberOfSamples();
     double getSamplingRate();
-    double getOverlapping();
+    double getDesiredFrameRate();
     double getNumberOfSignalsForAveraging();
     double getNumberOfSignalsForMaxHold();
     double getAlphaFactorForSmoothing();

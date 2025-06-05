@@ -26,7 +26,7 @@ void AudioSpectrumAnalyzer::init()
     threads.push_back(std::thread(&AudioSpectrumAnalyzer::fftCalculator,this));
     threads.push_back(std::thread(&AudioSpectrumAnalyzer::processing,this));
     threads.push_back(std::thread(&AudioSpectrumAnalyzer::drafter,this));
-    threads.push_back(std::thread(&AudioSpectrumAnalyzer::statsPrinter,this));
+    threads.push_back(std::thread(&AudioSpectrumAnalyzer::flowController,this));
 }
 
 void AudioSpectrumAnalyzer::samplesUpdater()
@@ -58,13 +58,21 @@ void AudioSpectrumAnalyzer::fftCalculator()
     const std::string processName{"fftCalculator"};
     StatsManager statsManager(processName);
 
-    WelchCalculator fft(config.numberOfSamples, config.overlapping, config.signalWindow);
+    float overlapping = calculateOverlapping(config.samplingRate, config.numberOfSamples, config.desiredFrameRate);
+
+    WelchCalculator fft(config.numberOfSamples, overlapping, config.signalWindow);
 
     using namespace std::chrono;
 
     while(shouldProceed)
     {
         const auto &dataInTimeDomain  = dataExchanger.get();
+        const auto &newOverlapping = flowControlDataExchanger.getWithoutBlocking();
+
+        if(newOverlapping != std::nullopt)
+        {
+            overlapping = *newOverlapping;
+        }
 
         if(dataInTimeDomain == nullptr)
         {
@@ -73,6 +81,7 @@ void AudioSpectrumAnalyzer::fftCalculator()
 
         statsManager.update();
 
+        fft.updateOverlapping(overlapping);
         fft.updateBuffer(*dataInTimeDomain);
         fft.calculate(fftDataExchanger);
     }
@@ -178,44 +187,40 @@ void AudioSpectrumAnalyzer::drafter()
 
 }
 
-void AudioSpectrumAnalyzer::statsPrinter()
+void AudioSpectrumAnalyzer::flowController()
 {
-    std::optional<time_point<high_resolution_clock>> timeWhenProgramWillBeClosed;
-    auto lowRefreshRateTimeThresholdIsSeconds{3s};
+    float coeffUsedInCaseWhenScreenFallsBehindIncomingData = -0.01;
 
+    auto previousTime = high_resolution_clock::now();
 
     while(shouldProceed)
     {
-       std::this_thread::sleep_for(1000ms);
+        std::this_thread::sleep_for(100ms);
 
-       auto statsForSamplesUpdater = StatsManager::getStatsFor("samplesUpdater");
-       auto statsForDrafter = StatsManager::getStatsFor("drafter");
+        auto numberOfFramesPerSecond = StatsManager::getStatsFor("drafter").getNumberOfCallsInLast(1000ms);
+        auto overlappingDiff = calculateOverlappingDiff(config.desiredFrameRate, numberOfFramesPerSecond);
+        auto overlapping = calculateOverlapping(config.samplingRate, config.numberOfSamples, numberOfFramesPerSecond);
 
-       auto numberOfFramesPerSecond = statsForDrafter.getNumberOfCallsInLast(1000ms);
+        if(processedDataExchanger.getSize() > 1)
+        {
+            overlapping = overlapping + coeffUsedInCaseWhenScreenFallsBehindIncomingData;
+        }
 
-       if(numberOfFramesPerSecond > 1)
-       {
-           std::cout<<"Samples are updated: "<<statsForSamplesUpdater.getNumberOfCallsInLast(1000ms)<<" per second"<< " queue size: "<<dataExchanger.getSize()<<std::endl;
-           std::cout<<"Plots are updated: "<<numberOfFramesPerSecond<<" per second"<<" queue size: "<<processedDataExchanger.getSize()<<std::endl;
-           timeWhenProgramWillBeClosed.reset();
-           continue;
-       }
+        overlapping = overlapping + overlappingDiff;
 
+        if((overlapping >=0) && (overlapping < 1))
+        {
+            flowControlDataExchanger.push_back(std::move(overlapping));
+        }
 
-      if(!timeWhenProgramWillBeClosed)
-      {
-         timeWhenProgramWillBeClosed = high_resolution_clock::now()+lowRefreshRateTimeThresholdIsSeconds;
-      }
+        auto now = high_resolution_clock::now();
 
-      auto programWillBeClosedInSeconds = duration_cast<seconds>(*timeWhenProgramWillBeClosed - high_resolution_clock::now()) ;
-
-      if(programWillBeClosedInSeconds  <= 0s)
-      {
-          shouldProceed.store(false);
-      }
-
-      std::cout<<"Program will be closed in: "<<  programWillBeClosedInSeconds.count()<<" seconds..."<<std::endl;
-
+        if(now - previousTime >= seconds(1))
+        {
+            std::cout<<"Samples are updated: "<<StatsManager::getStatsFor("samplesUpdater").getNumberOfCallsInLast(1000ms)<<" per second"<< " queue size: "<<dataExchanger.getSize()<<std::endl;
+            std::cout<<"Plots are updated: "<<numberOfFramesPerSecond<<" per second"<<" queue size: "<<processedDataExchanger.getSize()<<std::endl;
+            previousTime = now;
+        }
     }
 }
 

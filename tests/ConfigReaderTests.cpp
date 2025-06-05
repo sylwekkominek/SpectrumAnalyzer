@@ -26,8 +26,8 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_EQ(config.verticalSize, 2);
     EXPECT_EQ(config.numberOfSamples, 3);
     EXPECT_EQ(config.samplingRate, 4);
-    EXPECT_NEAR(config.overlapping, 5.1, marginOfError);
-    EXPECT_NEAR(config.gapWidthInRelationToRectangleWidth, 5.2, marginOfError);
+    EXPECT_EQ(config.desiredFrameRate, 5);
+    EXPECT_NEAR(config.gapWidthInRelationToRectangleWidth, 5.1, marginOfError);
     EXPECT_EQ(config.numberOfSignalsForAveraging, 6);
     EXPECT_EQ(config.numberOfSignalsForMaxHold, 7);
     EXPECT_EQ(config.maxQueueSize, 8);

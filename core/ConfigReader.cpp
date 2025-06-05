@@ -28,7 +28,7 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
     os <<"gapWidthInRelationToRectangleWidth: "<<config.gapWidthInRelationToRectangleWidth<<std::endl;
     os <<"numberOfSamples: "<<config.numberOfSamples<<std::endl;
     os <<"samplingRate: "<<config.samplingRate<<std::endl;
-    os <<"overlapping: "<<config.overlapping<<std::endl;
+    os <<"desiredFrameRate: "<<config.desiredFrameRate<<std::endl;
     os <<"numberOfSignalsForAveraging: "<<config.numberOfSignalsForAveraging<<std::endl;
     os <<"numberOfSignalsForMaxHold: "<<config.numberOfSignalsForMaxHold<<std::endl;
     os <<"alphaFactor: "<<config.alphaFactor<<std::endl;
@@ -63,7 +63,7 @@ ConfigReader::ConfigReader(const char *moduleName):
                  "getGapWidthInRelationToRectangleWidth",
                  "getNumberOfSamples",
                  "getSamplingRate",
-                 "getOverlapping",
+                 "getDesiredFrameRate",
                  "getNumberOfSignalsForAveraging",
                  "getNumberOfSignalsForMaxHold",
                  "getAlphaFactorForSmoothing",
@@ -92,7 +92,7 @@ Configuration ConfigReader::getConfig()
         config.gapWidthInRelationToRectangleWidth = getGapWidthInRelationToRectangleWidth();
         config.numberOfSamples = getNumberOfSamples();
         config.samplingRate = getSamplingRate();
-        config.overlapping = getOverlapping();
+        config.desiredFrameRate = getDesiredFrameRate();
         config.numberOfSignalsForAveraging = getNumberOfSignalsForAveraging();
         config.numberOfSignalsForMaxHold = getNumberOfSignalsForMaxHold();
         config.alphaFactor = getAlphaFactorForSmoothing();
@@ -151,7 +151,7 @@ double ConfigReader::getSamplingRate()
     return getValue(pointersToPythonFunctions.at(__func__));
 }
 
-double ConfigReader::getOverlapping()
+double ConfigReader::getDesiredFrameRate()
 {
     return getValue(pointersToPythonFunctions.at(__func__));
 }

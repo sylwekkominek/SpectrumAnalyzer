@@ -7,7 +7,6 @@
 #include "FFTCalculator.hpp"
 #include "DataExchanger.hpp"
 
-
 FFTCalculator::FFTCalculator(uint32_t size): inPtr(std::make_unique<std::vector<fftw_complex>>(size)), outPtr(std::make_unique<std::vector<fftw_complex>>(size))
 {
     p = fftw_plan_dft_1d(size, inPtr->data(), outPtr->data(), FFTW_FORWARD,  FFTW_ESTIMATE);
@@ -46,7 +45,7 @@ FFTCalculator::~FFTCalculator()
 WelchCalculator::WelchCalculator(const uint32_t fftSize, const float overlapping, const std::vector<float> window) :
     FFTCalculator(fftSize),
     overlapping(overlapping),
-    numberOfSamplesToBeRemoved(fftSize - (uint32_t)(overlapping * fftSize)),
+    numberOfSamplesToBeRemoved(calculateNumberOfSamplesToBeRemoved()),
     fftSize(fftSize), window(window)
 {
 }
@@ -54,6 +53,12 @@ WelchCalculator::WelchCalculator(const uint32_t fftSize, const float overlapping
 void WelchCalculator::updateBuffer(const std::vector<float> &inputData)
 {
     bufforWithDataToBeConverted.insert(bufforWithDataToBeConverted.end(), inputData.begin(), inputData.end());
+}
+
+void WelchCalculator::updateOverlapping(const float newOverlapping)
+{
+    overlapping = newOverlapping;
+    numberOfSamplesToBeRemoved = calculateNumberOfSamplesToBeRemoved();
 }
 
 void WelchCalculator::calculate(DataExchanger<std::unique_ptr<FFTResult>> &queue)
@@ -69,9 +74,23 @@ void WelchCalculator::calculate(DataExchanger<std::unique_ptr<FFTResult>> &queue
         }
 
         FFTResult result = FFTCalculator::calculate(dataInTimeDomain);
-
         queue.push_back(std::make_unique<FFTResult>(std::move(result)));
-
-        bufforWithDataToBeConverted.erase(bufforWithDataToBeConverted.begin(), bufforWithDataToBeConverted.begin()+numberOfSamplesToBeRemoved);
+        bufforWithDataToBeConverted.erase(bufforWithDataToBeConverted.begin(), bufforWithDataToBeConverted.begin() + numberOfSamplesToBeRemoved);
     }
+}
+
+uint32_t WelchCalculator::calculateNumberOfSamplesToBeRemoved()
+{
+    if(overlapping <= 0)
+    {
+        return fftSize;
+    }
+
+    if(overlapping >= 1)
+    {
+        const uint32_t atLeastOneSampleMustBeRemoved{1};
+        return atLeastOneSampleMustBeRemoved;
+    }
+
+    return  (fftSize - (uint32_t)(overlapping * fftSize));
 }

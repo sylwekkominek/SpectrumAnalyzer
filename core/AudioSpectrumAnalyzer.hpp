@@ -18,7 +18,7 @@ public:
     virtual void fftCalculator() override;
     virtual void processing() override;
     virtual void drafter() override;
-    virtual void statsPrinter() override;
+    virtual void flowController() override;
     virtual ~AudioSpectrumAnalyzer() override;
 protected:
     std::string audioConfigFile="audioConfig";

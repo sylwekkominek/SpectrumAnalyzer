@@ -36,9 +36,12 @@ class WelchCalculator :  FFTCalculator
 public:
     WelchCalculator(const uint32_t fftSize, const float overlapping, const std::vector<float> window);
     void updateBuffer(const std::vector<float> &inputData);
+    void updateOverlapping(const float newOverlapping);
     void calculate(DataExchanger<std::unique_ptr<FFTResult>> &queue);
 
 private:
+    uint32_t calculateNumberOfSamplesToBeRemoved();
+
     const uint32_t fftSize;
     float overlapping;
     uint numberOfSamplesToBeRemoved;

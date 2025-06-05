@@ -105,6 +105,9 @@ class WelchCalculatorTest : public FFTCalculatorTestBase
 {
 public:
     const float marginOfError = exp(-6);
+    const uint numberOfSamples{16};
+    const uint32_t maxQueueValue{100};
+    const float signalAmplitude{1};
 
     auto generateWindow(uint numberOfSamples)
     {
@@ -114,16 +117,15 @@ public:
 
 TEST_F(WelchCalculatorTest, checkingIfCalculatorWorksWellWith50PercentOverlapping)
 {
-    const uint numberOfSamples{16};
-    const float signalAmplitude{1};
+    const float initialOverlapping{0.0};
     const float overlapping{0.5};
-    const uint32_t maxQueueValue{100};
 
     std::vector<float> signal = generateSignal(numberOfSamples,numberOfSamples,signalAmplitude);
 
     DataExchanger<std::unique_ptr<FFTResult>> queue(maxQueueValue);
 
-    WelchCalculator welchCalculator(numberOfSamples, overlapping, generateWindow(numberOfSamples));
+    WelchCalculator welchCalculator(numberOfSamples, initialOverlapping, generateWindow(numberOfSamples));
+    welchCalculator.updateOverlapping(overlapping);
     welchCalculator.updateBuffer(signal);
     welchCalculator.updateBuffer(signal);
     welchCalculator.calculate(queue);
@@ -139,10 +141,7 @@ TEST_F(WelchCalculatorTest, checkingIfCalculatorWorksWellWith50PercentOverlappin
 
 TEST_F(WelchCalculatorTest, checkingIfCalculatorWorksWellWith75PercentOverlapping)
 {
-    const uint numberOfSamples{16};
-    const float signalAmplitude{1};
     const float overlapping{0.75};
-    const uint32_t maxQueueValue{100};
 
     std::vector<float> signal = generateSignal(numberOfSamples,numberOfSamples,signalAmplitude);
 
@@ -164,3 +163,40 @@ TEST_F(WelchCalculatorTest, checkingIfCalculatorWorksWellWith75PercentOverlappin
     verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
 }
 
+TEST_F(WelchCalculatorTest, checkingIfCalculatorWorksWellWithOverlappingBelowProperRange)
+{
+    const float initialOverlapping{0.0};
+    const float overlappingBelowProperRange{-1.0};
+
+    std::vector<float> signal = generateSignal(numberOfSamples,numberOfSamples,signalAmplitude);
+
+    DataExchanger<std::unique_ptr<FFTResult>> queue(maxQueueValue);
+
+    WelchCalculator welchCalculator(numberOfSamples, initialOverlapping, generateWindow(numberOfSamples));
+    welchCalculator.updateOverlapping(overlappingBelowProperRange);
+    welchCalculator.updateBuffer(signal);
+    welchCalculator.updateBuffer(signal);
+    welchCalculator.calculate(queue);
+
+    EXPECT_EQ(2, queue.getSize());
+
+    const std::map<Position,ExpectedValue> expectedFftValuesAfterNormalization = {{0,0}, {1,signalAmplitude}, {2,0},{3,0},{4,0},{5,0},{6,0}, {7,0}, {8,0},{9,0}, {10,0}, {11,0},{12,0},{13,0},{14,0}, {15,signalAmplitude}};
+
+    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
+}
+
+TEST_F(WelchCalculatorTest, checkingIfCalculatorWorksWellWithOverlappingAboveProperRange)
+{
+    const float overlappingAboveProperRange{3.0};
+
+    std::vector<float> signal = generateSignal(numberOfSamples,numberOfSamples,signalAmplitude);
+
+    DataExchanger<std::unique_ptr<FFTResult>> queue(maxQueueValue);
+
+    WelchCalculator welchCalculator(numberOfSamples, overlappingAboveProperRange, generateWindow(numberOfSamples));
+    welchCalculator.updateBuffer(signal);
+    welchCalculator.updateBuffer(signal);
+    welchCalculator.calculate(queue);
+
+    EXPECT_EQ(17, queue.getSize());
+}

@@ -63,3 +63,18 @@ std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftDat
     return outputData;
 }
 
+float calculateOverlappingDiff(const uint desiredNumberOfFramesPerSecond, const uint currentFramesPerSecond)
+{
+    const float slope = 0.2;
+
+    auto desiredFps = (desiredNumberOfFramesPerSecond == 0) ? 1 : desiredNumberOfFramesPerSecond;
+
+    return (-slope/desiredFps)*currentFramesPerSecond + slope;
+}
+
+float calculateOverlapping(const uint samplingRate, const uint numberOfSamples, const uint numberOfFramesPerSecond)
+{
+    auto fps = (numberOfFramesPerSecond == 0) ? 1 : numberOfFramesPerSecond;
+
+    return  (1.0 - static_cast<float>(samplingRate)/(numberOfSamples * fps));
+}

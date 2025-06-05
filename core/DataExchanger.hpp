@@ -8,6 +8,7 @@
 
 #include <condition_variable>
 #include <mutex>
+#include <optional>
 #include <queue>
 
 template<typename T>
@@ -17,6 +18,7 @@ public:
     DataExchanger(uint32_t maxQueueSize);
     void push_back(T &&value);
     T get();
+    std::optional<T> getWithoutBlocking();
     void stop();
     uint32_t getSize();
 
@@ -59,6 +61,21 @@ T DataExchanger<T>::get()
     queue.pop();
 
     return value;
+}
+
+template<typename T>
+std::optional<T> DataExchanger<T>::getWithoutBlocking()
+{
+    std::unique_lock<std::mutex> ul(queueMutex);
+
+    if(not queue.empty())
+    {
+        auto value = std::move(queue.front());
+        queue.pop();
+        return value;
+    }
+
+    return {};
 }
 
 template<typename T>

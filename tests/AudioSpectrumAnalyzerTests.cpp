@@ -31,7 +31,7 @@ public:
             threads.push_back(std::thread(&AudioSpectrumAnalyzer::fftCalculator,this));
             threads.push_back(std::thread(&AudioSpectrumAnalyzer::processing,this));
             threads.push_back(std::thread(&ModifiedAudioSpectrumAnalyzer::drafter,this));
-            threads.push_back(std::thread(&ModifiedAudioSpectrumAnalyzer::statsPrinter,this));
+            threads.push_back(std::thread(&ModifiedAudioSpectrumAnalyzer::flowController,this));
         }
 
         void samplesUpdater() override
@@ -76,7 +76,7 @@ public:
             EXPECT_EQ(dbFs, -numberOfSignalsToBeTransferred);
         }
 
-        void statsPrinter() override
+        void flowController() override
         {
             while(shouldProceed)
             {
@@ -96,7 +96,7 @@ public:
         Configuration config{};
         config.numberOfSamples = 2048;
         config.samplingRate = 8000;
-        config.overlapping = 0.0;
+        config.desiredFrameRate = 1;
         config.numberOfSignalsForAveraging = 1;
         config.numberOfSignalsForMaxHold = 1;
         config.alphaFactor = 1;
@@ -165,10 +165,10 @@ public:
             threads.push_back(std::thread(&AudioSpectrumAnalyzer::fftCalculator,this));
             threads.push_back(std::thread(&AudioSpectrumAnalyzer::processing,this));
             threads.push_back(std::thread(&AudioSpectrumAnalyzer::drafter,this));
-            threads.push_back(std::thread(&ModifiedAudioSpectrumAnalyzer::statsPrinter,this));
+            threads.push_back(std::thread(&ModifiedAudioSpectrumAnalyzer::flowController,this));
         }
 
-        void statsPrinter() override
+        void flowController() override
         {
             while(shouldProceed)
             {
@@ -191,7 +191,7 @@ public:
         config.numberOfSamples = 2048;
         config.signalWindow = getSignalWindow(config.numberOfSamples);
         config.samplingRate = 8000;
-        config.overlapping = 0.0;
+        config.desiredFrameRate = 1;
         config.numberOfSignalsForAveraging = 1;
         config.numberOfSignalsForMaxHold = 1;
         config.alphaFactor = 1;
