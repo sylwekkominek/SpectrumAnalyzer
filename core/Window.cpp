@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <iostream>
 
+bool Window::isMaximized = false;
+
 Window::RectangleInsideGpu::RectangleInsideGpu(const Rectangle &rectangle)
 {
     /*
@@ -83,9 +85,13 @@ Window::Window(const WindowConfig &windowConfig) :
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
-    window = glfwCreateWindow(windowConfig.horizontalSize, windowConfig.verticalSize, "Audio spectrum analyzer implemented by Sylwester Kominek", glfwGetPrimaryMonitor(), nullptr);
+    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+    window = glfwCreateWindow(windowConfig.horizontalSize, windowConfig.verticalSize, "SpectrumAnalyzer", nullptr, nullptr);
+
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    glfwSetWindowMaximizeCallback(window, windowMaximizeCallback);
+
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     gladLoadGL();
@@ -123,13 +129,33 @@ bool Window::checkIfWindowShouldBeClosed()
 {
     glfwPollEvents();
 
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwWindowShouldClose(window))
     {
-        glfwSetWindowShouldClose(window, true);
         return true;
     }
 
     return false;
+}
+
+bool Window::checkIfWindowShouldBeRecreated()
+{
+    glfwPollEvents();
+
+    return ((isMaximized && glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS))  ? (isMaximized = false, true) : false;
+}
+
+void Window::framebufferSizeCallback(GLFWwindow* /*window*/, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+void Window::windowMaximizeCallback(GLFWwindow* glfwWindow, int maximized)
+{
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+    glfwSetWindowMonitor(glfwWindow, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+    isMaximized = (maximized == GLFW_TRUE);
 }
 
 Window::~Window()
@@ -137,9 +163,8 @@ Window::~Window()
    glDeleteProgramPipelines(1, &pipeline);
    glDeleteProgram(vs);
    glDeleteProgram(fs);
-   glfwTerminate();
+   glfwDestroyWindow(window);
 }
-
 
 std::vector<Window::Rectangle> Window::rectanglesFactory(const float heightInPercentOfScreenSize)
 {

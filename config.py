@@ -5,10 +5,10 @@
 import math
 
 def getHorizontalSize():
-    return 1920
+    return 1280
     
 def getVerticalSize():
-    return 1080
+    return 512
     
 def getNumberOfSamples():
     return 4096
@@ -49,7 +49,7 @@ def getOffsetFactor():
     return 0
     
 def getSmallRectanglesVisibilityState():
-    return False
+    return True
 
 def getSmallRectangleHeightInPercentOfScreenSize():
     return 1.0

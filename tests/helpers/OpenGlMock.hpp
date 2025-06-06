@@ -26,7 +26,11 @@ public:
     MOCK_METHOD0(glfwTerminate, void());
     MOCK_METHOD0(glfwPollEvents, void());
     MOCK_METHOD2(glfwGetKey, int(GLFWwindow* window, int key));
+    MOCK_METHOD1(glfwWindowShouldClose, int(GLFWwindow* window));
     MOCK_METHOD2(glfwSetWindowShouldClose, void(GLFWwindow* window, int value));
+    MOCK_METHOD2(glfwSetFramebufferSizeCallback, GLFWframebuffersizefun(GLFWwindow* window, GLFWframebuffersizefun callback));
+    MOCK_METHOD2(glfwSetWindowMaximizeCallback, GLFWwindowmaximizefun(GLFWwindow* window, GLFWwindowmaximizefun callback));
+    MOCK_METHOD1(glfwDestroyWindow, void(GLFWwindow* glfwWindow));
 
     MOCK_METHOD2(glCreateVertexArrays, void(GLsizei, GLuint *));
     MOCK_METHOD2(glCreateBuffers, void(GLsizei, GLuint *));
@@ -47,6 +51,7 @@ public:
     MOCK_METHOD2(glCreateProgramPipelines, void(GLsizei, GLuint*));
     MOCK_METHOD4(glClearColor, void(GLfloat, GLfloat, GLfloat, GLfloat));
     MOCK_METHOD1(glClear, void(GLbitfield));
+    MOCK_METHOD4(glViewport, void(GLint , GLint ,GLsizei , GLsizei));
 };
 
 

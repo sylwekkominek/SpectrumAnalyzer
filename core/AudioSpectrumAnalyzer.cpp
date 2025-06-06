@@ -151,8 +151,8 @@ void AudioSpectrumAnalyzer::drafter()
                               config.colorsOfSmallRectangle,
                               config.advancedColorSettings};
 
-    Window window(windowConfig);
-    window.initializeGPU();
+    std::unique_ptr<Window> window = std::make_unique<Window>(windowConfig);
+    window->initializeGPU();
 
     IndexSelector indexSelector(config.samplingRate, config.numberOfSamples, config.frequencies);
     SmallRectanglesPositionCalculator smallRectanglesPositionCalculator(config.numberOfRectangles, config.speedOfFalling, config.accelerationStateOfFalling);
@@ -177,12 +177,19 @@ void AudioSpectrumAnalyzer::drafter()
 
         const auto smallRectanglesPosition = config.smallRectanglesVisibilityState ? smallRectanglesPositionCalculator.getPositions(dataToBePrinted) : std::vector<float>{};
 
-        window.draw(dataToBePrinted, smallRectanglesPosition);
+        window->draw(dataToBePrinted, smallRectanglesPosition);
 
-        if(window.checkIfWindowShouldBeClosed())
+        if(window->checkIfWindowShouldBeClosed())
         {
             shouldProceed.store(false);
         }
+
+        if(window->checkIfWindowShouldBeRecreated())
+        {
+            window = std::make_unique<Window>(windowConfig);
+            window->initializeGPU();
+        }
+
     }
 
 }

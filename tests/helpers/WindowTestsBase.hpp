@@ -35,6 +35,10 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glfwInit()).Times(1);
         EXPECT_CALL(openGL, glfwWindowHint(_,_)).Times(4);
         EXPECT_CALL(openGL, glfwCreateWindow(_,_,_,_,_)).Times(1);
+        EXPECT_CALL(openGL, glfwSetFramebufferSizeCallback(_,_)).Times(1);
+        EXPECT_CALL(openGL, glfwSetWindowMaximizeCallback(_,_)).Times(1);
+
+
         EXPECT_CALL(openGL, glfwMakeContextCurrent(_)).Times(1);
         EXPECT_CALL(openGL, glfwSwapInterval(_)).Times(1);
         EXPECT_CALL(openGL, gladLoadGL()).Times(1);
@@ -43,7 +47,6 @@ struct WindowTestsBase
     void expectInitializeGPU(const uint numberOfRectangles, const bool smallRectanglesEnabled)
     {
         const uint numberOfExpectCalls = smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles;
-
 
         EXPECT_CALL(openGL, glCreateShaderProgramv(_,_,_)).Times(2);
         EXPECT_CALL(openGL, glGetProgramInfoLog(_,_,_,_)).Times(2);
@@ -102,24 +105,20 @@ struct WindowTestsBase
 
     void expectCheckIfWindowShouldBeClosed(const bool returnValue=true)
     {
-        EXPECT_CALL(openGL, glfwPollEvents()).Times(1);
+        EXPECT_CALL(openGL, glfwPollEvents()).Times(1).RetiresOnSaturation();
+        EXPECT_CALL(openGL, glfwWindowShouldClose(_)).WillOnce(Return(returnValue));
+    }
 
-        if(returnValue)
-        {
-            EXPECT_CALL(openGL, glfwGetKey(_,_)).WillOnce(Return(GLFW_PRESS));
-            EXPECT_CALL(openGL, glfwSetWindowShouldClose(_,_)).Times(1);
-        }
-        else
-        {
-            EXPECT_CALL(openGL, glfwGetKey(_,_)).WillOnce(Return(GLFW_KEY_UNKNOWN));
-        }
+    void expectCheckIfWindowShouldRecreated()
+    {
+        EXPECT_CALL(openGL, glfwPollEvents()).Times(1).RetiresOnSaturation();
     }
 
     void expectDestroyWindow()
     {
         EXPECT_CALL(openGL, glDeleteProgramPipelines(_,_)).Times(1);
         EXPECT_CALL(openGL, glDeleteProgram(_)).Times(2);
-        EXPECT_CALL(openGL, glfwTerminate()).Times(1);
+        EXPECT_CALL(openGL, glfwDestroyWindow(_)).Times(1);
     }
 
 };

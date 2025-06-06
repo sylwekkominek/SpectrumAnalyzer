@@ -25,14 +25,8 @@ PFNGLUSEPROGRAMSTAGESPROC glad_glUseProgramStages = nullptr;
 PFNGLVERTEXARRAYATTRIBBINDINGPROC glad_glVertexArrayAttribBinding = nullptr;
 PFNGLVERTEXARRAYATTRIBFORMATPROC glad_glVertexArrayAttribFormat = nullptr;
 PFNGLVERTEXARRAYVERTEXBUFFERPROC glad_glVertexArrayVertexBuffer = nullptr;
+PFNGLVIEWPORTPROC glad_glViewport = nullptr;
 
-
-
-std::function<int()> glfwInitFunction;
-std::function<void(int hint, int value)> glfwWindowHintFunction;
-std::function<GLFWwindow*(int , int , const char* , GLFWmonitor* , GLFWwindow* )> glfwCreateWindowFunction;
-std::function<void(GLFWwindow* window)> glfwMakeContextCurrentFunction;
-std::function<void(int interval)> glfwSwapIntervalFunction;
 std::function<int()> gladLoadGLFunction;
 std::function<void(GLsizei , GLuint *)> glCreateProgramPipelinesFunction;
 std::function<GLuint(GLenum, GLsizei, const GLchar *const*)> glCreateShaderProgramvFunction;
@@ -53,11 +47,23 @@ std::function<void(GLsizei, const GLuint *)> glDeleteProgramPipelinesFunction;
 std::function<void(GLuint)> glDeleteProgramFunction;
 std::function<void(GLfloat, GLfloat, GLfloat, GLfloat)> glClearColorFunction;
 std::function<void(GLbitfield)> glClearFunction;
+std::function<void(GLint, GLint,GLsizei, GLsizei)> glViewportFunction;
+
+std::function<int()> glfwInitFunction;
+std::function<void(int hint, int value)> glfwWindowHintFunction;
+std::function<GLFWwindow*(int , int , const char* , GLFWmonitor* , GLFWwindow* )> glfwCreateWindowFunction;
+std::function<void(GLFWwindow* window)> glfwMakeContextCurrentFunction;
+std::function<void(int interval)> glfwSwapIntervalFunction;
+std::function<GLFWframebuffersizefun(GLFWwindow*, GLFWframebuffersizefun)> glfwSetFramebufferSizeCallbackFunction;
+std::function<GLFWwindowmaximizefun(GLFWwindow*, GLFWwindowmaximizefun)>  glfwSetWindowMaximizeCallbackFunction;
 std::function<void(GLFWwindow* window)> glfwSwapBuffersFunction;
 std::function<void()> glfwTerminateFunction;
 std::function<void()> glfwPollEventsFunction;
 std::function<int(GLFWwindow* window, int key)> glfwGetKeyFunction;
+std::function<int(GLFWwindow* window)> glfwWindowShouldCloseFunction;
 std::function<void(GLFWwindow* window, int value)> glfwSetWindowShouldCloseFunction;
+std::function<void(GLFWwindow* glfwWindow)>  glfwDestroyWindowFunction;
+
 
 int glfwInit()
 {
@@ -115,9 +121,31 @@ int glfwGetKey(GLFWwindow* window, int key)
     return glfwGetKeyFunction(window, key);
 }
 
+GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun callback)
+{
+    return glfwSetFramebufferSizeCallbackFunction(window, callback);
+}
+
+GLFWwindowmaximizefun glfwSetWindowMaximizeCallback(GLFWwindow* window, GLFWwindowmaximizefun callback)
+{
+    return glfwSetWindowMaximizeCallbackFunction(window, callback);
+}
+
+
+int glfwWindowShouldClose(GLFWwindow* window)
+{
+    return glfwWindowShouldCloseFunction(window);
+}
+
+
 void glfwSetWindowShouldClose(GLFWwindow* window, int value)
 {
     glfwSetWindowShouldCloseFunction(window, value);
+}
+
+void glfwDestroyWindow(GLFWwindow* window)
+{
+    glfwDestroyWindowFunction(window);
 }
 
 void glCreateProgramPipelinesMock(GLsizei n, GLuint *pipelines)
@@ -210,6 +238,11 @@ void glClearMock(GLbitfield mask)
     glClearFunction(mask);
 }
 
+void glViewportMock(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+    glViewportFunction(x,y,width,height);
+}
+
 OpenGlMock::OpenGlMock()
 {
 
@@ -240,6 +273,17 @@ OpenGlMock::OpenGlMock()
         return this->glfwSwapInterval(interval);
     };
 
+    glfwSetFramebufferSizeCallbackFunction = [this](GLFWwindow* window, GLFWframebuffersizefun callback)
+    {
+        return this->glfwSetFramebufferSizeCallback(window, callback);
+    };
+
+    glfwSetWindowMaximizeCallbackFunction = [this](GLFWwindow* window, GLFWwindowmaximizefun callback)
+    {
+        return this->glfwSetWindowMaximizeCallback(window, callback);
+    };
+
+
     gladLoadGLFunction = [this]()
     {
         return this->gladLoadGL();
@@ -265,11 +309,20 @@ OpenGlMock::OpenGlMock()
         return this->glfwGetKey(window, key);
     };
 
+    glfwWindowShouldCloseFunction = [this](GLFWwindow* window)
+    {
+        return this->glfwWindowShouldClose(window);
+    };
+
     glfwSetWindowShouldCloseFunction = [this](GLFWwindow* window, int value)
     {
         this->glfwSetWindowShouldClose(window, value);
     };
 
+    glfwDestroyWindowFunction = [this](GLFWwindow* window)
+    {
+        this->glfwDestroyWindow(window);
+    };
 
     ::glad_glCreateProgramPipelines = glCreateProgramPipelinesMock;
     ::glad_glCreateShaderProgramv = glCreateShaderProgramvMock;
@@ -290,6 +343,7 @@ OpenGlMock::OpenGlMock()
     ::glad_glDeleteProgram = glDeleteProgramMock;
     ::glad_glClearColor = glClearColorMock;
     ::glad_glClear = glClearMock;
+    ::glad_glViewport = glViewportMock;
 
     glCreateShaderProgramvFunction = [this](GLenum type, GLsizei count, const GLchar *const* strings)
     {
@@ -386,5 +440,9 @@ OpenGlMock::OpenGlMock()
         this->glClear(mask);
     };
 
+    glViewportFunction = [this](GLint x, GLint y, GLsizei width, GLsizei height)
+    {
+        this->glViewport(x,y,width,height);
+    };
 }
 

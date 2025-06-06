@@ -210,6 +210,7 @@ public:
         expectInitializeGPU(config.numberOfRectangles, true);
         expectDraw({-0.812812, -0.494849, -0.404816, -0.494849,-0.812812}, true);
         expectCheckIfWindowShouldBeClosed();
+        expectCheckIfWindowShouldRecreated();
         expectDestroyWindow();
     }
 

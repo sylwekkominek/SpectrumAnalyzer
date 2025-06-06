@@ -32,6 +32,7 @@ public:
     void initializeGPU();
     void draw(const std::vector<float> &positions, const std::vector<float> &positionsOfSmallRectangles={});
     bool checkIfWindowShouldBeClosed();
+    bool checkIfWindowShouldBeRecreated();
     ~Window();
 
 private:
@@ -66,7 +67,6 @@ private:
         const GLuint ATTR_COLOR = 1u;
     };
 
-
     std::vector<Rectangle> rectanglesFactory(const float heightInPercentOfScreenSize);
 
     void initializeRectangles(std::vector<RectangleInsideGpu> &rectanglesInsideGpu, const std::vector<Rectangle> &rectangles);
@@ -80,16 +80,21 @@ private:
     void prepareShaders(const char *vsConfig, const char *fsConfig);
     GLuint compileShader(const GLchar* source, GLenum stage, const std::string& msg);
 
+    static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+    static void windowMaximizeCallback(GLFWwindow* window, int maximized);
+
+
     const WindowConfig windowConfig;
 
     std::vector<RectangleInsideGpu> rectanglesInsideGpu;
     std::vector<RectangleInsideGpu> smallRectanglesInsideGpu;
 
+
     GLuint vs;
     GLuint fs;
     GLuint pipeline;
     GLFWwindow* window;
-
+    static bool isMaximized;
 };
 
 using namespace std::chrono;
@@ -97,7 +102,7 @@ using namespace std::chrono;
 class SmallRectanglesPositionCalculator
 {
 public:
-    SmallRectanglesPositionCalculator(uint numberOfRectangles, float speedOfFalling = 600, bool accelerationStateOfFalling=true, float initialPositionInPercents=100);
+    SmallRectanglesPositionCalculator(uint numberOfRectangles, float speedOfFalling = 600, bool accelerationStateOfFalling=true, float initialPositionInPercents=0);
     std::vector<float> getPositions(const std::vector<float> &dataToBePrinted);
 private:
 
