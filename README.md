@@ -25,7 +25,8 @@ What is important recompilation of app is not needed even after updating config.
 
 ![spectrumAnalyzer](https://github.com/user-attachments/assets/7df13dbb-58de-47f7-8432-3631ef989950)
 
-![Spectrum Analyzer](https://github.com/user-attachments/assets/56436a83-ddf8-4308-8448-989e2c6d4f9b)
+![SpectrumAnalyzer version 1 6](https://github.com/user-attachments/assets/e9e815ad-bce6-4449-9a4b-be1e10cc9462)
+
 
 
 **Preparing sw environment:**
