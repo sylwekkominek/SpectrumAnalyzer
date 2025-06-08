@@ -29,66 +29,47 @@ What is important recompilation of app is not needed even after updating config.
 
 
 
+
 **Preparing sw environment:**
 
 In order to use it following steps are needed (tested on Ubuntu 24.04):
 
-sudo apt update
+sudo apt update && apt install -y g++ cmake python3 python3-pyaudio python3-dev libglfw3-dev pkg-config libgtest-dev libgmock-dev wget git
 
-sudo apt install g++
+sudo wget http://www.fftw.org/fftw-3.3.10.tar.gz && tar -xzf fftw-3.3.10.tar.gz && cd fftw-3.3.10 && ./configure && make -j4 && make install
 
-sudo apt install cmake
-
-sudo apt install python3
-
-sudo apt install python3-pyaudio
-
-sudo apt install python3-dev
-
-sudo apt install libglfw3-dev
-
-sudo apt install pkg-config
-
-sudo apt install libgtest-dev
-
-sudo apt install libgmock-dev
-
-download fftw from https://www.fftw.org/download.html extract and run commands:
-
-./configure
-
-make 
-
-sudo make install
+git clone https://github.com/sylwekkominek/SpectrumAnalyzer.git
 
 do not forget to configure your input audio device
 
 **Compilation and running:**
 
-download SpectrumAnalyzer
-
-mkdir build
-
-cd build
-
-cmake ..
-
-make -j4
+cd SpectrumAnalyzer && mkdir build && cd build && cmake .. && make -j4
 
 ./spectrum-analyzer
 
 **Compilation of unit tests and running:**
 
-mkdir build
-
-cd build
-
-cmake .. -DENABLE_TESTS=ON
-
-make -j4
-
-cd tests
+cd SpectrumAnalyzer && mkdir build && cd build && cmake .. -DENABLE_TESTS=ON && make -j4 && cd tests
 
 ./spectrum-analyzer-tests
 
+**Docker - running app**
 
+Depending on your system configuration, you may need to adjust the Docker arguments (especially for GUI and audio support).
+
+cd SpectrumAnalyzer
+
+docker build -t spectrum-analyzer -f docker/spectrum-analyzer/Dockerfile .
+
+xhost +local:docker
+
+docker run  -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix   --device /dev/dri  --device /dev/snd   spectrum-analyzer
+
+**Docker - running tests**
+
+cd SpectrumAnalyzer
+
+docker build -t spectrum-analyzer-tests -f docker/spectrum-analyzer-tests/Dockerfile .
+
+docker run spectrum-analyzer-tests

@@ -15,5 +15,5 @@ def initialize(dataLength, samplingRate):
     return True
     
 def getData():
-    data = inputStream.read(chunk)
+    data = inputStream.read(chunk, exception_on_overflow=False)
     return (struct.unpack('{n}h'.format(n= len(data)//2 ), data))
