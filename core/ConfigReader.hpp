@@ -31,13 +31,13 @@ struct Configuration
     uint maxQueueSize;
     float scalingFactor;
     float offsetFactor;
-    bool smallRectanglesVisibilityState;
-    float smallRectangleHeightInPercentOfScreenSize;
-    float speedOfFalling;
-    bool accelerationStateOfFalling;
+    bool dynamicMaxHoldVisibilityState;
+    float dynamicMaxHoldRectangleHeightInPercentOfScreenSize;
+    float dynamicMaxHoldSpeedOfFalling;
+    bool dynamicMaxHoldAccelerationStateOfFalling;
     bool advancedColorSettingEnabled;
     ColorsOfRectanglePerVertices colorsOfRectangle;
-    ColorsOfRectanglePerVertices colorsOfSmallRectangle;
+    ColorsOfRectanglePerVertices colorsOfDynamicMaxHoldRectangle;
     std::string advancedColorSettings;
 };
 
@@ -64,12 +64,12 @@ private:
     double getMaxQueueSize();
     double getScalingFactor();
     double getOffsetFactor();
-    bool getSmallRectanglesVisibilityState();
-    double getSmallRectangleHeightInPercentOfScreenSize();
-    double getSpeedOfFalling();
-    bool getAccelerationStateOfFalling();
+    bool getDynamicMaxHoldVisibilityState();
+    double getDynamicMaxHoldRectangleHeightInPercentOfScreenSize();
+    double getDynamicMaxHoldSpeedOfFalling();
+    bool getDynamicMaxHoldAccelerationStateOfFalling();
     ColorsOfRectanglePerVertices getColorsOfRectangle();
-    ColorsOfRectanglePerVertices getColorsOfSmallRectangle();
+    ColorsOfRectanglePerVertices getColorsOfDynamicMaxHoldRectangle();
     ColorsOfRectanglePerVertices getColorsOfRectangleHelper(const std::string& functionName);
     std::string getAdvancedColorSettings();
 

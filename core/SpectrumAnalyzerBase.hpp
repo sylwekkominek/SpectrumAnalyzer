@@ -4,6 +4,8 @@
  * see file LICENSE in this source tree.
  */
 
+#pragma once
+
 #include "ConfigReader.hpp"
 #include "DataExchanger.hpp"
 #include "FFTCalculator.hpp"

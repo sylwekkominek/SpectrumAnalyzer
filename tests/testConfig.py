@@ -45,16 +45,16 @@ def getScalingFactor():
 def getOffsetFactor():
     return 10
     
-def getSmallRectanglesVisibilityState():
+def getDynamicMaxHoldVisibilityState():
     return True
 
-def getSmallRectangleHeightInPercentOfScreenSize():
+def getDynamicMaxHoldRectangleHeightInPercentOfScreenSize():
     return 10.1
 
-def getSpeedOfFalling():
+def getDynamicMaxHoldSpeedOfFalling():
     return 11
 
-def getAccelerationStateOfFalling():
+def getDynamicMaxHoldAccelerationStateOfFalling():
     return True
 
 def getColorsOfRectangle(vertex):
@@ -68,7 +68,7 @@ def getColorsOfRectangle(vertex):
         case 3:
             return (4.1, 4.2, 4.3)
  
-def getColorsOfSmallRectangle(vertex):
+def getColorsOfDynamicMaxHoldRectangle(vertex):
     match vertex:
         case 0:
             return (1.1, 2.1, 3.1)

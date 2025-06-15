@@ -142,20 +142,8 @@ void AudioSpectrumAnalyzer::drafter()
     const std::string processName{"drafter"};
     StatsManager statsManager(processName);
 
-    const WindowConfig windowConfig{config.horizontalSize,
-                              config.verticalSize,
-                              config.numberOfRectangles,
-                              config.gapWidthInRelationToRectangleWidth,
-                              config.smallRectangleHeightInPercentOfScreenSize,
-                              config.colorsOfRectangle,
-                              config.colorsOfSmallRectangle,
-                              config.advancedColorSettings};
-
-    std::unique_ptr<Window> window = std::make_unique<Window>(windowConfig);
+    std::unique_ptr<Window> window = std::make_unique<Window>(config);
     window->initializeGPU();
-
-    IndexSelector indexSelector(config.samplingRate, config.numberOfSamples, config.frequencies);
-    SmallRectanglesPositionCalculator smallRectanglesPositionCalculator(config.numberOfRectangles, config.speedOfFalling, config.accelerationStateOfFalling);
 
     while(shouldProceed)
     {
@@ -168,16 +156,7 @@ void AudioSpectrumAnalyzer::drafter()
 
         statsManager.update();
 
-        std::vector<float> dataToBePrinted(config.numberOfRectangles,0);
-
-        for(uint i=0;i<config.numberOfRectangles;++i)
-        {
-            dataToBePrinted[i]= config.scalingFactor*(data->at(indexSelector.getFrequencyIndex(i))+config.offsetFactor);
-        }
-
-        const auto smallRectanglesPosition = config.smallRectanglesVisibilityState ? smallRectanglesPositionCalculator.getPositions(dataToBePrinted) : std::vector<float>{};
-
-        window->draw(dataToBePrinted, smallRectanglesPosition);
+        window->draw(*data);
 
         if(window->checkIfWindowShouldBeClosed())
         {
@@ -186,14 +165,12 @@ void AudioSpectrumAnalyzer::drafter()
 
         if(window->checkIfWindowShouldBeRecreated())
         {
-            window = std::make_unique<Window>(windowConfig);
+            window = std::make_unique<Window>(config);
             window->initializeGPU();
         }
-
     }
 
 }
-
 void AudioSpectrumAnalyzer::flowController()
 {
     float coeffUsedInCaseWhenScreenFallsBehindIncomingData = -0.01;

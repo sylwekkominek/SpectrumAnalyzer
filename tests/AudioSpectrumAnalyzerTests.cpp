@@ -196,11 +196,11 @@ public:
         config.numberOfSignalsForMaxHold = 1;
         config.alphaFactor = 1;
         config.maxQueueSize = 5;
-        config.smallRectanglesVisibilityState = true;
+        config.dynamicMaxHoldVisibilityState = true;
         config.scalingFactor = 1.0;
         config.gapWidthInRelationToRectangleWidth = 0;
-        config.colorsOfRectangle = {{0,{1,1,1}}, {1,{1,1,1}}, {2,{1,1,1}}, {3,{1,1,1}}};
-        config.colorsOfSmallRectangle = config.colorsOfRectangle;
+        config.colorsOfRectangle = {{0,{1,1,1,1}}, {1,{1,1,1,1}}, {2,{1,1,1,1}}, {3,{1,1,1,1}}};
+        config.colorsOfDynamicMaxHoldRectangle = config.colorsOfRectangle;
         return config;
     }
 
@@ -228,3 +228,4 @@ TEST_F(AudioSpectrumAnalyzerTests2, checkCalculationsAndDataTransfer)
     spectrumAnalyzer->init();
     spectrumAnalyzer->run();
 }
+

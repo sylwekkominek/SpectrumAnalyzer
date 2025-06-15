@@ -48,40 +48,40 @@ def getScalingFactor():
 def getOffsetFactor():
     return 0
     
-def getSmallRectanglesVisibilityState():
+def getDynamicMaxHoldVisibilityState():
     return True
 
-def getSmallRectangleHeightInPercentOfScreenSize():
+def getDynamicMaxHoldRectangleHeightInPercentOfScreenSize():
     return 1.0
 
-def getSpeedOfFalling():
+def getDynamicMaxHoldSpeedOfFalling():
     return 900
 
-def getAccelerationStateOfFalling():
+def getDynamicMaxHoldAccelerationStateOfFalling():
     return True
 
 def getColorsOfRectangle(vertex):
     match vertex:
         case 0:
-            return (0.61, 0.61, 0.61)
+            return (0.61, 0.61, 0.61,1)
         case 1:
-            return (0,0,0)
+            return (0,0,0,1)
         case 2:
-            return (0,0,0)
+            return (0,0,0,1)
         case 3:
-            return (0.61, 0.61, 0.61)
+            return (0.61, 0.61, 0.61,1)
 
 
-def getColorsOfSmallRectangle(vertex):
+def getColorsOfDynamicMaxHoldRectangle(vertex):
         match vertex:
             case 0:
-                return (0.61, 0.61, 0.61)
+                return (0.61, 0.61, 0.61,1)
             case 1:
-                return (0,0,0)
+                return (0,0,0,1)
             case 2:
-                return (0,0,0)
+                return (0,0,0,1)
             case 3:
-                return (0.61, 0.61, 0.61)
+                return (0.61, 0.61, 0.61,1)
 
 
 #if you get errors after modification please find following log with error msg: "VS log:"
@@ -89,23 +89,23 @@ def getAdvancedColorSettings():
     return '''#version 330 core
 
         in vec4 calculatedPosition;
-        in vec3 vertColor;
+        in vec4 vertColor;
         out vec4 Color;
 
         void main()
         {
-            vec3 tmpColor;
+            vec4 tmpColor;
 
             float t = clamp(calculatedPosition.y, -1.0, 1.0);
 
             //Move position from [-1,1] to [0,1]
             float y = (t + 1.0) * 0.5;
 
-            vec3 red    = vec3(1.0, 0.0, 0.0);
-            vec3 yellow = vec3(1.0, 1.0, 0.0);
-            vec3 green  = vec3(0.0, 1.0, 0.0);
-            vec3 cyan   = vec3(0.0, 1.0, 1.0);
-            vec3 blue   = vec3(0.0, 0.0, 1.0);
+            vec4 red    = vec4(1.0, 0.0, 0.0,1);
+            vec4 yellow = vec4(1.0, 1.0, 0.0,1);
+            vec4 green  = vec4(0.0, 1.0, 0.0,1);
+            vec4 cyan   = vec4(0.0, 1.0, 1.0,1);
+            vec4 blue   = vec4(0.0, 0.0, 1.0,1);
 
             //Use 5 segments: [0,0.25), [0.25,0.5), [0.5,0.75), [0.75,1.0]
 
@@ -114,8 +114,8 @@ def getAdvancedColorSettings():
             tmpColor = mix(tmpColor ,yellow, smoothstep(0.5,0.75, y));
             tmpColor = mix(tmpColor ,red, smoothstep(0.75,1, y));
 
-            // mix tmpColor with those returned by getColorsOfRectangle / getColorsOfSmallRectangle
-            Color = vec4(mix(tmpColor, vertColor, 0.4) , 1.0);
+            // mix tmpColor with those returned by getColorsOfRectangle / getColorsOfDynamicMaxHoldRectangle
+            Color = mix(tmpColor, vertColor, 0.4);
 
         }
         '''

@@ -35,10 +35,10 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
     os <<"maxQueueSize: "<<config.maxQueueSize<<std::endl;
     os <<"scalingFactor: "<<config.scalingFactor<<std::endl;
     os <<"offsetFactor: "<<config.offsetFactor<<std::endl;
-    os <<"smallRectanglesVisibilityState: "<<config.smallRectanglesVisibilityState<<std::endl;
-    os <<"smallRectangleHeightInPercentOfScreenSize: "<<config.smallRectangleHeightInPercentOfScreenSize<<std::endl;
-    os <<"speedOfFalling: "<<config.speedOfFalling<<std::endl;
-    os <<"accelerationStateOfFalling: "<<config.accelerationStateOfFalling<<std::endl;
+    os <<"dynamicMaxHoldVisibilityState: "<<config.dynamicMaxHoldVisibilityState<<std::endl;
+    os <<"dynamicMaxHoldRectangleHeightInPercentOfScreenSize: "<<config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize<<std::endl;
+    os <<"dynamicMaxHoldSpeedOfFalling: "<<config.dynamicMaxHoldSpeedOfFalling<<std::endl;
+    os <<"dynamicMaxHoldAccelerationStateOfFalling: "<<config.dynamicMaxHoldAccelerationStateOfFalling<<std::endl;
     os <<"frequencies: ";
 
     for(const auto &el: config.frequencies)
@@ -50,8 +50,8 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
     os <<"signalWindow size: "<<config.signalWindow.size()<<std::endl;
     os <<"colorsOfRectangle: "<<std::endl;
     colorsPrinter(config.colorsOfRectangle);
-    os <<"colorsOfSmallRectangle: "<<std::endl;
-    colorsPrinter(config.colorsOfSmallRectangle);
+    os <<"colorsOfDynamicMaxHoldRectangle: "<<std::endl;
+    colorsPrinter(config.colorsOfDynamicMaxHoldRectangle);
 
     return os;
 }
@@ -72,12 +72,12 @@ ConfigReader::ConfigReader(const char *moduleName):
                  "getSignalWindow",
                  "getScalingFactor",
                  "getOffsetFactor",
-                 "getSmallRectanglesVisibilityState",
-                 "getSmallRectangleHeightInPercentOfScreenSize",
-                 "getSpeedOfFalling",
-                 "getAccelerationStateOfFalling",
+                 "getDynamicMaxHoldVisibilityState",
+                 "getDynamicMaxHoldRectangleHeightInPercentOfScreenSize",
+                 "getDynamicMaxHoldSpeedOfFalling",
+                 "getDynamicMaxHoldAccelerationStateOfFalling",
                  "getColorsOfRectangle",
-                 "getColorsOfSmallRectangle",
+                 "getColorsOfDynamicMaxHoldRectangle",
                  "getAdvancedColorSettings"
              })
 {
@@ -102,12 +102,12 @@ Configuration ConfigReader::getConfig()
         config.numberOfRectangles = config.frequencies.size();
         config.scalingFactor = getScalingFactor();
         config.offsetFactor = getOffsetFactor();
-        config.smallRectanglesVisibilityState = getSmallRectanglesVisibilityState();
-        config.smallRectangleHeightInPercentOfScreenSize = getSmallRectangleHeightInPercentOfScreenSize();
-        config.speedOfFalling = getSpeedOfFalling();
-        config.accelerationStateOfFalling = getAccelerationStateOfFalling();
+        config.dynamicMaxHoldVisibilityState = getDynamicMaxHoldVisibilityState();
+        config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize = getDynamicMaxHoldRectangleHeightInPercentOfScreenSize();
+        config.dynamicMaxHoldSpeedOfFalling = getDynamicMaxHoldSpeedOfFalling();
+        config.dynamicMaxHoldAccelerationStateOfFalling = getDynamicMaxHoldAccelerationStateOfFalling();
         config.colorsOfRectangle =  getColorsOfRectangle();
-        config.colorsOfSmallRectangle =  getColorsOfSmallRectangle();
+        config.colorsOfDynamicMaxHoldRectangle =  getColorsOfDynamicMaxHoldRectangle();
         config.advancedColorSettings = getAdvancedColorSettings();
         closePython();
         isConfigReadOut = true;
@@ -186,22 +186,22 @@ double ConfigReader::getOffsetFactor()
     return getValue(pointersToPythonFunctions.at(__func__));
 }
 
-bool ConfigReader::getSmallRectanglesVisibilityState()
+bool ConfigReader::getDynamicMaxHoldVisibilityState()
 {
     return getBooleanValue(pointersToPythonFunctions.at(__func__));
 }
 
-double ConfigReader::getSmallRectangleHeightInPercentOfScreenSize()
+double ConfigReader::getDynamicMaxHoldRectangleHeightInPercentOfScreenSize()
 {
     return getValue(pointersToPythonFunctions.at(__func__));
 }
 
-double ConfigReader::getSpeedOfFalling()
+double ConfigReader::getDynamicMaxHoldSpeedOfFalling()
 {
     return getValue(pointersToPythonFunctions.at(__func__));
 }
 
-bool ConfigReader::getAccelerationStateOfFalling()
+bool ConfigReader::getDynamicMaxHoldAccelerationStateOfFalling()
 {
     return getBooleanValue(pointersToPythonFunctions.at(__func__));
 }
@@ -211,7 +211,7 @@ ColorsOfRectanglePerVertices ConfigReader::getColorsOfRectangle()
     return getColorsOfRectangleHelper(__func__);
 }
 
-ColorsOfRectanglePerVertices ConfigReader::getColorsOfSmallRectangle()
+ColorsOfRectanglePerVertices ConfigReader::getColorsOfDynamicMaxHoldRectangle()
 {
     return getColorsOfRectangleHelper(__func__);
 }

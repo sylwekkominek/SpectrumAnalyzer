@@ -34,9 +34,9 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_NEAR(config.alphaFactor, 8.1, marginOfError);
     EXPECT_EQ(config.scalingFactor, 9);
     EXPECT_EQ(config.offsetFactor, 10);
-    EXPECT_NEAR(config.smallRectangleHeightInPercentOfScreenSize, 10.1, marginOfError);
-    EXPECT_EQ(config.speedOfFalling, 11);
-    EXPECT_EQ(config.smallRectanglesVisibilityState, true);
+    EXPECT_NEAR(config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize, 10.1, marginOfError);
+    EXPECT_EQ(config.dynamicMaxHoldSpeedOfFalling, 11);
+    EXPECT_EQ(config.dynamicMaxHoldVisibilityState, true);
     EXPECT_EQ(config.advancedColorSettings, std::string("test"));
 
     valueChecker({1,2,3}, config.frequencies);
@@ -47,8 +47,8 @@ TEST_F(ConfigReaderTests, configReaderTest)
     valueChecker({3.1, 3.2, 3.3}, config.colorsOfRectangle.at(2));
     valueChecker({4.1, 4.2, 4.3}, config.colorsOfRectangle.at(3));
 
-    valueChecker({1.1, 2.1, 3.1}, config.colorsOfSmallRectangle.at(0));
-    valueChecker({1.2, 2.2, 3.2}, config.colorsOfSmallRectangle.at(1));
-    valueChecker({1.3, 2.3, 3.3}, config.colorsOfSmallRectangle.at(2));
-    valueChecker({1.4, 2.4, 3.4}, config.colorsOfSmallRectangle.at(3));
+    valueChecker({1.1, 2.1, 3.1}, config.colorsOfDynamicMaxHoldRectangle.at(0));
+    valueChecker({1.2, 2.2, 3.2}, config.colorsOfDynamicMaxHoldRectangle.at(1));
+    valueChecker({1.3, 2.3, 3.3}, config.colorsOfDynamicMaxHoldRectangle.at(2));
+    valueChecker({1.4, 2.4, 3.4}, config.colorsOfDynamicMaxHoldRectangle.at(3));
 }

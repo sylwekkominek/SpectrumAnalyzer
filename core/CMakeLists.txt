@@ -12,6 +12,7 @@ add_library(spectrum-analyzer-core STATIC
     Stats.cpp
     AudioSpectrumAnalyzer.cpp
     Helpers.cpp
+    ElementsInsideGpu.cpp
 )
 
 target_include_directories(spectrum-analyzer-core

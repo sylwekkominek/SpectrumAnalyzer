@@ -20,6 +20,7 @@ PFNGLDRAWARRAYSPROC glad_glDrawArrays = nullptr;
 PFNGLENABLEVERTEXARRAYATTRIBPROC glad_glEnableVertexArrayAttrib = nullptr;
 PFNGLGETPROGRAMINFOLOGPROC glad_glGetProgramInfoLog = nullptr;
 PFNGLNAMEDBUFFERSTORAGEPROC glad_glNamedBufferStorage = nullptr;
+PFNGLPROGRAMUNIFORM1FPROC glad_glProgramUniform1f = nullptr;
 PFNGLPROGRAMUNIFORM2FPROC glad_glProgramUniform2f = nullptr;
 PFNGLUSEPROGRAMSTAGESPROC glad_glUseProgramStages = nullptr;
 PFNGLVERTEXARRAYATTRIBBINDINGPROC glad_glVertexArrayAttribBinding = nullptr;
@@ -41,6 +42,7 @@ std::function<void(GLuint, GLuint, GLuint, GLintptr, GLsizei)> glVertexArrayVert
 std::function<void(GLuint, GLuint, GLuint)> glVertexArrayAttribBindingFunction;
 std::function<void(GLuint)> glBindProgramPipelineFunction;
 std::function<void(GLuint)> glBindVertexArrayFunction;
+std::function<void(GLuint, GLint, GLfloat)> glProgramUniform1fFunction;
 std::function<void(GLuint, GLint, GLfloat, GLfloat)> glProgramUniform2fFunction;
 std::function<void(GLenum, GLint, GLsizei)> glDrawArraysFunction;
 std::function<void(GLsizei, const GLuint *)> glDeleteProgramPipelinesFunction;
@@ -211,6 +213,10 @@ void glBindVertexArrayMock(GLuint array)
 {
     glBindVertexArrayFunction(array);
 }
+void glProgramUniform1fMock(GLuint program, GLint location, GLfloat v0)
+{
+    glProgramUniform1fFunction(program, location, v0);
+}
 void glProgramUniform2fMock(GLuint program, GLint location, GLfloat v0, GLfloat v1)
 {
     glProgramUniform2fFunction(program, location, v0, v1);
@@ -337,6 +343,7 @@ OpenGlMock::OpenGlMock()
     ::glad_glVertexArrayAttribBinding = glVertexArrayAttribBindingMock;
     ::glad_glBindProgramPipeline = glBindProgramPipelineMock;
     ::glad_glBindVertexArray = glBindVertexArrayMock;
+    ::glad_glProgramUniform1f = glProgramUniform1fMock;
     ::glad_glProgramUniform2f = glProgramUniform2fMock;
     ::glad_glDrawArrays = glDrawArraysMock;
     ::glad_glDeleteProgramPipelines = glDeleteProgramPipelinesMock;
@@ -408,6 +415,11 @@ OpenGlMock::OpenGlMock()
     glBindVertexArrayFunction = [this](GLuint array)
     {
         this->glBindVertexArray(array);
+    };
+
+    glProgramUniform1fFunction = [this](GLuint program, GLint location, GLfloat v0)
+    {
+        this->glProgramUniform1f(program, location, v0);
     };
 
     glProgramUniform2fFunction = [this](GLuint program, GLint location, GLfloat v0, GLfloat v1)
