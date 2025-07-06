@@ -17,6 +17,7 @@ struct Point
     float y;
 };
 
+using Line = std::vector<Point>;
 using Rectangle = std::vector<Point>;
 
 class ElementInsideGpu
@@ -58,3 +59,25 @@ private:
     static GLuint fs;
     static GLuint pipeline;
 };
+
+class LineInsideGpu : public ElementInsideGpu
+{
+public:
+    LineInsideGpu();
+    void draw(const Line &line, const std::vector<float> &color={1.0, 1.0,1.0,1.0});
+    static void initialize();
+    static void finalize();
+private:
+    float percentToPositon(float percent);
+    static const char* getVertexShader();
+    static const char* getFragmentShader();
+    GLuint vao;
+    static bool isInitialized;
+    static GLuint vs;
+    static GLuint fs;
+    static GLint p0Loc;
+    static GLint p1Loc;
+    static GLint colorLoc;
+    static GLuint pipeline;
+};
+

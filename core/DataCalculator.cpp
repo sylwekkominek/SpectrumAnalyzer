@@ -27,8 +27,8 @@ void DataAverager::updateAlgorithm()
     };
 }
 
-DataMaxHolder::DataMaxHolder(uint numberOfSamples, uint numberOfSignalsForProcessing):
-    DataCalculatorBase(numberOfSamples, numberOfSignalsForProcessing)
+DataMaxHolder::DataMaxHolder(uint numberOfSamples, uint numberOfSignalsForProcessing, float initValue):
+    DataCalculatorBase(numberOfSamples, numberOfSignalsForProcessing, initValue)
 
 {
     updateAlgorithm();

@@ -5,6 +5,9 @@
  */
 
 #include "Window.hpp"
+#include "CommonData.hpp"
+#include <algorithm>
+
 
 bool Window::isMaximized = false;
 
@@ -12,7 +15,8 @@ Window::Window(const Configuration &config) :
     config(config),
     indexSelector(config.samplingRate, config.numberOfSamples, config.frequencies),
     positionOfDynamicMaxHoldElements(config.numberOfRectangles),
-    timesWhenDynamicMaxHoldElementsHaveBeenUpdated(config.numberOfRectangles, high_resolution_clock::now())
+    timesWhenDynamicMaxHoldElementsHaveBeenUpdated(config.numberOfRectangles, high_resolution_clock::now()),
+    horizontalLinePositions(getHorizontalLines(scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(config.horizontalLinePositions))))
 {
 
     glfwInit();
@@ -33,32 +37,37 @@ Window::Window(const Configuration &config) :
 
 void Window::initializeGPU()
 {
-    const float fullScreenSizeInPercents{100};
-
     RectangleInsideGpu::initialize(config.advancedColorSettings.c_str());
+    LineInsideGpu::initialize();
+
 
     for(const auto & rectangle : rectanglesFactory(fullScreenSizeInPercents))
     {
-            rectanglesInsideGpu.emplace_back(RectangleInsideGpu(rectangle, config.colorsOfRectangle));
+        rectanglesInsideGpu.emplace_back(RectangleInsideGpu(rectangle, config.colorsOfRectangle));
     }
 
     for(const auto & rectangle : rectanglesFactory(config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize, 50))
     {
         dynamicMaxHoldRectanglesInsideGpu.emplace_back(RectangleInsideGpu(rectangle,  config.colorsOfDynamicMaxHoldRectangle));
     }
+
+    for(int i=0;i<config.horizontalLinePositions.size();++i)
+    {
+        horizontalLinesInsideGpu.emplace_back(LineInsideGpu());
+    }
 }
 
 void Window::draw(const std::vector<float> &data)
 {
-    std::vector<float> positions(config.numberOfRectangles,0);
-
-    for(uint i=0;i<config.numberOfRectangles;++i)
-    {
-        positions[i] = config.scalingFactor*(data.at(indexSelector.getFrequencyIndex(i))+config.offsetFactor);
-    }
+    auto positions = scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(extractDataToBePrinted(data)));
 
     glClear(GL_COLOR_BUFFER_BIT);
 
+
+    for(uint i=0;i<config.horizontalLinePositions.size();++i)
+    {
+        horizontalLinesInsideGpu.at(i).draw(horizontalLinePositions.at(i), config.colorOfStaticLines);
+    }
 
     for(uint i=0;i<positions.size();++i)
     {
@@ -114,6 +123,7 @@ void Window::windowMaximizeCallback(GLFWwindow* glfwWindow, int maximized)
 Window::~Window()
 {
     RectangleInsideGpu::finalize();
+    LineInsideGpu::finalize();
     glfwDestroyWindow(window);
 }
 
@@ -169,6 +179,25 @@ std::vector<Rectangle> Window::rectanglesFactory(const float heightInPercentOfSc
     return rectangles;
 }
 
+std::vector<Line> Window::getHorizontalLines(const Positions &positions)
+{
+    double xBegin =  0;
+    double xEnd = fullScreenSizeInPercents;
+
+    std::vector<Line> lines{};
+    lines.reserve(positions.size());
+
+    for(const auto & position : positions)
+    {
+        Line line;
+
+        line.push_back(Point{static_cast<float>(xBegin), static_cast<float>(position)});
+        line.push_back(Point{static_cast<float>(xEnd),static_cast<float>(position)});
+        lines.emplace_back(std::move(line));
+    }
+
+    return lines;
+}
 
 std::vector<float> Window::getPositionsOfDynamicMaxHoldElements(const std::vector<float> &dataToBePrinted)
 {
@@ -195,4 +224,34 @@ std::vector<float> Window::getPositionsOfDynamicMaxHoldElements(const std::vecto
     }
 
     return positionOfDynamicMaxHoldElements;
+}
+
+std::vector<float> Window::moveDbFsToPositiveValues(const std::vector<float> &signalInDbfs)
+{
+    std::vector<float> outputData(signalInDbfs.size());
+
+    std::transform(signalInDbfs.begin(), signalInDbfs.end(), outputData.begin(), [](const auto &el){ return el+getDynamicRangeOf16bitSignal(); });
+    return outputData;
+}
+
+std::vector<float> Window::scaleDbfsToPercentsOfTheScreen(const std::vector<float> &signalInDbfs)
+{
+    constexpr float scallingFactor = fullScreenSizeInPercents/getDynamicRangeOf16bitSignal();
+
+    std::vector<float> outputData(signalInDbfs.size());
+
+    std::transform(signalInDbfs.begin(), signalInDbfs.end(), outputData.begin(), [&scallingFactor](const auto &el){ return el*scallingFactor; });
+    return outputData;
+}
+
+std::vector<float> Window::extractDataToBePrinted(const std::vector<float> &data)
+{
+    std::vector<float> positions(config.numberOfRectangles,0);
+
+    for(uint i=0;i<config.numberOfRectangles;++i)
+    {
+        positions[i] = data.at(indexSelector.getFrequencyIndex(i));
+    }
+
+    return positions;
 }

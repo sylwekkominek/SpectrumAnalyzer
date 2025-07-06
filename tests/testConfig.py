@@ -57,6 +57,12 @@ def getDynamicMaxHoldSpeedOfFalling():
 def getDynamicMaxHoldAccelerationStateOfFalling():
     return True
 
+def getColorOfStaticLines():
+    return (11.1,11.2,11.3,11.4)
+
+def getHorizontalLinePositions():
+    return (-12.1,-12.2)
+
 def getColorsOfRectangle(vertex):
     match vertex:
         case 0:

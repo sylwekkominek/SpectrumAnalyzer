@@ -43,22 +43,34 @@ def getSignalWindow():
     return tuple(0.5 * (1 - math.cos(2 * math.pi * n / (N - 1))) for n in range(N))
 
 def getScalingFactor():
-    return 1.2
-    
+    #Scaling magnitude after window function
+    window = getSignalWindow()
+    windowAverage = sum(window) / len(window)
+    amplitudeCorrection = 1.0 / windowAverage
+    return amplitudeCorrection
+
 def getOffsetFactor():
+    #Adjusting magnitude
     return 0
     
 def getDynamicMaxHoldVisibilityState():
     return True
 
 def getDynamicMaxHoldRectangleHeightInPercentOfScreenSize():
-    return 1.0
+    return 1
 
 def getDynamicMaxHoldSpeedOfFalling():
     return 900
 
 def getDynamicMaxHoldAccelerationStateOfFalling():
     return True
+
+def getColorOfStaticLines():
+    return (0.2,0.2,0.2,0.2)
+
+def getHorizontalLinePositions():
+    #Scale in dBFs
+    return (-6.02, -12.04, -18.06, -24.08, -30.10, -36.12, -36.12, -42.14, -48.16, -54.18, -60.20, -66.22, -72.24, -78.26, -84.28, -90.30)
 
 def getColorsOfRectangle(vertex):
     match vertex:
@@ -71,7 +83,6 @@ def getColorsOfRectangle(vertex):
         case 3:
             return (0.61, 0.61, 0.61,1)
 
-
 def getColorsOfDynamicMaxHoldRectangle(vertex):
         match vertex:
             case 0:
@@ -82,7 +93,6 @@ def getColorsOfDynamicMaxHoldRectangle(vertex):
                 return (0,0,0,1)
             case 3:
                 return (0.61, 0.61, 0.61,1)
-
 
 #if you get errors after modification please find following log with error msg: "VS log:"
 def getAdvancedColorSettings():

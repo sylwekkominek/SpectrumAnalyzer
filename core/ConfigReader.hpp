@@ -11,8 +11,11 @@
 #include <vector>
 
 using Frequency = float;
+using Position = float;
 using Frequencies = std::vector<Frequency>;
-using ColorsOfRectanglePerVertices = std::map<uint, std::vector<float>>;
+using Positions = std::vector<Position>;
+using Color = std::vector<float>;
+using ColorsOfRectanglePerVertices = std::map<uint, Color>;
 
 struct Configuration
 {
@@ -36,6 +39,8 @@ struct Configuration
     float dynamicMaxHoldSpeedOfFalling;
     bool dynamicMaxHoldAccelerationStateOfFalling;
     bool advancedColorSettingEnabled;
+    Positions horizontalLinePositions;
+    Color colorOfStaticLines;
     ColorsOfRectanglePerVertices colorsOfRectangle;
     ColorsOfRectanglePerVertices colorsOfDynamicMaxHoldRectangle;
     std::string advancedColorSettings;
@@ -68,6 +73,8 @@ private:
     double getDynamicMaxHoldRectangleHeightInPercentOfScreenSize();
     double getDynamicMaxHoldSpeedOfFalling();
     bool getDynamicMaxHoldAccelerationStateOfFalling();
+    Positions getHorizontalLinePositions();
+    Color getColorOfStaticLines();
     ColorsOfRectanglePerVertices getColorsOfRectangle();
     ColorsOfRectanglePerVertices getColorsOfDynamicMaxHoldRectangle();
     ColorsOfRectanglePerVertices getColorsOfRectangleHelper(const std::string& functionName);

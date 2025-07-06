@@ -102,27 +102,29 @@ public:
         config.alphaFactor = 1;
         config.maxQueueSize = 100;
         config.signalWindow = getSignalWindow(config.numberOfSamples);
+        config.scalingFactor = 1.0;
         return config;
     }
 
 private:
 
-    static Signal prepareExpectedFreqDomainSignal(const float fullScaleOffset)
+    static Signal prepareExpectedFreqDomainSignal(const float fullScaleOffset, const float defaultValue = -96.32)
     {
+
         const std::vector<uint> expectedFftPositions1000Hz = {254, 1790};
         const std::vector<uint> expectedFftPositions2000Hz = {510, 1534};
         std::vector<uint> expectedFftValuesPositions;
 
-        expectedFftValuesPositions.insert(expectedFftValuesPositions.begin(),expectedFftPositions1000Hz.begin(),expectedFftPositions1000Hz.end());
-        expectedFftValuesPositions.insert(expectedFftValuesPositions.begin(),expectedFftPositions2000Hz.begin(),expectedFftPositions2000Hz.end());
+        expectedFftValuesPositions.insert(expectedFftValuesPositions.end(),expectedFftPositions1000Hz.begin(),expectedFftPositions1000Hz.end());
+        expectedFftValuesPositions.insert(expectedFftValuesPositions.end(),expectedFftPositions2000Hz.begin(),expectedFftPositions2000Hz.end());
 
-        std::vector<float> fftValuesWithFullScale{62.37,78.27,82.77,78.27,62.37};
+        std::vector<float> fftValuesWithFullScale{-27.94,-12.04, -7.54 ,-12.04, -27.94};
 
         std::transform(fftValuesWithFullScale.begin(),fftValuesWithFullScale.end(),fftValuesWithFullScale.begin(),[&](const auto &el){
             return el+fullScaleOffset;
         });
 
-        std::vector<float> fftSignal(2048);
+        std::vector<float> fftSignal(2048, defaultValue);
 
         for(const auto &position: expectedFftValuesPositions)
         {
@@ -208,7 +210,7 @@ public:
     {
         expectCreateWindow();
         expectInitializeGPU(config.numberOfRectangles, true);
-        expectDraw({-0.812812, -0.494849, -0.404816, -0.494849,-0.812812}, true);
+        expectDraw({-0.642635, -0.312524, -0.219052,  -0.312524,-0.642635}, true);
         expectCheckIfWindowShouldBeClosed();
         expectCheckIfWindowShouldRecreated();
         expectDestroyWindow();

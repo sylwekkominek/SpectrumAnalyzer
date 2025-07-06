@@ -44,8 +44,11 @@ public:
     MOCK_METHOD3(glUseProgramStages, void(GLuint pipeline, GLbitfield stages, GLuint program));
     MOCK_METHOD1(glBindProgramPipeline, void(GLuint));
     MOCK_METHOD1(glBindVertexArray, void(GLuint));
+    MOCK_METHOD2(glGenVertexArrays, void(GLsizei, GLuint *));
+    MOCK_METHOD2(glGetUniformLocation, GLint(GLuint, const GLchar *));
     MOCK_METHOD3(glProgramUniform1f, void(GLuint, GLint, GLfloat));
     MOCK_METHOD4(glProgramUniform2f, void(GLuint, GLint, GLfloat, GLfloat));
+    MOCK_METHOD6(glProgramUniform4f, void(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat));
     MOCK_METHOD3(glDrawArrays, void(GLenum, GLint, GLsizei));
     MOCK_METHOD2(glDeleteProgramPipelines, void(GLsizei, const GLuint *));
     MOCK_METHOD1(glDeleteProgram, void(GLuint));

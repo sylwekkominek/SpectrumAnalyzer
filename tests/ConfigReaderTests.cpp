@@ -36,8 +36,13 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_EQ(config.offsetFactor, 10);
     EXPECT_NEAR(config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize, 10.1, marginOfError);
     EXPECT_EQ(config.dynamicMaxHoldSpeedOfFalling, 11);
+    EXPECT_EQ(config.dynamicMaxHoldAccelerationStateOfFalling, true);
+
     EXPECT_EQ(config.dynamicMaxHoldVisibilityState, true);
     EXPECT_EQ(config.advancedColorSettings, std::string("test"));
+
+    valueChecker({11.1,11.2,11.3,11.4}, config.colorOfStaticLines);
+    valueChecker({-12.1,-12.2}, config.horizontalLinePositions);
 
     valueChecker({1,2,3}, config.frequencies);
     valueChecker({4,5,6}, config.signalWindow);

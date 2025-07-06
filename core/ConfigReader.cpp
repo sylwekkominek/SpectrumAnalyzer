@@ -9,14 +9,23 @@
 
 std::ostream& operator<<(std::ostream& os, const Configuration & config)
 {
+    auto colorPrinter = [](const auto &color)
+    {
+        for(auto & component: color)
+        {
+            std::cout<<component<<" ";
+        }
+        std::cout<<std::endl;
+    };
+
     auto colorsPrinter = [](const auto &colorsOfRectangle)
     {
-        for(auto &[vertex, colors]: colorsOfRectangle)
+        for(auto &[vertex, color]: colorsOfRectangle)
         {
-            std::cout<<"vertex: "<<vertex<<" colors: ";
-            for(auto & color: colors)
+            std::cout<<"vertex: "<<vertex<<" color: ";
+            for(auto & component: color)
             {
-                std::cout<<color<<" ";
+                std::cout<<component<<" ";
             }
             std::cout<<std::endl;
         }
@@ -48,6 +57,18 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
     os <<std::endl;
 
     os <<"signalWindow size: "<<config.signalWindow.size()<<std::endl;
+
+
+    os <<"horizontalLinePositions: ";
+
+    for(const auto &el: config.horizontalLinePositions)
+    {
+        os <<el<<" ";
+    }
+    os <<std::endl;
+
+    os <<"colorOfStaticLines: "<<std::endl;
+    colorPrinter(config.colorOfStaticLines);
     os <<"colorsOfRectangle: "<<std::endl;
     colorsPrinter(config.colorsOfRectangle);
     os <<"colorsOfDynamicMaxHoldRectangle: "<<std::endl;
@@ -76,6 +97,8 @@ ConfigReader::ConfigReader(const char *moduleName):
                  "getDynamicMaxHoldRectangleHeightInPercentOfScreenSize",
                  "getDynamicMaxHoldSpeedOfFalling",
                  "getDynamicMaxHoldAccelerationStateOfFalling",
+                 "getHorizontalLinePositions",
+                 "getColorOfStaticLines",
                  "getColorsOfRectangle",
                  "getColorsOfDynamicMaxHoldRectangle",
                  "getAdvancedColorSettings"
@@ -106,6 +129,8 @@ Configuration ConfigReader::getConfig()
         config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize = getDynamicMaxHoldRectangleHeightInPercentOfScreenSize();
         config.dynamicMaxHoldSpeedOfFalling = getDynamicMaxHoldSpeedOfFalling();
         config.dynamicMaxHoldAccelerationStateOfFalling = getDynamicMaxHoldAccelerationStateOfFalling();
+        config.horizontalLinePositions = getHorizontalLinePositions();
+        config.colorOfStaticLines = getColorOfStaticLines();
         config.colorsOfRectangle =  getColorsOfRectangle();
         config.colorsOfDynamicMaxHoldRectangle =  getColorsOfDynamicMaxHoldRectangle();
         config.advancedColorSettings = getAdvancedColorSettings();
@@ -204,6 +229,16 @@ double ConfigReader::getDynamicMaxHoldSpeedOfFalling()
 bool ConfigReader::getDynamicMaxHoldAccelerationStateOfFalling()
 {
     return getBooleanValue(pointersToPythonFunctions.at(__func__));
+}
+
+Positions ConfigReader::getHorizontalLinePositions()
+{
+    return getValues(pointersToPythonFunctions.at(__func__));
+}
+
+std::vector<float> ConfigReader::getColorOfStaticLines()
+{
+    return getValues(pointersToPythonFunctions.at(__func__));
 }
 
 ColorsOfRectanglePerVertices ConfigReader::getColorsOfRectangle()

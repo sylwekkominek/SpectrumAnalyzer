@@ -15,13 +15,14 @@ class DataCalculatorBase
 {
 public:
 
-    DataCalculatorBase(uint numberOfSamples, uint numberOfSignalsForProcessing);
+    DataCalculatorBase(uint numberOfSamples, uint numberOfSignalsForProcessing, float initValue=0);
     virtual std::vector<T> calculate() =0;
 
     void push_back(const std::vector<T>&data);
     void clear();
 
 protected:
+
 
     virtual void updateAlgorithm()=0;
 
@@ -36,14 +37,15 @@ private:
 
     std::deque<std::vector<T>> dataQueue;
     std::vector<T> data;
+    float initValue;
     uint numberOfSamples;
 };
 
 
 template<typename T>
-DataCalculatorBase<T>::DataCalculatorBase(uint numberOfSamples, uint numberOfSignalsForProcessing):
+DataCalculatorBase<T>::DataCalculatorBase(uint numberOfSamples, uint numberOfSignalsForProcessing, float initValue):
     numberOfSamples(numberOfSamples),
-    numberOfSignalsForProcessing(numberOfSignalsForProcessing), data(numberOfSamples,0)
+    numberOfSignalsForProcessing(numberOfSignalsForProcessing), initValue(initValue), data(numberOfSamples,0)
 {
 }
 
@@ -59,7 +61,7 @@ std::vector<T> DataCalculatorBase<T>::calculateWithMoving()
 
     if(dataQueue.size() >= numberOfSignalsForProcessing)
     {
-        data = std::vector<T>(numberOfSamples,0);
+        data = std::vector<T>(numberOfSamples,initValue);
 
         for(uint i =0;i<numberOfSignalsForProcessing;++i)
         {
@@ -78,7 +80,7 @@ std::vector<T> DataCalculatorBase<T>::calculateWithClearing()
 
     if(dataQueue.size() >= numberOfSignalsForProcessing)
     {
-        data = std::vector<T>(numberOfSamples,0);
+        data = std::vector<T>(numberOfSamples,initValue);
 
         for(uint i =0;i<numberOfSignalsForProcessing;++i)
         {
@@ -128,7 +130,7 @@ private:
 class DataMaxHolder : public DataCalculatorBase<float>
 {
 public:
-    DataMaxHolder(uint numberOfSamples, uint numberOfSignalsForProcessing);
+    DataMaxHolder(uint numberOfSamples, uint numberOfSignalsForProcessing, float initValue=0);
     std::vector<float> calculate() override;
 
 private:

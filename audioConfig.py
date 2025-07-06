@@ -13,7 +13,7 @@ def initialize(dataLength, samplingRate):
     chunk = dataLength
     inputStream = p.open(format = pyaudio.paInt16, channels=2,rate=samplingRate, input=True, frames_per_buffer=chunk)
     return True
-    
+
 def getData():
     data = inputStream.read(chunk, exception_on_overflow=False)
     return (struct.unpack('{n}h'.format(n= len(data)//2 ), data))

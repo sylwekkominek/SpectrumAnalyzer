@@ -8,9 +8,9 @@
 #include "SamplesCollector.hpp"
 #include "ConfigReader.hpp"
 #include "Window.hpp"
-#include "IndexSelector.hpp"
 #include "Stats.hpp"
 #include "Helpers.hpp"
+#include "CommonData.hpp"
 #include "DataCalculator.hpp"
 #include <iostream>
 #include <optional>
@@ -97,7 +97,7 @@ void AudioSpectrumAnalyzer::processing()
     std::deque<Data> fftDataQueue;
     std::deque<Data> averagedDataQueue;
 
-    DataMaxHolder dataMaxHolder(config.numberOfSamples, config.numberOfSignalsForMaxHold);
+    DataMaxHolder dataMaxHolder(config.numberOfSamples, config.numberOfSignalsForMaxHold, getFloorDbFs16bit());
     DataAverager dataAverager(config.numberOfSamples, config.numberOfSignalsForAveraging);
     DataSmoother dataSmoother(config.numberOfSamples, config.alphaFactor);
 
@@ -113,7 +113,7 @@ void AudioSpectrumAnalyzer::processing()
 
         statsManager.update();
 
-        auto power = calculatePower(*fftResult);
+        auto power = calculatePower(*fftResult, config.scalingFactor, config.offsetFactor);
 
         dataMaxHolder.push_back(power);
         auto dataWithMaxValue = dataMaxHolder.calculate();

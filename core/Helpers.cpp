@@ -5,10 +5,12 @@
  */
 
 #include "Helpers.hpp"
+#include "CommonData.hpp"
 #include <cmath>
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
+
 
 std::vector<float> getAverage(const std::vector<float> &left, const std::vector<float> &right)
 {
@@ -47,17 +49,20 @@ std::vector<float> normalize(const std::vector<float> &fftData)
     return outputData;
 }
 
-std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftData)
+std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftData, const float scalingFactor, const float offsetFactor)
 {
-
     const uint32_t numberOfSamples = fftData.size();
+    static constexpr float fullScale16bit = 32767;
 
     std::vector<float> outputData(numberOfSamples);
 
     for (uint i = 0; i < numberOfSamples; i++)
     {
-        auto data =  std::sqrt(fftData[i].real() * fftData[i].real() + fftData[i].imag() * fftData[i].imag())/(numberOfSamples/2);
-        outputData[i]  = (data >=1) ? 20*log10(data) : 0;
+        const auto magnitude = std::sqrt(fftData[i].real() * fftData[i].real() + fftData[i].imag() * fftData[i].imag())/(numberOfSamples/2);
+        const auto correctedMagnitude = scalingFactor * magnitude + offsetFactor;
+        const auto powerInDbfs = 20*log10(correctedMagnitude/fullScale16bit);
+
+        outputData[i]  = (powerInDbfs < getFloorDbFs16bit()) ? getFloorDbFs16bit() : powerInDbfs;
     }
 
     return outputData;
@@ -65,7 +70,7 @@ std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftDat
 
 float calculateOverlappingDiff(const uint desiredNumberOfFramesPerSecond, const uint currentFramesPerSecond)
 {
-    const float slope = 0.2;
+    static constexpr float slope = 0.2;
 
     auto desiredFps = (desiredNumberOfFramesPerSecond == 0) ? 1 : desiredNumberOfFramesPerSecond;
 
@@ -78,3 +83,7 @@ float calculateOverlapping(const uint samplingRate, const uint numberOfSamples, 
 
     return  (1.0 - static_cast<float>(samplingRate)/(numberOfSamples * fps));
 }
+
+
+
+

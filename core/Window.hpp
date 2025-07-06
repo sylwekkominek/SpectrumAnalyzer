@@ -32,7 +32,11 @@ private:
     static void windowMaximizeCallback(GLFWwindow* window, int maximized);
 
     std::vector<Rectangle> rectanglesFactory(const float heightInPercentOfScreenSize, const float offsetInPercentOffScreenSize=0);
+    std::vector<Line> getHorizontalLines(const Positions &positions);
     std::vector<float> getPositionsOfDynamicMaxHoldElements(const std::vector<float> &dataToBePrinted);
+    std::vector<float> scaleDbfsToPercentsOfTheScreen(const std::vector<float> &signalInDbfs);
+    std::vector<float> extractDataToBePrinted(const std::vector<float> &data);
+    std::vector<float> moveDbFsToPositiveValues(const std::vector<float> &signalInDbfs);
 
     const Configuration config;
 
@@ -40,11 +44,16 @@ private:
 
     std::vector<RectangleInsideGpu> rectanglesInsideGpu;
     std::vector<RectangleInsideGpu> dynamicMaxHoldRectanglesInsideGpu;
+    std::vector<LineInsideGpu> horizontalLinesInsideGpu;
 
     std::vector<float> positionOfDynamicMaxHoldElements;
     std::vector<time_point<high_resolution_clock>> timesWhenDynamicMaxHoldElementsHaveBeenUpdated;
 
+    const std::vector<Line> horizontalLinePositions;
+
     GLFWwindow* window;
     static bool isMaximized;
+
+    static constexpr float fullScreenSizeInPercents{100};
 };
 
