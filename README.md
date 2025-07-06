@@ -34,9 +34,9 @@ What is important recompilation of app is not needed even after updating config.
 
 In order to use it following steps are needed (tested on Ubuntu 24.04):
 
-sudo apt update && apt install -y g++ cmake python3 python3-pyaudio python3-dev libglfw3-dev pkg-config libgtest-dev libgmock-dev wget git
+sudo apt update && sudo apt install -y g++ cmake python3 python3-pyaudio python3-dev libglfw3-dev pkg-config libgtest-dev libgmock-dev wget git
 
-sudo wget http://www.fftw.org/fftw-3.3.10.tar.gz && tar -xzf fftw-3.3.10.tar.gz && cd fftw-3.3.10 && ./configure && make -j4 && make install
+wget http://www.fftw.org/fftw-3.3.10.tar.gz && tar -xzf fftw-3.3.10.tar.gz && cd fftw-3.3.10 && ./configure && make -j4 && sudo make install
 
 git clone https://github.com/sylwekkominek/SpectrumAnalyzer.git
 
@@ -45,6 +45,8 @@ do not forget to configure your input audio device
 **Compilation and running:**
 
 cd SpectrumAnalyzer && mkdir build && cd build && cmake .. && make -j4
+
+(This step is only required for Raspberry Pi users: export MESA_GL_VERSION_OVERRIDE=4.5)
 
 ./spectrum-analyzer
 
