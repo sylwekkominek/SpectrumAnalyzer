@@ -9,14 +9,13 @@
 #include <algorithm>
 
 
-bool Window::isMaximized = false;
-
-Window::Window(const Configuration &config) :
+Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
     config(config),
     indexSelector(config.samplingRate, config.numberOfSamples, config.frequencies),
     positionOfDynamicMaxHoldElements(config.numberOfRectangles),
     timesWhenDynamicMaxHoldElementsHaveBeenUpdated(config.numberOfRectangles, high_resolution_clock::now()),
-    horizontalLinePositions(getHorizontalLines(scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(config.horizontalLinePositions))))
+    horizontalLinePositions(getHorizontalLines(scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(config.horizontalLinePositions)))),
+    isFullScreenEnabled(isFullScreenEnabled)
 {
 
     glfwInit();
@@ -24,11 +23,18 @@ Window::Window(const Configuration &config) :
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-    window = glfwCreateWindow(config.horizontalSize, config.verticalSize, "SpectrumAnalyzer", nullptr, nullptr);
 
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetWindowMaximizeCallback(window, windowMaximizeCallback);
+    if(isFullScreenEnabled)
+    {
+        glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+        window = glfwCreateWindow(config.maximizedWindowHorizontalSize, config.maximizedWindowVerticalSize, "SpectrumAnalyzer", glfwGetPrimaryMonitor(), nullptr);
+    }
+    else
+    {
+        glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+        window = glfwCreateWindow(config.normalWindowHorizontalSize, config.normalWindowVerticalSize, "SpectrumAnalyzer", nullptr, nullptr);
+        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    }
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
@@ -90,8 +96,19 @@ void Window::draw(const std::vector<float> &data)
 bool Window::checkIfWindowShouldBeClosed()
 {
     glfwPollEvents();
+    return glfwWindowShouldClose(window);
+}
 
-    if (glfwWindowShouldClose(window))
+bool Window::checkIfWindowShouldBeRecreated()
+{
+    glfwPollEvents();
+
+    if((isFullScreenEnabled && glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS))
+    {
+        return true;
+    }
+
+    if(glfwGetWindowAttrib(window, GLFW_MAXIMIZED))
     {
         return true;
     }
@@ -99,25 +116,9 @@ bool Window::checkIfWindowShouldBeClosed()
     return false;
 }
 
-bool Window::checkIfWindowShouldBeRecreated()
-{
-    glfwPollEvents();
-
-    return ((isMaximized && glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS))  ? (isMaximized = false, true) : false;
-}
-
 void Window::framebufferSizeCallback(GLFWwindow* /*window*/, int width, int height)
 {
     glViewport(0, 0, width, height);
-}
-
-void Window::windowMaximizeCallback(GLFWwindow* glfwWindow, int maximized)
-{
-    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
-    glfwSetWindowMonitor(glfwWindow, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-    isMaximized = (maximized == GLFW_TRUE);
 }
 
 Window::~Window()

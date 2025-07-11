@@ -36,7 +36,6 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glfwWindowHint(_,_)).Times(4);
         EXPECT_CALL(openGL, glfwCreateWindow(_,_,_,_,_)).Times(1);
         EXPECT_CALL(openGL, glfwSetFramebufferSizeCallback(_,_)).Times(1);
-        EXPECT_CALL(openGL, glfwSetWindowMaximizeCallback(_,_)).Times(1);
 
         EXPECT_CALL(openGL, glfwMakeContextCurrent(_)).Times(1);
         EXPECT_CALL(openGL, glfwSwapInterval(_)).Times(1);
@@ -115,6 +114,7 @@ struct WindowTestsBase
     void expectCheckIfWindowShouldRecreated()
     {
         EXPECT_CALL(openGL, glfwPollEvents()).Times(1).RetiresOnSaturation();
+        EXPECT_CALL(openGL, glfwGetWindowAttrib(_,_)).WillOnce(Return(false));
     }
 
     void expectDestroyWindow()

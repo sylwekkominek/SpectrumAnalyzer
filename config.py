@@ -4,10 +4,19 @@
 
 import math
 
-def getHorizontalSize():
+def getDefaultFullscreenState():
+    return False
+
+def getMaximizedWindowHorizontalSize():
+    return 1920
+
+def getMaximizedWindowVerticalSize():
+    return 1080
+
+def getNormalWindowHorizontalSize():
     return 1280
     
-def getVerticalSize():
+def getNormalWindowVerticalSize():
     return 512
     
 def getNumberOfSamples():
@@ -57,7 +66,7 @@ def getDynamicMaxHoldVisibilityState():
     return True
 
 def getDynamicMaxHoldRectangleHeightInPercentOfScreenSize():
-    return 1
+    return 0.8
 
 def getDynamicMaxHoldSpeedOfFalling():
     return 900
@@ -66,7 +75,7 @@ def getDynamicMaxHoldAccelerationStateOfFalling():
     return True
 
 def getColorOfStaticLines():
-    return (0.2,0.2,0.2,0.2)
+    return (0.15,0.15,0.15,0.15)
 
 def getHorizontalLinePositions():
     #Scale in dBFs

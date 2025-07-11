@@ -19,7 +19,7 @@ using namespace std::chrono;
 class Window
 {
 public:
-    Window(const Configuration &config);
+    Window(const Configuration &config, const bool fullScreenEnabled);
     void initializeGPU();
     void draw(const std::vector<float> &data);
     bool checkIfWindowShouldBeClosed();
@@ -29,7 +29,6 @@ public:
 private:
 
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
-    static void windowMaximizeCallback(GLFWwindow* window, int maximized);
 
     std::vector<Rectangle> rectanglesFactory(const float heightInPercentOfScreenSize, const float offsetInPercentOffScreenSize=0);
     std::vector<Line> getHorizontalLines(const Positions &positions);
@@ -52,7 +51,7 @@ private:
     const std::vector<Line> horizontalLinePositions;
 
     GLFWwindow* window;
-    static bool isMaximized;
+    const bool isFullScreenEnabled;
 
     static constexpr float fullScreenSizeInPercents{100};
 };

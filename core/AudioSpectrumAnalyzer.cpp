@@ -142,7 +142,9 @@ void AudioSpectrumAnalyzer::drafter()
     const std::string processName{"drafter"};
     StatsManager statsManager(processName);
 
-    std::unique_ptr<Window> window = std::make_unique<Window>(config);
+    bool isFullScreenEnabled = config.defaultFullscreenState;
+
+    std::unique_ptr<Window> window = std::make_unique<Window>(config, isFullScreenEnabled);
     window->initializeGPU();
 
     while(shouldProceed)
@@ -165,7 +167,8 @@ void AudioSpectrumAnalyzer::drafter()
 
         if(window->checkIfWindowShouldBeRecreated())
         {
-            window = std::make_unique<Window>(config);
+            isFullScreenEnabled = !isFullScreenEnabled;
+            window = std::make_unique<Window>(config, isFullScreenEnabled);
             window->initializeGPU();
         }
     }

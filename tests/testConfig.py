@@ -3,10 +3,19 @@
 # This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
 # see file LICENSE in this source tree.
 
-def getHorizontalSize():
+def getDefaultFullscreenState():
+    return False
+
+def getMaximizedWindowHorizontalSize():
+    return 20
+
+def getMaximizedWindowVerticalSize():
+    return 21
+
+def getNormalWindowHorizontalSize():
     return 1
-    
-def getVerticalSize():
+
+def getNormalWindowVerticalSize():
     return 2
     
 def getNumberOfSamples():

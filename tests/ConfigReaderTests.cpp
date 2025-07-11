@@ -22,8 +22,11 @@ TEST_F(ConfigReaderTests, configReaderTest)
 
     const auto &config = configReader.getConfig();
 
-    EXPECT_EQ(config.horizontalSize, 1);
-    EXPECT_EQ(config.verticalSize, 2);
+    EXPECT_EQ(config.defaultFullscreenState, false);
+    EXPECT_EQ(config.maximizedWindowHorizontalSize, 20);
+    EXPECT_EQ(config.maximizedWindowVerticalSize, 21);
+    EXPECT_EQ(config.normalWindowHorizontalSize, 1);
+    EXPECT_EQ(config.normalWindowVerticalSize, 2);
     EXPECT_EQ(config.numberOfSamples, 3);
     EXPECT_EQ(config.samplingRate, 4);
     EXPECT_EQ(config.desiredFrameRate, 5);

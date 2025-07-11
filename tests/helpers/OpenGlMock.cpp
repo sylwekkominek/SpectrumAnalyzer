@@ -68,6 +68,7 @@ std::function<void(GLFWwindow* window)> glfwSwapBuffersFunction;
 std::function<void()> glfwTerminateFunction;
 std::function<void()> glfwPollEventsFunction;
 std::function<int(GLFWwindow* window, int key)> glfwGetKeyFunction;
+std::function<int(GLFWwindow* window, int attrib)> glfwGetWindowAttribFunction;
 std::function<int(GLFWwindow* window)> glfwWindowShouldCloseFunction;
 std::function<void(GLFWwindow* window, int value)> glfwSetWindowShouldCloseFunction;
 std::function<void(GLFWwindow* glfwWindow)>  glfwDestroyWindowFunction;
@@ -127,6 +128,11 @@ void glfwPollEvents()
 int glfwGetKey(GLFWwindow* window, int key)
 {
     return glfwGetKeyFunction(window, key);
+}
+
+int glfwGetWindowAttrib(GLFWwindow* window, int attrib)
+{
+    return glfwGetWindowAttribFunction(window, attrib);
 }
 
 GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun callback)
@@ -331,6 +337,11 @@ OpenGlMock::OpenGlMock()
     glfwGetKeyFunction = [this](GLFWwindow* window, int key)
     {
         return this->glfwGetKey(window, key);
+    };
+
+    glfwGetWindowAttribFunction = [this](GLFWwindow* window, int attrib)
+    {
+        return this->glfwGetWindowAttrib(window, attrib);
     };
 
     glfwWindowShouldCloseFunction = [this](GLFWwindow* window)

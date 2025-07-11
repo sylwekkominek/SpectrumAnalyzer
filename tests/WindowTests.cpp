@@ -10,6 +10,8 @@
 
 struct WindowTests  : public WindowTestsBase, public ::testing::Test
 {
+    static constexpr bool defaultFullscreenState = false;
+
     Configuration getConfig()
     {
         Configuration config{};
@@ -18,6 +20,7 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
         config.numberOfSamples = 2048;
         config.samplingRate = 44100;
         config.dynamicMaxHoldVisibilityState = true;
+        config.defaultFullscreenState = false;
         config.scalingFactor = 1.0;
         config.colorsOfRectangle ={{0, {1,1,1,1}},{1, {1,1,1,1}},{2,{1,1,1,1}}, {3,{1,1,1,1}}};
         config.colorsOfDynamicMaxHoldRectangle = {{0, {1,1,1,1}},{1, {1,1,1,1}},{2,{1,1,1,1}}, {3,{1,1,1,1}}};
@@ -37,7 +40,7 @@ TEST_F(WindowTests, checkIfOpenGlFunctionsAreBeingCalled)
     expectCheckIfWindowShouldRecreated();
     expectDestroyWindow();
 
-    Window window(getConfig());
+    Window window(getConfig(),defaultFullscreenState);
     window.initializeGPU();
     window.draw(std::vector<float>(config.numberOfSamples,0));
 

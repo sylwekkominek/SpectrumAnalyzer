@@ -26,6 +26,7 @@ public:
     MOCK_METHOD0(glfwTerminate, void());
     MOCK_METHOD0(glfwPollEvents, void());
     MOCK_METHOD2(glfwGetKey, int(GLFWwindow* window, int key));
+    MOCK_METHOD2(glfwGetWindowAttrib, int(GLFWwindow* window, int attrib));
     MOCK_METHOD1(glfwWindowShouldClose, int(GLFWwindow* window));
     MOCK_METHOD2(glfwSetWindowShouldClose, void(GLFWwindow* window, int value));
     MOCK_METHOD2(glfwSetFramebufferSizeCallback, GLFWframebuffersizefun(GLFWwindow* window, GLFWframebuffersizefun callback));

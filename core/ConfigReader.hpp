@@ -21,8 +21,11 @@ struct Configuration
 {
     Frequencies frequencies;
     std::vector<float> signalWindow;
-    uint16_t horizontalSize;
-    uint16_t verticalSize;
+    bool defaultFullscreenState;
+    uint16_t maximizedWindowHorizontalSize;
+    uint16_t maximizedWindowVerticalSize;
+    uint16_t normalWindowHorizontalSize;
+    uint16_t normalWindowVerticalSize;
     uint16_t numberOfRectangles;
     double gapWidthInRelationToRectangleWidth;
     uint numberOfSamples;
@@ -57,8 +60,11 @@ public:
 private:
     Frequencies getFrequencies();
     std::vector<float> getSignalWindow();
-    double getHorizontalSize();
-    double getVerticalSize();
+    bool getDefaultFullscreenState();
+    double getMaximizedWindowHorizontalSize();
+    double getMaximizedWindowVerticalSize();
+    double getNormalWindowHorizontalSize();
+    double getNormalWindowVerticalSize();
     double getGapWidthInRelationToRectangleWidth();
     double getNumberOfSamples();
     double getSamplingRate();

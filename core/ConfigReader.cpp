@@ -31,8 +31,11 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
         }
     };
 
-    os <<"horizontalSize: "<<config.horizontalSize<<std::endl;
-    os <<"verticalSize: "<<config.verticalSize<<std::endl;
+    os <<"defaultFullscreenState: "<<config.defaultFullscreenState<<std::endl;
+    os <<"maximizedWindowHorizontalSize: "<<config.maximizedWindowHorizontalSize<<std::endl;
+    os <<"maximizedWindowVerticalSize: "<<config.maximizedWindowVerticalSize<<std::endl;
+    os <<"normalWindowHorizontalSize: "<<config.normalWindowHorizontalSize<<std::endl;
+    os <<"normalWindowVerticalSize: "<<config.normalWindowVerticalSize<<std::endl;
     os <<"numberOfRectangles: "<<config.numberOfRectangles<<std::endl;
     os <<"gapWidthInRelationToRectangleWidth: "<<config.gapWidthInRelationToRectangleWidth<<std::endl;
     os <<"numberOfSamples: "<<config.numberOfSamples<<std::endl;
@@ -79,8 +82,11 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
 
 ConfigReader::ConfigReader(const char *moduleName):
     PythonCodeRunner(moduleName,
-                {"getHorizontalSize",
-                 "getVerticalSize",
+                {"getDefaultFullscreenState",
+                 "getMaximizedWindowHorizontalSize",
+                 "getMaximizedWindowVerticalSize",
+                 "getNormalWindowHorizontalSize",
+                 "getNormalWindowVerticalSize",
                  "getGapWidthInRelationToRectangleWidth",
                  "getNumberOfSamples",
                  "getSamplingRate",
@@ -110,8 +116,11 @@ Configuration ConfigReader::getConfig()
 {
     if(not isConfigReadOut)
     {
-        config.horizontalSize = getHorizontalSize();
-        config.verticalSize = getVerticalSize();
+        config.defaultFullscreenState = getDefaultFullscreenState();
+        config.maximizedWindowHorizontalSize = getMaximizedWindowHorizontalSize();
+        config.maximizedWindowVerticalSize = getMaximizedWindowVerticalSize();
+        config.normalWindowHorizontalSize = getNormalWindowHorizontalSize();
+        config.normalWindowVerticalSize = getNormalWindowVerticalSize();
         config.gapWidthInRelationToRectangleWidth = getGapWidthInRelationToRectangleWidth();
         config.numberOfSamples = getNumberOfSamples();
         config.samplingRate = getSamplingRate();
@@ -141,6 +150,7 @@ Configuration ConfigReader::getConfig()
     return config;
 }
 
+
 Frequencies ConfigReader::getFrequencies()
 {
     return getValues(pointersToPythonFunctions.at(__func__));
@@ -151,12 +161,27 @@ std::vector<float> ConfigReader::getSignalWindow()
     return getValues(pointersToPythonFunctions.at(__func__));
 }
 
-double ConfigReader::getHorizontalSize()
+bool ConfigReader::getDefaultFullscreenState()
 {
     return getValue(pointersToPythonFunctions.at(__func__));
 }
 
-double ConfigReader::getVerticalSize()
+double ConfigReader::getMaximizedWindowHorizontalSize()
+{
+    return getValue(pointersToPythonFunctions.at(__func__));
+}
+
+double ConfigReader::getMaximizedWindowVerticalSize()
+{
+    return getValue(pointersToPythonFunctions.at(__func__));
+}
+
+double ConfigReader::getNormalWindowHorizontalSize()
+{
+    return getValue(pointersToPythonFunctions.at(__func__));
+}
+
+double ConfigReader::getNormalWindowVerticalSize()
 {
     return getValue(pointersToPythonFunctions.at(__func__));
 }
