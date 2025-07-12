@@ -108,7 +108,7 @@ bool Window::checkIfWindowShouldBeRecreated()
         return true;
     }
 
-    if(glfwGetWindowAttrib(window, GLFW_MAXIMIZED))
+    if((not isFullScreenEnabled) && glfwGetWindowAttrib(window, GLFW_MAXIMIZED))
     {
         return true;
     }

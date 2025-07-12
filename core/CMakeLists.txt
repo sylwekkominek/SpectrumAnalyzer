@@ -18,12 +18,12 @@ add_library(spectrum-analyzer-core STATIC
 target_include_directories(spectrum-analyzer-core
   PUBLIC
     "../${CMAKE_INCLUDE_CURRENT_DIR}"
-    ${PYTHON_INCLUDE_DIRS}
+    ${Python3_INCLUDE_DIRS}
   )
 
 target_link_libraries(spectrum-analyzer-core
   PUBLIC
-    ${PYTHON_LIBRARIES}
+    ${Python3_LIBRARIES}
     OpenGL::GL
     glfw
     glad
