@@ -1,3 +1,6 @@
+
+![obraz](https://github.com/user-attachments/assets/c39a0f55-db5d-4664-80e8-7a003eea05a8)
+
 **Copyright (C) 2024-2025, Sylwester Kominek**
 
 This program is free software: you can redistribute it and/or modify
@@ -23,10 +26,12 @@ The file config.py can be used to update such parameters as:
 number of strips, frequencies, colors, speed and so on.
 What is important recompilation of app is not needed even after updating config.py/audioConfig.py files. 
 
-![spectrumAnalyzer](https://github.com/user-attachments/assets/7df13dbb-58de-47f7-8432-3631ef989950)
+
+**Full documentation is available in the Wiki:** 
+[https://github.com/sylwekkominek/SpectrumAnalyzer/wiki](https://github.com/sylwekkominek/SpectrumAnalyzer/wiki)
+
 
 ![SpectrumAnalyzer version 1 6](https://github.com/user-attachments/assets/e9e815ad-bce6-4449-9a4b-be1e10cc9462)
-
 
 
 
