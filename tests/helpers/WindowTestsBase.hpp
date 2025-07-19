@@ -50,7 +50,7 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glGetProgramInfoLog(_,_,_,_)).Times(4);
         EXPECT_CALL(openGL, glCreateProgramPipelines(_,_)).Times(2);
         EXPECT_CALL(openGL, glUseProgramStages(_,_,_)).Times(4);
-        EXPECT_CALL(openGL, glGetUniformLocation(_,_)).Times(2);
+        EXPECT_CALL(openGL, glGetUniformLocation(_,_)).Times(3);
 
 
         EXPECT_CALL(openGL, glCreateVertexArrays(_,_)).Times(numberOfExpectCalls);
@@ -66,10 +66,11 @@ struct WindowTestsBase
     void expectDraw(const uint numberOfRectangles, const bool smallRectanglesEnabled)
     {
         const uint numberOfExpectCalls = smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles;
+        const uint timeUpdateCall = 1;
         EXPECT_CALL(openGL, glClear(_)).Times(1);
-        EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(numberOfExpectCalls);
+        EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(numberOfExpectCalls+timeUpdateCall);
         EXPECT_CALL(openGL, glBindVertexArray(_)).Times(numberOfExpectCalls);
-        EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(numberOfExpectCalls);
+        EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(numberOfExpectCalls+timeUpdateCall);
         EXPECT_CALL(openGL, glDrawArrays(_,_,_)).Times(numberOfExpectCalls);
         EXPECT_CALL(openGL, glfwSwapBuffers(_)).Times(1);
     }
@@ -80,6 +81,9 @@ struct WindowTestsBase
         const uint numberOfSmallRectangles = positions.size();
 
         InSequence s;
+
+        EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(1);
+        EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(1);
 
         EXPECT_CALL(openGL, glClear(_)).Times(1);
 

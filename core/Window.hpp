@@ -46,6 +46,7 @@ private:
     std::vector<LineInsideGpu> horizontalLinesInsideGpu;
 
     std::vector<float> positionOfDynamicMaxHoldElements;
+    const time_point<high_resolution_clock> startTime;
     std::vector<time_point<high_resolution_clock>> timesWhenDynamicMaxHoldElementsHaveBeenUpdated;
 
     const std::vector<Line> horizontalLinePositions;

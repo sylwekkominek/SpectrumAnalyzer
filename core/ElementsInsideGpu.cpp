@@ -7,9 +7,11 @@
 #include "ElementsInsideGpu.hpp"
 #include <iostream>
 
+
 GLuint RectangleInsideGpu::vs = 0;
 GLuint RectangleInsideGpu::fs = 0;
 GLuint RectangleInsideGpu::pipeline = 0;
+GLuint RectangleInsideGpu::timeLoc = 0;
 
 GLuint LineInsideGpu::vs = 0;
 GLuint LineInsideGpu::fs = 0;
@@ -84,6 +86,7 @@ RectangleInsideGpu::RectangleInsideGpu(const Rectangle &rectangle, const ColorsO
 void RectangleInsideGpu::initialize(const char *fsConfig)
 {
     prepareShaders(pipeline, vs, fs, getVertexShader(),fsConfig);
+    timeLoc = glGetUniformLocation(fs, "timeInMilliSeconds");
 }
 
 void RectangleInsideGpu::finalize()
@@ -115,6 +118,12 @@ const char* RectangleInsideGpu::getVertexShader()
     })";
 
     return shaderUsedWithColorsProvidedByUser;
+}
+
+void RectangleInsideGpu::updateTime(const float timeInMilliSeconds)
+{
+    glBindProgramPipeline(pipeline);
+    glProgramUniform1f(fs, timeLoc, timeInMilliSeconds);
 }
 
 void RectangleInsideGpu::move(const float y)

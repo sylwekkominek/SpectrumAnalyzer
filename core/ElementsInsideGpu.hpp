@@ -42,6 +42,7 @@ public:
     RectangleInsideGpu(const Rectangle &rectangle);
     RectangleInsideGpu(const Rectangle &rectangle, const ColorsOfRectanglePerVertices &colorsOfRectangle);
     void move(const float y);
+    static void updateTime(const float timeInMilliSeconds);
     static void initialize(const char *fsConfig);
     static void finalize();
 private:
@@ -58,6 +59,7 @@ private:
     static GLuint vs;
     static GLuint fs;
     static GLuint pipeline;
+    static GLuint timeLoc;
 };
 
 class LineInsideGpu : public ElementInsideGpu

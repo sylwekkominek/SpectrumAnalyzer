@@ -8,12 +8,12 @@
 #include "CommonData.hpp"
 #include <algorithm>
 
-
 Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
     config(config),
     indexSelector(config.samplingRate, config.numberOfSamples, config.frequencies),
     positionOfDynamicMaxHoldElements(config.numberOfRectangles),
-    timesWhenDynamicMaxHoldElementsHaveBeenUpdated(config.numberOfRectangles, high_resolution_clock::now()),
+    startTime(high_resolution_clock::now()),
+    timesWhenDynamicMaxHoldElementsHaveBeenUpdated(config.numberOfRectangles, startTime),
     horizontalLinePositions(getHorizontalLines(scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(config.horizontalLinePositions)))),
     isFullScreenEnabled(isFullScreenEnabled)
 {
@@ -67,8 +67,9 @@ void Window::draw(const std::vector<float> &data)
 {
     auto positions = scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(extractDataToBePrinted(data)));
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    RectangleInsideGpu::updateTime(std::chrono::duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - startTime).count());
 
+    glClear(GL_COLOR_BUFFER_BIT);
 
     for(uint i=0;i<config.horizontalLinePositions.size();++i)
     {
