@@ -25,13 +25,19 @@ it will be possible to read data from other device (for example: SPI acceleromet
 The file config.py can be used to update such parameters as:
 number of strips, frequencies, colors, speed and so on.
 What is important recompilation of app is not needed even after updating config.py/audioConfig.py files. 
+**The application offers unlimited configuration options and allows you to generate various themes using artificial intelligence.**
 
 
 **Full documentation is available in the Wiki:** 
 [https://github.com/sylwekkominek/SpectrumAnalyzer/wiki](https://github.com/sylwekkominek/SpectrumAnalyzer/wiki)
 
 
-![SpectrumAnalyzer version 1 6](https://github.com/user-attachments/assets/e9e815ad-bce6-4449-9a4b-be1e10cc9462)
+<img width="1280" height="512" alt="Drawing1" src="https://github.com/user-attachments/assets/a0a98d55-c578-4493-80b8-421b9f5fcd9f" />
+<img width="1280" height="512" alt="Drawing13" src="https://github.com/user-attachments/assets/d0592877-32b5-414a-8963-7fd0da590757" />
+<img width="1280" height="512" alt="Drawing14" src="https://github.com/user-attachments/assets/78be2ed1-ef67-4b6d-b01d-6ce9482d43c2" />
+<img width="1280" height="512" alt="Drawing15" src="https://github.com/user-attachments/assets/3d1422b1-ce85-4334-ba17-655c9b6e149e" />
+<img width="1280" height="512" alt="Drawing16" src="https://github.com/user-attachments/assets/3032b880-b481-41ac-8692-ac4809d5c088" />
+<img width="1280" height="512" alt="Drawing17" src="https://github.com/user-attachments/assets/d4b41be7-b6b1-4d63-aa22-050c72a04e58" />
 
 
 
