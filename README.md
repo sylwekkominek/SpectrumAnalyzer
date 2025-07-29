@@ -1,6 +1,4 @@
 
-![obraz](https://github.com/user-attachments/assets/c39a0f55-db5d-4664-80e8-7a003eea05a8)
-
 **Copyright (C) 2024-2025, Sylwester Kominek**
 
 This program is free software: you can redistribute it and/or modify
@@ -25,11 +23,14 @@ it will be possible to read data from other device (for example: SPI acceleromet
 The file config.py can be used to update such parameters as:
 number of strips, frequencies, colors, speed and so on.
 What is important recompilation of app is not needed even after updating config.py/audioConfig.py files. 
-**The application offers unlimited configuration options and allows you to generate various themes using artificial intelligence.**
+**The application offers unlimited configuration options and allows you to generate various themes using ChatGPT.**
 
 
 **Full documentation is available in the Wiki:** 
 [https://github.com/sylwekkominek/SpectrumAnalyzer/wiki](https://github.com/sylwekkominek/SpectrumAnalyzer/wiki)
+
+**Video on YouTube:** 
+[sylwekkominek/SpectrumAnalyzer – Fully Configurable Open Source Spectrum Analyzer](https://www.youtube.com/watch?v=Sjx05eXpgq4)
 
 
 <img width="1280" height="512" alt="Drawing1" src="https://github.com/user-attachments/assets/a0a98d55-c578-4493-80b8-421b9f5fcd9f" />
