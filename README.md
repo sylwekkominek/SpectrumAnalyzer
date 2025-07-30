@@ -46,7 +46,7 @@ What is important recompilation of app is not needed even after updating config.
 
 In order to use it following steps are needed (tested on Ubuntu 24.04):
 
-sudo apt update && sudo apt install -y g++ cmake python3 python3-pyaudio python3-dev libglfw3-dev libfftw3-dev pkg-config libgtest-dev libgmock-dev wget git
+sudo apt update && sudo apt install -y g++ cmake python3 python3-pyaudio python3-dev libglfw3-dev libfftw3-dev pkg-config libgtest-dev libgmock-dev git
 
 git clone https://github.com/sylwekkominek/SpectrumAnalyzer.git
 
