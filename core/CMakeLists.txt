@@ -12,12 +12,15 @@ add_library(spectrum-analyzer-core STATIC
     Stats.cpp
     AudioSpectrumAnalyzer.cpp
     Helpers.cpp
-    ElementsInsideGpu.cpp
+    gpu/ElementInsideGpu.cpp
+    gpu/LineInsideGpu.cpp
+    gpu/RectangleInsideGpu.cpp
 )
 
 target_include_directories(spectrum-analyzer-core
   PUBLIC
-    "../${CMAKE_INCLUDE_CURRENT_DIR}"
+    "${CMAKE_INCLUDE_CURRENT_DIR}"
+    "${CMAKE_INCLUDE_CURRENT_DIR}/gpu"
     ${Python3_INCLUDE_DIRS}
   )
 

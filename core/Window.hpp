@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include "ElementsInsideGpu.hpp"
+#include "gpu/LineInsideGpu.hpp"
+#include "gpu/RectangleInsideGpu.hpp"
 #include "ConfigReader.hpp"
 #include "IndexSelector.hpp"
 #include <glad/glad.h>
@@ -43,6 +44,7 @@ private:
 
     std::vector<RectangleInsideGpu> rectanglesInsideGpu;
     std::vector<RectangleInsideGpu> dynamicMaxHoldRectanglesInsideGpu;
+
     std::vector<LineInsideGpu> horizontalLinesInsideGpu;
 
     std::vector<float> positionOfDynamicMaxHoldElements;

@@ -46,7 +46,6 @@ void Window::initializeGPU()
     RectangleInsideGpu::initialize(config.advancedColorSettings.c_str());
     LineInsideGpu::initialize();
 
-
     for(const auto & rectangle : rectanglesFactory(fullScreenSizeInPercents))
     {
         rectanglesInsideGpu.emplace_back(RectangleInsideGpu(rectangle, config.colorsOfRectangle));
@@ -61,6 +60,7 @@ void Window::initializeGPU()
     {
         horizontalLinesInsideGpu.emplace_back(LineInsideGpu());
     }
+
 }
 
 void Window::draw(const std::vector<float> &data)
@@ -126,6 +126,7 @@ Window::~Window()
 {
     RectangleInsideGpu::finalize();
     LineInsideGpu::finalize();
+
     glfwDestroyWindow(window);
 }
 
@@ -133,9 +134,9 @@ std::vector<Rectangle> Window::rectanglesFactory(const float heightInPercentOfSc
 {
     const double fullScreenSize = 2.0;
     const double xBeginOfZeroElement = -1;
+
     const double numberOfGaps = config.numberOfRectangles -1;
     const double xWidth =  (fullScreenSize/(config.numberOfRectangles + numberOfGaps * config.gapWidthInRelationToRectangleWidth));
-
 
     const float  offset  = (offsetInPercentOffScreenSize/50);
 
@@ -183,8 +184,9 @@ std::vector<Rectangle> Window::rectanglesFactory(const float heightInPercentOfSc
 
 std::vector<Line> Window::getHorizontalLines(const Positions &positions)
 {
-    double xBegin =  0;
+    double xBegin = 0;
     double xEnd = fullScreenSizeInPercents;
+
 
     std::vector<Line> lines{};
     lines.reserve(positions.size());

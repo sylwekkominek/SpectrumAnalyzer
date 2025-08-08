@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2024-2025, Sylwester Kominek
+ * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
+ * see file LICENSE in this source tree.
+ */
+
+#pragma once
+
+#include "ConfigReader.hpp"
+#include "ElementInsideGpu.hpp"
+#include <glad/glad.h>
+
+
+class RectangleInsideGpu : public ElementInsideGpu
+{
+public:
+    RectangleInsideGpu(const Rectangle &rectangle);
+    RectangleInsideGpu(const Rectangle &rectangle, const ColorsOfRectanglePerVertices &colorsOfRectangle);
+    void move(const float y);
+    static void updateTime(const float timeInMilliSeconds);
+    static void initialize(const char *fsConfig);
+    static void finalize();
+private:
+    float percentToPositon(float percent);
+    static const char* getVertexShader();
+
+    GLuint vao;
+    GLuint vertexBuffer;
+    GLuint colorBuffer;
+
+    const GLuint ATTR_POS = 0u;
+    const GLuint ATTR_COLOR = 1u;
+
+    static GLuint vs;
+    static GLuint fs;
+    static GLuint pipeline;
+    static GLuint timeLoc;
+};

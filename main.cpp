@@ -7,7 +7,6 @@
 #include "core/AudioSpectrumAnalyzer.hpp"
 #include "core/ConfigReader.hpp"
 #include <iostream>
-
 void printLicense()
 {
     const std::string license = R"(Copyright (C) 2024-2025, Sylwester Kominek
@@ -31,8 +30,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 }
 
 
+
 int main()
 {
+
     printLicense();
 
     ConfigReader configReader;

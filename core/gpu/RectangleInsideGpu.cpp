@@ -4,49 +4,13 @@
  * see file LICENSE in this source tree.
  */
 
-#include "ElementsInsideGpu.hpp"
-#include <iostream>
-
+#include "RectangleInsideGpu.hpp"
 
 GLuint RectangleInsideGpu::vs = 0;
 GLuint RectangleInsideGpu::fs = 0;
 GLuint RectangleInsideGpu::pipeline = 0;
 GLuint RectangleInsideGpu::timeLoc = 0;
 
-GLuint LineInsideGpu::vs = 0;
-GLuint LineInsideGpu::fs = 0;
-GLuint LineInsideGpu::pipeline = 0;
-GLint LineInsideGpu::p0Loc = 0;
-GLint LineInsideGpu::p1Loc = 0;
-GLint LineInsideGpu::colorLoc = 0;
-
-
-void ElementInsideGpu::prepareShaders(GLuint &pipeline, GLuint &vs, GLuint &fs, const char * vsConfig, const char *fsConfig)
-{
-    vs = compileShader(vsConfig, GL_VERTEX_SHADER, "VS log");
-    fs = compileShader(fsConfig, GL_FRAGMENT_SHADER, "FS log");
-
-    glCreateProgramPipelines(1, &pipeline);
-    glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, vs);
-    glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, fs);
-}
-
-void ElementInsideGpu::removeShaders(GLuint &pipeline, GLuint &vs, GLuint &fs)
-{
-    glDeleteProgramPipelines(1, &pipeline);
-    glDeleteProgram(vs);
-    glDeleteProgram(fs);
-}
-
-GLuint ElementInsideGpu::compileShader(const GLchar* source, GLenum stage, const std::string& msg)
-{
-    GLuint shdr = glCreateShaderProgramv(stage, 1, &source);
-    std::string log;
-    log.resize(1024);
-    glGetProgramInfoLog(shdr, log.size(), nullptr, &log.front());
-    std::cout<<msg.c_str()<<": "<<log.c_str()<<std::endl;
-    return shdr;
-}
 
 RectangleInsideGpu::RectangleInsideGpu(const Rectangle &rectangle)
 {
@@ -132,68 +96,4 @@ void RectangleInsideGpu::move(const float y)
     glBindVertexArray(vao);
     glProgramUniform1f(vs, 0, percentToPositon(y));
     glDrawArrays(GL_TRIANGLES, 0, 6);
-}
-
-LineInsideGpu::LineInsideGpu()
-{
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-}
-
-void LineInsideGpu::draw(const Line &line, const std::vector<float> &color)
-{
-    glBindProgramPipeline(pipeline);
-    glBindVertexArray(vao);
-    glProgramUniform2f(vs, p0Loc, percentToPositon(line.at(0).x), percentToPositon(line.at(0).y));
-    glProgramUniform2f(vs, p1Loc, percentToPositon(line.at(1).x), percentToPositon(line.at(1).y));
-    glProgramUniform4f(fs, colorLoc, color.at(indexOfRed), color.at(indexOfGreen), color.at(indexOfBlue), color.at(indexOfTransparency));
-
-    glDrawArrays(GL_LINES, 0, 2);
-}
-
-float LineInsideGpu::percentToPositon(float percent)
-{
-    return (std::min<float>(percent, 100)/50) -1.0;
-}
-
-void LineInsideGpu::initialize()
-{
-    prepareShaders(pipeline, vs, fs, getVertexShader(),getFragmentShader());
-    p0Loc = glGetUniformLocation(vs, "p0");
-    p1Loc = glGetUniformLocation(vs, "p1");
-}
-
-void LineInsideGpu::finalize()
-{
-    ElementInsideGpu::removeShaders(pipeline, vs,fs);
-}
-
-const char* LineInsideGpu::getVertexShader()
-{
-    const char* shaderUsedWithColorsProvidedByUser = R"(#version 330 core
-uniform vec2 p0;
-uniform vec2 p1;
-
-void main() {
-    vec2 pos = (gl_VertexID == 0) ? p0 : p1;
-    gl_Position = vec4(pos, 0.0, 1.0);
-})";
-
-    return shaderUsedWithColorsProvidedByUser;
-
-}
-
-const char* LineInsideGpu::getFragmentShader()
-{
-    const char* fragmentShaderSrc = R"(
-#version 330 core
-uniform vec4 uColor;
-out vec4 Color;
-
-void main() {
-    Color = uColor;
-}
-)";
-
-    return fragmentShaderSrc;
 }

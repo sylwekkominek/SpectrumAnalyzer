@@ -16,6 +16,7 @@ add_executable(spectrum-analyzer-tests
 target_include_directories(spectrum-analyzer-tests
   PRIVATE
     ${CMAKE_INCLUDE_CURRENT_DIR}
+    "../${CMAKE_INCLUDE_CURRENT_DIR}"
   )
 
 target_link_libraries(spectrum-analyzer-tests PRIVATE
@@ -23,10 +24,6 @@ target_link_libraries(spectrum-analyzer-tests PRIVATE
     GTest::GTest
     GTest::gmock
     GTest::gmock_main
-
-)
-target_link_libraries(spectrum-analyzer-tests PRIVATE
-
 )
 
 
