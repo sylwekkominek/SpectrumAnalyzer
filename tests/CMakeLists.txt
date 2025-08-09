@@ -9,6 +9,7 @@ add_executable(spectrum-analyzer-tests
         SamplesCollectorTests.cpp
         WindowTests.cpp
         AudioSpectrumAnalyzerTests.cpp
+        helpers/TextInsideGpuMock.cpp
         helpers/OpenGlMock.cpp
         helpers/TestHelpers.cpp
         )

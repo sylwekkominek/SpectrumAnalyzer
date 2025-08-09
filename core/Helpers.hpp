@@ -15,3 +15,4 @@ std::vector<float> normalize(const std::vector<float> &fftData);
 std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftData, const float amplitudeCorrection=0, const float offsetFactor=0);
 float calculateOverlappingDiff(const uint desiredNumberOfFramesPerSecond, const uint currentFramesPerSecond);
 float calculateOverlapping(const uint samplingRate, const uint numberOfSamples, const uint numberOfFramesPerSecond);
+std::string formatFloat(float value, int totalWidth, int precision);

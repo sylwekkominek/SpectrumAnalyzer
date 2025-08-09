@@ -6,7 +6,9 @@
 
 #include "Window.hpp"
 #include "CommonData.hpp"
+#include "Helpers.hpp"
 #include <algorithm>
+
 
 Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
     config(config),
@@ -28,12 +30,14 @@ Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
     {
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         window = glfwCreateWindow(config.maximizedWindowHorizontalSize, config.maximizedWindowVerticalSize, "SpectrumAnalyzer", glfwGetPrimaryMonitor(), nullptr);
+        TextInsideGpu::updateWindowSize(config.maximizedWindowHorizontalSize, config.maximizedWindowVerticalSize);
     }
     else
     {
         glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
         window = glfwCreateWindow(config.normalWindowHorizontalSize, config.normalWindowVerticalSize, "SpectrumAnalyzer", nullptr, nullptr);
         glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+        TextInsideGpu::updateWindowSize(config.normalWindowHorizontalSize, config.normalWindowVerticalSize);
     }
 
     glfwMakeContextCurrent(window);
@@ -45,6 +49,7 @@ void Window::initializeGPU()
 {
     RectangleInsideGpu::initialize(config.advancedColorSettings.c_str());
     LineInsideGpu::initialize();
+    TextInsideGpu::initialize();
 
     for(const auto & rectangle : rectanglesFactory(fullScreenSizeInPercents))
     {
@@ -61,6 +66,10 @@ void Window::initializeGPU()
         horizontalLinesInsideGpu.emplace_back(LineInsideGpu());
     }
 
+    for(int i=0;i<config.horizontalLinePositions.size();++i)
+    {
+        textsInsideGpu.emplace_back(formatFloat(config.horizontalLinePositions.at(i),4,2), config.colorOfStaticLines);
+    }
 }
 
 void Window::draw(const std::vector<float> &data)
@@ -74,6 +83,11 @@ void Window::draw(const std::vector<float> &data)
     for(uint i=0;i<config.horizontalLinePositions.size();++i)
     {
         horizontalLinesInsideGpu.at(i).draw(horizontalLinePositions.at(i), config.colorOfStaticLines);
+    }
+
+    for(uint i=0;i<config.horizontalLinePositions.size();++i)
+    {
+        textsInsideGpu.at(i).draw(horizontalLinePositions.at(i).front().y);
     }
 
     for(uint i=0;i<positions.size();++i)
@@ -120,12 +134,14 @@ bool Window::checkIfWindowShouldBeRecreated()
 void Window::framebufferSizeCallback(GLFWwindow* /*window*/, int width, int height)
 {
     glViewport(0, 0, width, height);
+    TextInsideGpu::updateWindowSize(width, height);
 }
 
 Window::~Window()
 {
     RectangleInsideGpu::finalize();
     LineInsideGpu::finalize();
+    TextInsideGpu::finalize();
 
     glfwDestroyWindow(window);
 }
@@ -184,9 +200,8 @@ std::vector<Rectangle> Window::rectanglesFactory(const float heightInPercentOfSc
 
 std::vector<Line> Window::getHorizontalLines(const Positions &positions)
 {
-    double xBegin = 0;
-    double xEnd = fullScreenSizeInPercents;
-
+    double xBegin = 3;
+    double xEnd = 97;
 
     std::vector<Line> lines{};
     lines.reserve(positions.size());
@@ -259,3 +274,6 @@ std::vector<float> Window::extractDataToBePrinted(const std::vector<float> &data
 
     return positions;
 }
+
+
+

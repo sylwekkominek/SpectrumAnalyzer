@@ -5,6 +5,7 @@
  */
 
 #pragma once
+#include "TextInsideGpuMock.hpp"
 #include "OpenGlMock.hpp"
 #include <gtest/gtest.h>
 
@@ -27,15 +28,18 @@ MATCHER_P(isInRange, value, "")
 
 struct WindowTestsBase
 {
+    TextInsideGpuMock text;
     OpenGlMock openGL;
 
 
     void expectCreateWindow()
     {
+
         EXPECT_CALL(openGL, glfwInit()).Times(1);
         EXPECT_CALL(openGL, glfwWindowHint(_,_)).Times(4);
         EXPECT_CALL(openGL, glfwCreateWindow(_,_,_,_,_)).Times(1);
         EXPECT_CALL(openGL, glfwSetFramebufferSizeCallback(_,_)).Times(1);
+        EXPECT_CALL(text, updateWindowSize(_,_)).Times(1);
 
         EXPECT_CALL(openGL, glfwMakeContextCurrent(_)).Times(1);
         EXPECT_CALL(openGL, glfwSwapInterval(_)).Times(1);
@@ -51,7 +55,7 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glCreateProgramPipelines(_,_)).Times(2);
         EXPECT_CALL(openGL, glUseProgramStages(_,_,_)).Times(4);
         EXPECT_CALL(openGL, glGetUniformLocation(_,_)).Times(3);
-
+        EXPECT_CALL(text, initialize()).Times(1);
 
         EXPECT_CALL(openGL, glCreateVertexArrays(_,_)).Times(numberOfExpectCalls);
         EXPECT_CALL(openGL, glCreateBuffers(_,_)).Times(2*numberOfExpectCalls);
@@ -126,6 +130,7 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glDeleteProgramPipelines(_,_)).Times(2);
         EXPECT_CALL(openGL, glDeleteProgram(_)).Times(4);
         EXPECT_CALL(openGL, glfwDestroyWindow(_)).Times(1);
+        EXPECT_CALL(text, finalize()).Times(1);
     }
 
 };

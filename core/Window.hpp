@@ -8,6 +8,7 @@
 
 #include "gpu/LineInsideGpu.hpp"
 #include "gpu/RectangleInsideGpu.hpp"
+#include "gpu/TextInsideGpu.hpp"
 #include "ConfigReader.hpp"
 #include "IndexSelector.hpp"
 #include <glad/glad.h>
@@ -44,8 +45,8 @@ private:
 
     std::vector<RectangleInsideGpu> rectanglesInsideGpu;
     std::vector<RectangleInsideGpu> dynamicMaxHoldRectanglesInsideGpu;
-
     std::vector<LineInsideGpu> horizontalLinesInsideGpu;
+    std::vector<TextInsideGpu> textsInsideGpu;
 
     std::vector<float> positionOfDynamicMaxHoldElements;
     const time_point<high_resolution_clock> startTime;

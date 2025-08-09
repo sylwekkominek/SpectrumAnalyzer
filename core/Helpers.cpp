@@ -10,7 +10,8 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
-
+#include <iomanip>
+#include <sstream>
 
 std::vector<float> getAverage(const std::vector<float> &left, const std::vector<float> &right)
 {
@@ -82,6 +83,17 @@ float calculateOverlapping(const uint samplingRate, const uint numberOfSamples, 
     auto fps = (numberOfFramesPerSecond == 0) ? 1 : numberOfFramesPerSecond;
 
     return  (1.0 - static_cast<float>(samplingRate)/(numberOfSamples * fps));
+}
+
+std::string formatFloat(float value, int totalWidth, int precision)
+{
+    std::ostringstream oss;
+
+    oss << std::fixed << std::setprecision(precision)
+        << std::setw(totalWidth)
+        << value;
+
+    return oss.str();
 }
 
 
