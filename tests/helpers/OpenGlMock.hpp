@@ -57,6 +57,9 @@ public:
     MOCK_METHOD4(glClearColor, void(GLfloat, GLfloat, GLfloat, GLfloat));
     MOCK_METHOD1(glClear, void(GLbitfield));
     MOCK_METHOD4(glViewport, void(GLint , GLint ,GLsizei , GLsizei));
+    MOCK_METHOD1(glEnable, void(GLenum));
+    MOCK_METHOD2(glBlendFunc, void(GLenum, GLenum));
+
 };
 
 

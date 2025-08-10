@@ -43,6 +43,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
 
     EXPECT_EQ(config.dynamicMaxHoldVisibilityState, true);
     EXPECT_EQ(config.advancedColorSettings, std::string("test"));
+    EXPECT_EQ(config.backgroundColorSettings, std::string("SpectrumAnalyzer has become an awesome tool! :D"));
 
     valueChecker({11.1,11.2,11.3,11.4}, config.colorOfStaticLines);
     valueChecker({-12.1,-12.2}, config.horizontalLinePositions);

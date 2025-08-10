@@ -6,13 +6,20 @@
 
 #include "RectangleInsideGpu.hpp"
 
-GLuint RectangleInsideGpu::vs = 0;
-GLuint RectangleInsideGpu::fs = 0;
-GLuint RectangleInsideGpu::pipeline = 0;
-GLuint RectangleInsideGpu::timeLoc = 0;
+template<RectangleType rectangleType>
+GLuint RectangleInsideGpu<rectangleType>::vs = 0;
 
+template<RectangleType rectangleType>
+GLuint RectangleInsideGpu<rectangleType>::fs = 0;
 
-RectangleInsideGpu::RectangleInsideGpu(const Rectangle &rectangle)
+template<RectangleType rectangleType>
+GLuint RectangleInsideGpu<rectangleType>::pipeline = 0;
+
+template<RectangleType rectangleType>
+GLuint RectangleInsideGpu<rectangleType>::timeLoc = 0;
+
+template<RectangleType rectangleType>
+RectangleInsideGpu<rectangleType>::RectangleInsideGpu(const Rectangle &rectangle)
 {
     glCreateVertexArrays(1, &vao);
 
@@ -25,7 +32,8 @@ RectangleInsideGpu::RectangleInsideGpu(const Rectangle &rectangle)
     glVertexArrayAttribBinding(vao, ATTR_POS, ATTR_POS);
 }
 
-RectangleInsideGpu::RectangleInsideGpu(const Rectangle &rectangle, const ColorsOfRectanglePerVertices &colorsOfRectangle):
+template<RectangleType rectangleType>
+RectangleInsideGpu<rectangleType>::RectangleInsideGpu(const Rectangle &rectangle, const ColorsOfRectanglePerVertices &colorsOfRectangle):
     RectangleInsideGpu(rectangle)
 {
 
@@ -47,23 +55,27 @@ RectangleInsideGpu::RectangleInsideGpu(const Rectangle &rectangle, const ColorsO
     glVertexArrayAttribBinding(vao, ATTR_COLOR, ATTR_COLOR);
 }
 
-void RectangleInsideGpu::initialize(const char *fsConfig)
+template<RectangleType rectangleType>
+void RectangleInsideGpu<rectangleType>::initialize(const char *fsConfig)
 {
     prepareShaders(pipeline, vs, fs, getVertexShader(),fsConfig);
     timeLoc = glGetUniformLocation(fs, "timeInMilliSeconds");
 }
 
-void RectangleInsideGpu::finalize()
+template<RectangleType rectangleType>
+void RectangleInsideGpu<rectangleType>::finalize()
 {
     ElementInsideGpu::removeShaders(pipeline, vs,fs);
 }
 
-float RectangleInsideGpu::percentToPositon(float percent)
+template<RectangleType rectangleType>
+float RectangleInsideGpu<rectangleType>::percentToPositon(float percent)
 {
     return (std::min<float>(percent, 100)/50) -2;
 }
 
-const char* RectangleInsideGpu::getVertexShader()
+template<RectangleType rectangleType>
+const char* RectangleInsideGpu<rectangleType>::getVertexShader()
 {
     const char* shaderUsedWithColorsProvidedByUser = R"(#version 330 core
     #extension GL_ARB_explicit_uniform_location : require
@@ -84,16 +96,28 @@ const char* RectangleInsideGpu::getVertexShader()
     return shaderUsedWithColorsProvidedByUser;
 }
 
-void RectangleInsideGpu::updateTime(const float timeInMilliSeconds)
+template<RectangleType rectangleType>
+void RectangleInsideGpu<rectangleType>::updateTime(const float timeInMilliSeconds)
 {
     glBindProgramPipeline(pipeline);
     glProgramUniform1f(fs, timeLoc, timeInMilliSeconds);
 }
 
-void RectangleInsideGpu::move(const float y)
+template<RectangleType rectangleType>
+void RectangleInsideGpu<rectangleType>::move(const float y)
 {
     glBindProgramPipeline(pipeline);
     glBindVertexArray(vao);
     glProgramUniform1f(vs, 0, percentToPositon(y));
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+
+template<RectangleType rectangleType>
+void RectangleInsideGpu<rectangleType>::draw()
+{
+    move(0);
+}
+
+
+template class RectangleInsideGpu<RectangleType::BAR>;
+template class RectangleInsideGpu<RectangleType::BACKGROUND>;

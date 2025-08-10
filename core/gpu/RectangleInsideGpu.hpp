@@ -10,13 +10,20 @@
 #include "ElementInsideGpu.hpp"
 #include <glad/glad.h>
 
+enum class RectangleType
+{
+    BAR,
+    BACKGROUND
+};
 
+template<RectangleType rectangleType>
 class RectangleInsideGpu : public ElementInsideGpu
 {
 public:
     RectangleInsideGpu(const Rectangle &rectangle);
     RectangleInsideGpu(const Rectangle &rectangle, const ColorsOfRectanglePerVertices &colorsOfRectangle);
     void move(const float y);
+    void draw();
     static void updateTime(const float timeInMilliSeconds);
     static void initialize(const char *fsConfig);
     static void finalize();

@@ -30,6 +30,8 @@ PFNGLVERTEXARRAYATTRIBBINDINGPROC glad_glVertexArrayAttribBinding = nullptr;
 PFNGLVERTEXARRAYATTRIBFORMATPROC glad_glVertexArrayAttribFormat = nullptr;
 PFNGLVERTEXARRAYVERTEXBUFFERPROC glad_glVertexArrayVertexBuffer = nullptr;
 PFNGLVIEWPORTPROC glad_glViewport = nullptr;
+PFNGLENABLEPROC glad_glEnable = nullptr;
+PFNGLBLENDFUNCPROC glad_glBlendFunc = nullptr;
 
 std::function<int()> gladLoadGLFunction;
 std::function<void(GLsizei , GLuint *)> glCreateProgramPipelinesFunction;
@@ -56,6 +58,9 @@ std::function<void(GLuint)> glDeleteProgramFunction;
 std::function<void(GLfloat, GLfloat, GLfloat, GLfloat)> glClearColorFunction;
 std::function<void(GLbitfield)> glClearFunction;
 std::function<void(GLint, GLint,GLsizei, GLsizei)> glViewportFunction;
+std::function<void(GLenum)> glEnableFunction;
+std::function<void(GLenum, GLenum)> glBlendFuncFunction;
+
 
 std::function<int()> glfwInitFunction;
 std::function<void(int hint, int value)> glfwWindowHintFunction;
@@ -273,6 +278,17 @@ void glViewportMock(GLint x, GLint y, GLsizei width, GLsizei height)
     glViewportFunction(x,y,width,height);
 }
 
+void glEnableMock(GLenum cap)
+{
+    glEnableFunction(cap);
+}
+
+void glBlendFuncMock(GLenum sfactor, GLenum dfactor)
+{
+    glBlendFuncFunction(sfactor,dfactor);
+}
+
+
 OpenGlMock::OpenGlMock()
 {
 
@@ -383,6 +399,8 @@ OpenGlMock::OpenGlMock()
     ::glad_glClearColor = glClearColorMock;
     ::glad_glClear = glClearMock;
     ::glad_glViewport = glViewportMock;
+    ::glad_glEnable = glEnableMock;
+    ::glad_glBlendFunc = glBlendFuncMock;
 
     glCreateShaderProgramvFunction = [this](GLenum type, GLsizei count, const GLchar *const* strings)
     {
@@ -504,5 +522,16 @@ OpenGlMock::OpenGlMock()
     {
         this->glViewport(x,y,width,height);
     };
+
+    glEnableFunction = [this](GLenum cap)
+    {
+        this->glEnable(cap);
+    };
+
+    glBlendFuncFunction =  [this](GLenum sfactor, GLenum dfactor)
+    {
+        this->glBlendFunc(sfactor, dfactor);
+    };
+
 }
 

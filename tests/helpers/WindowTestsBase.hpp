@@ -44,33 +44,38 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glfwMakeContextCurrent(_)).Times(1);
         EXPECT_CALL(openGL, glfwSwapInterval(_)).Times(1);
         EXPECT_CALL(openGL, gladLoadGL()).Times(1);
+
+        EXPECT_CALL(openGL, glEnable(GL_BLEND)).Times(1);
+        EXPECT_CALL(openGL, glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)).Times(1);
     }
 
     void expectInitializeGPU(const uint numberOfRectangles, const bool smallRectanglesEnabled)
     {
-        const uint numberOfExpectCalls = smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles;
+        const uint backgroundCall{1};
+        const uint numberOfExpectCalls = (smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles);
 
-        EXPECT_CALL(openGL, glCreateShaderProgramv(_,_,_)).Times(4);
-        EXPECT_CALL(openGL, glGetProgramInfoLog(_,_,_,_)).Times(4);
-        EXPECT_CALL(openGL, glCreateProgramPipelines(_,_)).Times(2);
-        EXPECT_CALL(openGL, glUseProgramStages(_,_,_)).Times(4);
-        EXPECT_CALL(openGL, glGetUniformLocation(_,_)).Times(3);
+        EXPECT_CALL(openGL, glCreateShaderProgramv(_,_,_)).Times(6);
+        EXPECT_CALL(openGL, glGetProgramInfoLog(_,_,_,_)).Times(6);
+        EXPECT_CALL(openGL, glCreateProgramPipelines(_,_)).Times(3);
+        EXPECT_CALL(openGL, glUseProgramStages(_,_,_)).Times(6);
+        EXPECT_CALL(openGL, glGetUniformLocation(_,_)).Times(4);
         EXPECT_CALL(text, initialize()).Times(1);
 
-        EXPECT_CALL(openGL, glCreateVertexArrays(_,_)).Times(numberOfExpectCalls);
-        EXPECT_CALL(openGL, glCreateBuffers(_,_)).Times(2*numberOfExpectCalls);
-        EXPECT_CALL(openGL, glNamedBufferStorage(_,_,_,_)).Times(2*numberOfExpectCalls);
+        EXPECT_CALL(openGL, glCreateVertexArrays(_,_)).Times(numberOfExpectCalls+backgroundCall);
+        EXPECT_CALL(openGL, glCreateBuffers(_,_)).Times(2*numberOfExpectCalls+backgroundCall);
+        EXPECT_CALL(openGL, glNamedBufferStorage(_,_,_,_)).Times(2*numberOfExpectCalls+backgroundCall);
 
-        EXPECT_CALL(openGL, glEnableVertexArrayAttrib(_,_)).Times(2*numberOfExpectCalls);
-        EXPECT_CALL(openGL, glVertexArrayAttribFormat(_,_,_,_,_,_)).Times(2*numberOfExpectCalls);
-        EXPECT_CALL(openGL, glVertexArrayVertexBuffer(_,_,_,_,_)).Times(2*numberOfExpectCalls);
-        EXPECT_CALL(openGL, glVertexArrayAttribBinding(_,_,_)).Times(2*numberOfExpectCalls);
+        EXPECT_CALL(openGL, glEnableVertexArrayAttrib(_,_)).Times(2*numberOfExpectCalls+backgroundCall);
+        EXPECT_CALL(openGL, glVertexArrayAttribFormat(_,_,_,_,_,_)).Times(2*numberOfExpectCalls+backgroundCall);
+        EXPECT_CALL(openGL, glVertexArrayVertexBuffer(_,_,_,_,_)).Times(2*numberOfExpectCalls+backgroundCall);
+        EXPECT_CALL(openGL, glVertexArrayAttribBinding(_,_,_)).Times(2*numberOfExpectCalls+backgroundCall);
     }
 
     void expectDraw(const uint numberOfRectangles, const bool smallRectanglesEnabled)
     {
-        const uint numberOfExpectCalls = smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles;
-        const uint timeUpdateCall = 1;
+        const uint backgroundCall{1};
+        const uint numberOfExpectCalls = (smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles)+backgroundCall;
+        const uint timeUpdateCall = 2;
         EXPECT_CALL(openGL, glClear(_)).Times(1);
         EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(numberOfExpectCalls+timeUpdateCall);
         EXPECT_CALL(openGL, glBindVertexArray(_)).Times(numberOfExpectCalls);
@@ -81,6 +86,7 @@ struct WindowTestsBase
 
     void expectDraw(const std::vector<float> &positions, const bool smallRectanglesEnabled)
     {
+        const uint backgroundCall{1};
         const uint numberOfRectangles = positions.size();
         const uint numberOfSmallRectangles = positions.size();
 
@@ -89,7 +95,16 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(1);
         EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(1);
 
+        EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(1);
+        EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(1);
+
         EXPECT_CALL(openGL, glClear(_)).Times(1);
+
+
+        EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(1);
+        EXPECT_CALL(openGL, glBindVertexArray(_)).Times(1);
+        EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(1);
+        EXPECT_CALL(openGL, glDrawArrays(_,_,_)).Times(1);
 
         for(auto &el: positions)
         {
@@ -127,8 +142,8 @@ struct WindowTestsBase
 
     void expectDestroyWindow()
     {
-        EXPECT_CALL(openGL, glDeleteProgramPipelines(_,_)).Times(2);
-        EXPECT_CALL(openGL, glDeleteProgram(_)).Times(4);
+        EXPECT_CALL(openGL, glDeleteProgramPipelines(_,_)).Times(3);
+        EXPECT_CALL(openGL, glDeleteProgram(_)).Times(6);
         EXPECT_CALL(openGL, glfwDestroyWindow(_)).Times(1);
         EXPECT_CALL(text, finalize()).Times(1);
     }

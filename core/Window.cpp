@@ -9,7 +9,6 @@
 #include "Helpers.hpp"
 #include <algorithm>
 
-
 Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
     config(config),
     indexSelector(config.samplingRate, config.numberOfSamples, config.frequencies),
@@ -43,22 +42,30 @@ Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     gladLoadGL();
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Window::initializeGPU()
 {
-    RectangleInsideGpu::initialize(config.advancedColorSettings.c_str());
+
+    RectangleInsideGpu<RectangleType::BACKGROUND>::initialize(config.backgroundColorSettings.c_str());
+    RectangleInsideGpu<RectangleType::BAR>::initialize(config.advancedColorSettings.c_str());
+
     LineInsideGpu::initialize();
     TextInsideGpu::initialize();
 
-    for(const auto & rectangle : rectanglesFactory(fullScreenSizeInPercents))
+    backgroundInsideGpu = std::make_unique<RectangleInsideGpu<RectangleType::BACKGROUND>>(rectanglesFactory(100, 1,100).front());
+
+    for(const auto & rectangle : rectanglesFactory(fullScreenSizeInPercents,config.numberOfRectangles))
     {
-        rectanglesInsideGpu.emplace_back(RectangleInsideGpu(rectangle, config.colorsOfRectangle));
+        rectanglesInsideGpu.emplace_back(RectangleInsideGpu<RectangleType::BAR>(rectangle, config.colorsOfRectangle));
     }
 
-    for(const auto & rectangle : rectanglesFactory(config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize, 50))
+    for(const auto & rectangle : rectanglesFactory(config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize, config.numberOfRectangles, 50 + config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize/2))
     {
-        dynamicMaxHoldRectanglesInsideGpu.emplace_back(RectangleInsideGpu(rectangle,  config.colorsOfDynamicMaxHoldRectangle));
+        dynamicMaxHoldRectanglesInsideGpu.emplace_back(RectangleInsideGpu<RectangleType::BAR>(rectangle,  config.colorsOfDynamicMaxHoldRectangle));
     }
 
     for(int i=0;i<config.horizontalLinePositions.size();++i)
@@ -75,10 +82,15 @@ void Window::initializeGPU()
 void Window::draw(const std::vector<float> &data)
 {
     auto positions = scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(extractDataToBePrinted(data)));
+    auto timeInMs = std::chrono::duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - startTime).count();
 
-    RectangleInsideGpu::updateTime(std::chrono::duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - startTime).count());
+    RectangleInsideGpu<RectangleType::BAR>::updateTime(timeInMs);
+    RectangleInsideGpu<RectangleType::BACKGROUND>::updateTime(timeInMs);
 
     glClear(GL_COLOR_BUFFER_BIT);
+
+    backgroundInsideGpu->draw();
+
 
     for(uint i=0;i<config.horizontalLinePositions.size();++i)
     {
@@ -139,20 +151,21 @@ void Window::framebufferSizeCallback(GLFWwindow* /*window*/, int width, int heig
 
 Window::~Window()
 {
-    RectangleInsideGpu::finalize();
+    RectangleInsideGpu<RectangleType::BACKGROUND>::finalize();
+    RectangleInsideGpu<RectangleType::BAR>::finalize();
     LineInsideGpu::finalize();
     TextInsideGpu::finalize();
 
     glfwDestroyWindow(window);
 }
 
-std::vector<Rectangle> Window::rectanglesFactory(const float heightInPercentOfScreenSize, const float offsetInPercentOffScreenSize)
+std::vector<Rectangle> Window::rectanglesFactory(const float heightInPercentOfScreenSize, const uint16_t numberOfRectangles, const float offsetInPercentOffScreenSize)
 {
     const double fullScreenSize = 2.0;
     const double xBeginOfZeroElement = -1;
 
-    const double numberOfGaps = config.numberOfRectangles -1;
-    const double xWidth =  (fullScreenSize/(config.numberOfRectangles + numberOfGaps * config.gapWidthInRelationToRectangleWidth));
+    const double numberOfGaps = numberOfRectangles -1;
+    const double xWidth =  (fullScreenSize/(numberOfRectangles + numberOfGaps * config.gapWidthInRelationToRectangleWidth));
 
     const float  offset  = (offsetInPercentOffScreenSize/50);
 
@@ -160,9 +173,9 @@ std::vector<Rectangle> Window::rectanglesFactory(const float heightInPercentOfSc
     const float yEnd = (heightInPercentOfScreenSize/100)+offset;
 
     std::vector<Rectangle> rectangles;
-    rectangles.reserve(config.numberOfRectangles);
+    rectangles.reserve(numberOfRectangles);
 
-    for(uint i=0;i<config.numberOfRectangles;++i)
+    for(uint i=0;i<numberOfRectangles;++i)
     {
         double xBegin =  xBeginOfZeroElement + i*xWidth*(1.0 + config.gapWidthInRelationToRectangleWidth);
         double xEnd = xBegin + xWidth;

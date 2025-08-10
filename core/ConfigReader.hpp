@@ -47,6 +47,7 @@ struct Configuration
     ColorsOfRectanglePerVertices colorsOfRectangle;
     ColorsOfRectanglePerVertices colorsOfDynamicMaxHoldRectangle;
     std::string advancedColorSettings;
+    std::string backgroundColorSettings;
 };
 
 std::ostream& operator<<(std::ostream& os, const Configuration & config);
@@ -85,6 +86,7 @@ private:
     ColorsOfRectanglePerVertices getColorsOfDynamicMaxHoldRectangle();
     ColorsOfRectanglePerVertices getColorsOfRectangleHelper(const std::string& functionName);
     std::string getAdvancedColorSettings();
+    std::string getBackgroundColorSettings();
 
     Configuration config{};
     bool isConfigReadOut{false};

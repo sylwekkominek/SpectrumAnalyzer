@@ -131,7 +131,7 @@ def getDynamicMaxHoldAccelerationStateOfFalling():
 #Default value: (0.15,0.15,0.15,0.15)
 
 def getColorOfStaticLines():
-    return (0.15,0.15,0.15,0.15)
+    return (0.15,0.15,0.15,1)
 
 #Description: Lets the user define how many horizontal lines are shown on the display and at which signal power levels (in dBFS) they appear. This allows for precise customization of the scale and visual reference points in the signal visualization.
 #Default value: –6.02, –12.04, –18.06, ..., –90.30 dBFS
@@ -146,27 +146,27 @@ def getHorizontalLinePositions():
 def getColorsOfRectangle(vertex):
     match vertex:
         case 0:
-            return (0.61, 0.61, 0.61,1)
+            return (0.2, 0.2, 0.2,0.1)
         case 1:
-            return (0,0,0,1)
+            return (0,0,0,0.1)
         case 2:
-            return (0,0,0,1)
+            return (0,0,0,0.1)
         case 3:
-            return (0.61, 0.61, 0.61,1)
+            return (0.2, 0.2, 0.2,0.1)
 
 #Description: Uses the same method of assigning RGBA colors to each of the 4 rectangle vertices as for the main bars. This time, however, it applies to the small visual elements that hold and display the peak (max hold) values over time. By setting the vertex colors, you can control the appearance of these peak indicators, including gradients and transparency.
 #Default value: RGBA color (Red, Green, Blue, Transparency) for each vertex
 
 def getColorsOfDynamicMaxHoldRectangle(vertex):
-        match vertex:
-            case 0:
-                return (0.61, 0.61, 0.61,1)
-            case 1:
-                return (0,0,0,1)
-            case 2:
-                return (0,0,0,1)
-            case 3:
-                return (0.61, 0.61, 0.61,1)
+    match vertex:
+        case 0:
+            return (0.2, 0.2, 0.2,0.1)
+        case 1:
+            return (0,0,0,0.1)
+        case 2:
+            return (0,0,0,0.1)
+        case 3:
+            return (0.2, 0.2, 0.2,0.1)
 
 
 #Description: The application first determines how many frequency bins are defined by the user, based on the number of frequencies provided by the getFrequencies() function. Then, it divides the screen into the same number of vertical bars — one for each frequency. Each bar is built using two triangles (6 vertices), which form a rectangle defined by 4 unique corner points in 2D space (x, y). These bars are then sent to the GPU with their initial positions. At this stage, all bars are evenly spaced and aligned. As the application analyzes the audio (or other signal) in real time, it calculates the power of each frequency. Based on this power, the height or vertical position of each bar is updated dynamically to reflect the current signal strength. The vertex shader updates the positions of the bar's corners depending on the signal’s power for that frequency. The GPU then fills in all the pixels between those corners by generating fragments — and each of these fragments is processed by the fragment shader. One of the values the fragment shader receives is calculatedPosition, which (in simplified terms) tells it how high up the current pixel is within its rectangle. This vertical position is used to control how the pixel will be colored. In addition, the shader receives vertColor values — these are colors assigned to each corner of the rectangle using application-side functions like getColorsOfRectangle() and getColorsOfDynamicMaxHoldRectangle(). The GPU automatically blends these colors across the surface of the rectangle, so each pixel gets its own color depending on where it lies. Inside the fragment shader, this blended color is combined with a vertical color gradient that transitions from blue → cyan → green → yellow → red, depending on the pixel’s height within the bar. This results in vibrant and informative color transitions that follow the signal in real time. Users can adjust the rectangle corner colors directly in the application to experiment with color effects. And because the shader computes colors for each pixel independently, there’s a lot of flexibility for customization. More advanced users can even edit the shader code to fully control how colors behave. All of this runs on the GPU, which executes the fragment shader for every pixel of every bar in parallel. This makes the visualization extremely fast and smooth — even when rendering many bars at once. This method not only results in dynamic and responsive visualizations, but also allows users to experiment and learn how shaders and GPU parallelism work in real-time graphics.
@@ -174,35 +174,78 @@ def getColorsOfDynamicMaxHoldRectangle(vertex):
 def getAdvancedColorSettings():
     return '''#version 330 core
 
-        in vec4 calculatedPosition;
-        in vec4 vertColor;
-        out vec4 Color;
-        uniform float timeInMilliSeconds; // waiting for usage
+in vec4 calculatedPosition;
+in vec4 vertColor;
+out vec4 Color;
 
-        void main()
-        {
-            vec4 tmpColor;
+uniform float timeInMilliSeconds;
 
-            float t = clamp(calculatedPosition.y, -1.0, 1.0);
+vec3 nebulaBarColor(float y)
+{
+    vec3 violet     = vec3(0.4, 0.2, 0.7);
+    vec3 magenta    = vec3(0.8, 0.1, 0.6);
+    vec3 red        = vec3(0.9, 0.2, 0.2);
+    vec3 orange     = vec3(1.0, 0.5, 0.1);
 
-            //Move position from [-1,1] to [0,1]
-            float y = (t + 1.0) * 0.5;
+    vec3 color = mix(violet, magenta, smoothstep(0.0, 0.33, y));
+    color = mix(color, red, smoothstep(0.33, 0.66, y));
+    color = mix(color, orange, smoothstep(0.66, 1.0, y));
 
-            vec4 red    = vec4(1.0, 0.0, 0.0,1);
-            vec4 yellow = vec4(1.0, 1.0, 0.0,1);
-            vec4 green  = vec4(0.0, 1.0, 0.0,1);
-            vec4 cyan   = vec4(0.0, 1.0, 1.0,1);
-            vec4 blue   = vec4(0.0, 0.0, 1.0,1);
+    return color;
+}
 
-            //Use 5 segments: [0,0.25), [0.25,0.5), [0.5,0.75), [0.75,1.0]
+void main()
+{
+    float t = clamp(calculatedPosition.y, -1.0, 1.0);
+    float y = (t + 1.0) * 0.5;
 
-            tmpColor = mix(blue, cyan, smoothstep(0.0, 0.25, y));
-            tmpColor = mix(tmpColor ,green, smoothstep(0.25,0.5, y));
-            tmpColor = mix(tmpColor ,yellow, smoothstep(0.5,0.75, y));
-            tmpColor = mix(tmpColor ,red, smoothstep(0.75,1, y));
+    vec3 barColor = nebulaBarColor(y);
 
-            // mix tmpColor with those returned by getColorsOfRectangle / getColorsOfDynamicMaxHoldRectangle
-            Color = mix(tmpColor, vertColor, 0.4);
+    Color = mix(vec4(barColor, 1.0), vertColor, 0.4);
+}
+'''
 
-        }
-        '''
+
+def getBackgroundColorSettings():
+    return '''#version 330 core
+
+in vec4 calculatedPosition;
+in vec4 vertColor;
+out vec4 Color;
+
+uniform float timeInMilliSeconds;
+
+float noise(vec2 p) {
+    return sin(p.x * 3.0) * cos(p.y * 2.0);
+}
+
+vec3 nebulaGlow(float x)
+{
+    return mix(vec3(0.05, 0.05, 0.1), vec3(0.3, 0.2, 0.5), smoothstep(0.0, 1.0, x));
+}
+
+void main()
+{
+    float time = timeInMilliSeconds / 1000.0;
+    vec2 uv = calculatedPosition.xy;
+
+    vec2 warped = uv * 2.0 + vec2(
+        cos(time * 0.3 + uv.y * 6.0),
+        sin(time * 0.4 + uv.x * 5.0)
+    );
+
+    float pattern = noise(warped + time * 0.5) * 0.5 + 0.5;
+
+    float pulse = 0.6 + 0.3 * sin(time * 0.7 + length(uv) * 2.0);
+    pattern *= pulse;
+
+    vec3 glow = nebulaGlow(pattern);
+
+    float y = (clamp(calculatedPosition.y, -1.0, 1.0) + 1.0) * 0.5;
+    vec3 gradient = mix(vec3(0.01, 0.01, 0.02), vec3(0.1, 0.1, 0.2), y);
+
+    vec3 final = mix(gradient, glow, 0.6);
+
+    Color = vec4(final, 1.0);
+}
+'''

@@ -15,6 +15,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <chrono>
+#include <memory>
 
 using namespace std::chrono;
 
@@ -32,7 +33,7 @@ private:
 
     static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
-    std::vector<Rectangle> rectanglesFactory(const float heightInPercentOfScreenSize, const float offsetInPercentOffScreenSize=0);
+    std::vector<Rectangle> rectanglesFactory(const float heightInPercentOfScreenSize, const uint16_t numberOfRectangles, const float offsetInPercentOffScreenSize=0);
     std::vector<Line> getHorizontalLines(const Positions &positions);
     std::vector<float> getPositionsOfDynamicMaxHoldElements(const std::vector<float> &dataToBePrinted);
     std::vector<float> scaleDbfsToPercentsOfTheScreen(const std::vector<float> &signalInDbfs);
@@ -43,8 +44,10 @@ private:
 
     IndexSelector indexSelector;
 
-    std::vector<RectangleInsideGpu> rectanglesInsideGpu;
-    std::vector<RectangleInsideGpu> dynamicMaxHoldRectanglesInsideGpu;
+    std::vector<RectangleInsideGpu<RectangleType::BAR>> rectanglesInsideGpu;
+    std::vector<RectangleInsideGpu<RectangleType::BAR>> dynamicMaxHoldRectanglesInsideGpu;
+    std::unique_ptr<RectangleInsideGpu<RectangleType::BACKGROUND>> backgroundInsideGpu;
+
     std::vector<LineInsideGpu> horizontalLinesInsideGpu;
     std::vector<TextInsideGpu> textsInsideGpu;
 

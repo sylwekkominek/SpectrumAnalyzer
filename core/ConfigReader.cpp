@@ -107,7 +107,8 @@ ConfigReader::ConfigReader(const char *moduleName):
                  "getColorOfStaticLines",
                  "getColorsOfRectangle",
                  "getColorsOfDynamicMaxHoldRectangle",
-                 "getAdvancedColorSettings"
+                 "getAdvancedColorSettings",
+                 "getBackgroundColorSettings"
              })
 {
 }
@@ -143,6 +144,7 @@ Configuration ConfigReader::getConfig()
         config.colorsOfRectangle =  getColorsOfRectangle();
         config.colorsOfDynamicMaxHoldRectangle =  getColorsOfDynamicMaxHoldRectangle();
         config.advancedColorSettings = getAdvancedColorSettings();
+        config.backgroundColorSettings = getBackgroundColorSettings();
         closePython();
         isConfigReadOut = true;
     }
@@ -277,6 +279,11 @@ ColorsOfRectanglePerVertices ConfigReader::getColorsOfDynamicMaxHoldRectangle()
 }
 
 std::string ConfigReader::getAdvancedColorSettings()
+{
+    return getStringValue(pointersToPythonFunctions.at(__func__));
+}
+
+std::string ConfigReader::getBackgroundColorSettings()
 {
     return getStringValue(pointersToPythonFunctions.at(__func__));
 }

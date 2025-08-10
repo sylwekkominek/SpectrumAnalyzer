@@ -96,3 +96,6 @@ def getColorsOfDynamicMaxHoldRectangle(vertex):
     
 def getAdvancedColorSettings():
     return "test"
+
+def getBackgroundColorSettings():
+    return "SpectrumAnalyzer has become an awesome tool! :D"
