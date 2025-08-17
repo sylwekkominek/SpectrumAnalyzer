@@ -64,10 +64,10 @@ def getNumberOfSignalsForMaxHold():
     return 5
 
 #Description: Controls the amount of smoothing applied to the signal visualization. A lower alpha factor results in a smoother and more stable display, but with slower response to rapid changes. A higher alpha makes the visualization more responsive and sensitive to signal variations, although it may result in a more flickery or unstable display.
-#Default value: 0.2
+#Default value: 0.25
 
 def getAlphaFactorForSmoothing():
-    return 0.2
+    return 0.25
 
 def getMaxQueueSize():
     return 20
@@ -179,13 +179,14 @@ in vec4 vertColor;
 out vec4 Color;
 
 uniform float timeInMilliSeconds;
+uniform vec2 boundary; // xBegin, xEnd
 
 vec3 nebulaBarColor(float y)
 {
-    vec3 violet     = vec3(0.4, 0.2, 0.7);
-    vec3 magenta    = vec3(0.8, 0.1, 0.6);
-    vec3 red        = vec3(0.9, 0.2, 0.2);
-    vec3 orange     = vec3(1.0, 0.5, 0.1);
+    vec3 violet  = vec3(0.4, 0.2, 0.7);
+    vec3 magenta = vec3(0.8, 0.1, 0.6);
+    vec3 red     = vec3(0.9, 0.2, 0.2);
+    vec3 orange  = vec3(1.0, 0.5, 0.1);
 
     vec3 color = mix(violet, magenta, smoothstep(0.0, 0.33, y));
     color = mix(color, red, smoothstep(0.33, 0.66, y));
@@ -200,9 +201,18 @@ void main()
     float y = (t + 1.0) * 0.5;
 
     vec3 barColor = nebulaBarColor(y);
+    vec4 baseColor = mix(vec4(barColor, 1.0), vertColor, 0.4);
 
-    Color = mix(vec4(barColor, 1.0), vertColor, 0.4);
+    bool insideBoundary = calculatedPosition.x > boundary.x && calculatedPosition.x < boundary.y;
+
+    if (insideBoundary)
+    {
+        baseColor.rgb = min(baseColor.rgb * 1.5, vec3(1.0));
+    }
+
+    Color = baseColor;
 }
+
 '''
 
 

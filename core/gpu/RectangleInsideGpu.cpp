@@ -19,6 +19,9 @@ template<RectangleType rectangleType>
 GLuint RectangleInsideGpu<rectangleType>::timeLoc = 0;
 
 template<RectangleType rectangleType>
+GLuint RectangleInsideGpu<rectangleType>::boundaryLoc = 0;
+
+template<RectangleType rectangleType>
 RectangleInsideGpu<rectangleType>::RectangleInsideGpu(const Rectangle &rectangle)
 {
     glCreateVertexArrays(1, &vao);
@@ -38,9 +41,10 @@ RectangleInsideGpu<rectangleType>::RectangleInsideGpu(const Rectangle &rectangle
 {
 
     const float colors[]={
-        colorsOfRectangle.at(2).at(indexOfRed), colorsOfRectangle.at(2).at(indexOfGreen),colorsOfRectangle.at(2).at(indexOfBlue),colorsOfRectangle.at(2).at(indexOfTransparency),    //2
-        colorsOfRectangle.at(1).at(indexOfRed), colorsOfRectangle.at(1).at(indexOfGreen),colorsOfRectangle.at(1).at(indexOfBlue),colorsOfRectangle.at(1).at(indexOfTransparency),    //1
         colorsOfRectangle.at(0).at(indexOfRed), colorsOfRectangle.at(0).at(indexOfGreen),colorsOfRectangle.at(0).at(indexOfBlue),colorsOfRectangle.at(0).at(indexOfTransparency),    //0
+        colorsOfRectangle.at(1).at(indexOfRed), colorsOfRectangle.at(1).at(indexOfGreen),colorsOfRectangle.at(1).at(indexOfBlue),colorsOfRectangle.at(1).at(indexOfTransparency),    //1
+        colorsOfRectangle.at(2).at(indexOfRed), colorsOfRectangle.at(2).at(indexOfGreen),colorsOfRectangle.at(2).at(indexOfBlue),colorsOfRectangle.at(2).at(indexOfTransparency),    //2
+
         colorsOfRectangle.at(2).at(indexOfRed), colorsOfRectangle.at(2).at(indexOfGreen),colorsOfRectangle.at(2).at(indexOfBlue),colorsOfRectangle.at(2).at(indexOfTransparency),    //5
         colorsOfRectangle.at(0).at(indexOfRed), colorsOfRectangle.at(0).at(indexOfGreen),colorsOfRectangle.at(0).at(indexOfBlue),colorsOfRectangle.at(0).at(indexOfTransparency),    //4
         colorsOfRectangle.at(3).at(indexOfRed), colorsOfRectangle.at(3).at(indexOfGreen),colorsOfRectangle.at(3).at(indexOfBlue),colorsOfRectangle.at(3).at(indexOfTransparency),    //3
@@ -60,6 +64,7 @@ void RectangleInsideGpu<rectangleType>::initialize(const char *fsConfig)
 {
     prepareShaders(pipeline, vs, fs, getVertexShader(),fsConfig);
     timeLoc = glGetUniformLocation(fs, "timeInMilliSeconds");
+    boundaryLoc = glGetUniformLocation(fs, "boundary");
 }
 
 template<RectangleType rectangleType>
@@ -101,6 +106,13 @@ void RectangleInsideGpu<rectangleType>::updateTime(const float timeInMilliSecond
 {
     glBindProgramPipeline(pipeline);
     glProgramUniform1f(fs, timeLoc, timeInMilliSeconds);
+}
+
+template<RectangleType rectangleType>
+void RectangleInsideGpu<rectangleType>::updateBoundary(const float xBegin, const float xEnd)
+{
+    glBindProgramPipeline(pipeline);
+    glProgramUniform2f(fs, boundaryLoc, xBegin, xEnd);
 }
 
 template<RectangleType rectangleType>

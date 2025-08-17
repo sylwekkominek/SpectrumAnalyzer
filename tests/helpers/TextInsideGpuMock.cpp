@@ -8,8 +8,8 @@
 #include <functional>
 
 std::function<void()> initializeFunction;
-std::function<void(const float)> drawFunction;
-std::function<void(const float, const float)> updateWindowSizeFunction;
+std::function<void(const HorizontalAligment, const float, const float)> drawFunction;
+std::function<void(const std::string &, const HorizontalAligment, const float, const float)> draw2Function;
 std::function<void()> finalizeFunction;
 
 
@@ -39,14 +39,14 @@ void TextInsideGpu::initialize()
     initializeFunction();
 }
 
-void TextInsideGpu::draw(const float y)
+void TextInsideGpu::draw(const HorizontalAligment horizontalAligment, const float x, const float y)
 {
-    drawFunction(y);
+    drawFunction(horizontalAligment, x, y);
 }
 
-void TextInsideGpu::updateWindowSize(const float w, const float h)
+void TextInsideGpu::draw(const std::string &str, const HorizontalAligment horizontalAligment, const float x, const float y)
 {
-    updateWindowSizeFunction(w,h);
+    draw2Function(str, horizontalAligment, x, y);
 }
 
 void TextInsideGpu::finalize()
@@ -72,14 +72,14 @@ TextInsideGpuMock::TextInsideGpuMock()
         this->initialize();
     };
 
-    drawFunction = [this](const float y)
+    drawFunction = [this](const HorizontalAligment horizontalAligment, const float x, const float y)
     {
-        this->draw(y);
+        this->draw(horizontalAligment, x, y);
     };
 
-    updateWindowSizeFunction = [this](const float w, const float h)
+    draw2Function = [this](const std::string &str, const HorizontalAligment horizontalAligment, const float x, const float y)
     {
-        this->updateWindowSize(w,h);
+        this->draw(str, horizontalAligment, x, y);
     };
 
     finalizeFunction = [this]()

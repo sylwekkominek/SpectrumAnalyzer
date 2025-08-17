@@ -77,6 +77,8 @@ std::function<int(GLFWwindow* window, int attrib)> glfwGetWindowAttribFunction;
 std::function<int(GLFWwindow* window)> glfwWindowShouldCloseFunction;
 std::function<void(GLFWwindow* window, int value)> glfwSetWindowShouldCloseFunction;
 std::function<void(GLFWwindow* glfwWindow)>  glfwDestroyWindowFunction;
+std::function<GLFWcursorenterfun(GLFWwindow* window, GLFWcursorenterfun callback)>  glfwSetCursorEnterCallbackFunction;
+std::function<void(GLFWwindow* window, double* xpos, double* ypos)> glfwGetCursorPosFunction;
 
 
 int glfwInit()
@@ -165,6 +167,16 @@ void glfwSetWindowShouldClose(GLFWwindow* window, int value)
 void glfwDestroyWindow(GLFWwindow* window)
 {
     glfwDestroyWindowFunction(window);
+}
+
+GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun callback)
+{
+    return glfwSetCursorEnterCallbackFunction(window, callback);
+}
+
+void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos)
+{
+    glfwGetCursorPosFunction(window, xpos, ypos);
 }
 
 void glCreateProgramPipelinesMock(GLsizei n, GLuint *pipelines)
@@ -370,9 +382,19 @@ OpenGlMock::OpenGlMock()
         this->glfwSetWindowShouldClose(window, value);
     };
 
+    glfwSetCursorEnterCallbackFunction =[this](GLFWwindow* window, GLFWcursorenterfun callback)
+    {
+        return this->glfwSetCursorEnterCallback(window, callback);
+    };
+
     glfwDestroyWindowFunction = [this](GLFWwindow* window)
     {
         this->glfwDestroyWindow(window);
+    };
+
+    glfwGetCursorPosFunction = [this](GLFWwindow* window, double* xpos, double* ypos)
+    {
+        this->glfwGetCursorPos(window, xpos, ypos);
     };
 
     ::glad_glCreateProgramPipelines = glCreateProgramPipelinesMock;

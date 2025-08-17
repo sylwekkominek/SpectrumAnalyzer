@@ -32,6 +32,8 @@ public:
     MOCK_METHOD2(glfwSetFramebufferSizeCallback, GLFWframebuffersizefun(GLFWwindow* window, GLFWframebuffersizefun callback));
     MOCK_METHOD2(glfwSetWindowMaximizeCallback, GLFWwindowmaximizefun(GLFWwindow* window, GLFWwindowmaximizefun callback));
     MOCK_METHOD1(glfwDestroyWindow, void(GLFWwindow* glfwWindow));
+    MOCK_METHOD2(glfwSetCursorEnterCallback, GLFWcursorenterfun(GLFWwindow* window, GLFWcursorenterfun callback));
+    MOCK_METHOD3(glfwGetCursorPos, void (GLFWwindow* window, double* xpos, double* ypos));
 
     MOCK_METHOD2(glCreateVertexArrays, void(GLsizei, GLuint *));
     MOCK_METHOD2(glCreateBuffers, void(GLsizei, GLuint *));

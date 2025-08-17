@@ -10,6 +10,13 @@
 #include <vector>
 #include <memory>
 
+enum class HorizontalAligment : uint16_t
+{
+    LEFT =0,
+    CENTER = 1,
+    RIGHT =2,
+};
+
 
 class TextInsideGpu
 {
@@ -21,9 +28,9 @@ public:
     TextInsideGpu(TextInsideGpu&&);
     TextInsideGpu& operator=(TextInsideGpu&&);
 
-    void draw(const float y);
+    void draw(const HorizontalAligment horizontalAligment, const float x, const float y);
+    void draw(const std::string &str, const HorizontalAligment horizontalAligment, const float x, const float y);
     static void initialize();
-    static void updateWindowSize(const float w, const float h);
     static void finalize();
 
 private:

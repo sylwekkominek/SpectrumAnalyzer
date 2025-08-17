@@ -25,6 +25,7 @@ public:
     void move(const float y);
     void draw();
     static void updateTime(const float timeInMilliSeconds);
+    static void updateBoundary(const float xBegin, const float xEnd);
     static void initialize(const char *fsConfig);
     static void finalize();
 private:
@@ -42,4 +43,5 @@ private:
     static GLuint fs;
     static GLuint pipeline;
     static GLuint timeLoc;
+    static GLuint boundaryLoc;
 };

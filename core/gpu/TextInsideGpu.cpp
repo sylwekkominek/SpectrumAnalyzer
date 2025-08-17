@@ -11,28 +11,20 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
-#include <atomic>
-
-
 
 class TextInsideGpu::TextInsideGpuImpl
 {
 public:
     TextInsideGpuImpl(const std::string &str, const std::vector<float> &color);
-    void draw(const float y);
+    void draw(const uint16_t horizontalAligment, const float x, const float y);
+    void draw(const std::string &str, const uint16_t horizontalAligment, const float x, const float y);
     static void initialize();
-    static void updateWindowSize(const float w, const float h);
     static void finalize();
     ~TextInsideGpuImpl() = default;
 private:
     const std::vector<float> color;
-    static std::atomic<float> width;
-    static std::atomic<float> height;
     std::unique_ptr<GLTtext, void(*)(GLTtext*)> textPtr;
 };
-
-std::atomic<float> TextInsideGpu::TextInsideGpuImpl::width=0;
-std::atomic<float> TextInsideGpu::TextInsideGpuImpl::height=0;
 
 
 void TextInsideGpu::TextInsideGpuImpl::initialize()
@@ -45,30 +37,35 @@ TextInsideGpu::TextInsideGpuImpl::TextInsideGpuImpl(const std::string &str, cons
     gltSetText(textPtr.get(), str.c_str());
 }
 
-void TextInsideGpu::TextInsideGpuImpl::draw(const float y)
+void TextInsideGpu::TextInsideGpuImpl::draw(const uint16_t horizontalAligment, const float x, const float y)
 {
     gltBeginDraw();
     gltColor(color.at(0), color.at(1), color.at(2), color.at(3));
 
     gltDrawText2DAligned(textPtr.get(),
-                         (GLfloat)(0),
-                         (GLfloat)(y*height),
+                         (GLfloat)(x),
+                         (GLfloat)(y),
                          1.0f,
-                         GLT_LEFT, GLT_CENTER);
-    gltDrawText2DAligned(textPtr.get(),
-                         (GLfloat)(width),
-                         (GLfloat)(y*height),
-                         1.0f,
-                         GLT_RIGHT, GLT_CENTER);
+                         horizontalAligment, GLT_CENTER);
 
     gltEndDraw();
     glUseProgram(0);
 }
 
-void TextInsideGpu::TextInsideGpuImpl::updateWindowSize(const float w, const float h)
+void TextInsideGpu::TextInsideGpuImpl::draw(const std::string &str,const uint16_t horizontalAligment, const float x, const float y)
 {
-    width = w;
-    height = h;
+    gltSetText(textPtr.get(), str.c_str());
+    gltBeginDraw();
+    gltColor(color.at(0), color.at(1), color.at(2), color.at(3));
+
+    gltDrawText2DAligned(textPtr.get(),
+                         (GLfloat)(x),
+                         (GLfloat)(y),
+                         1.0f,
+                         horizontalAligment, GLT_BOTTOM);
+
+    gltEndDraw();
+    glUseProgram(0);
 }
 
 void TextInsideGpu::TextInsideGpuImpl::finalize()
@@ -89,14 +86,14 @@ void TextInsideGpu::initialize()
     TextInsideGpuImpl::initialize();
 }
 
-void TextInsideGpu::draw(const float y)
+void TextInsideGpu::draw(const HorizontalAligment horizontalAligment, const float x, const float y)
 {
-    textInsideGpuImpl->draw(percentToPositon(y));
+    textInsideGpuImpl->draw((uint16_t)horizontalAligment, x, y);
 }
 
-void TextInsideGpu::updateWindowSize(const float w, const float h)
+void TextInsideGpu::draw(const std::string &str, const HorizontalAligment horizontalAligment, const float x, const float y)
 {
-    TextInsideGpuImpl::updateWindowSize(w,h);
+    textInsideGpuImpl->draw(str,(uint16_t)horizontalAligment, x, y);
 }
 
 void TextInsideGpu::finalize()

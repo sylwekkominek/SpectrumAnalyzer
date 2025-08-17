@@ -39,7 +39,7 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glfwWindowHint(_,_)).Times(4);
         EXPECT_CALL(openGL, glfwCreateWindow(_,_,_,_,_)).Times(1);
         EXPECT_CALL(openGL, glfwSetFramebufferSizeCallback(_,_)).Times(1);
-        EXPECT_CALL(text, updateWindowSize(_,_)).Times(1);
+        EXPECT_CALL(openGL, glfwSetCursorEnterCallback(_,_)).Times(1);
 
         EXPECT_CALL(openGL, glfwMakeContextCurrent(_)).Times(1);
         EXPECT_CALL(openGL, glfwSwapInterval(_)).Times(1);
@@ -58,7 +58,7 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glGetProgramInfoLog(_,_,_,_)).Times(6);
         EXPECT_CALL(openGL, glCreateProgramPipelines(_,_)).Times(3);
         EXPECT_CALL(openGL, glUseProgramStages(_,_,_)).Times(6);
-        EXPECT_CALL(openGL, glGetUniformLocation(_,_)).Times(4);
+        EXPECT_CALL(openGL, glGetUniformLocation(_,_)).Times(6);
         EXPECT_CALL(text, initialize()).Times(1);
 
         EXPECT_CALL(openGL, glCreateVertexArrays(_,_)).Times(numberOfExpectCalls+backgroundCall);
@@ -81,6 +81,7 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glBindVertexArray(_)).Times(numberOfExpectCalls);
         EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(numberOfExpectCalls+timeUpdateCall);
         EXPECT_CALL(openGL, glDrawArrays(_,_,_)).Times(numberOfExpectCalls);
+        EXPECT_CALL(openGL, glfwGetCursorPos(_,_,_)).Times(1);
         EXPECT_CALL(openGL, glfwSwapBuffers(_)).Times(1);
     }
 
@@ -125,6 +126,7 @@ struct WindowTestsBase
             }
         }
 
+        EXPECT_CALL(openGL, glfwGetCursorPos(_,_,_)).Times(1);
         EXPECT_CALL(openGL, glfwSwapBuffers(_)).Times(1);
     }
 
