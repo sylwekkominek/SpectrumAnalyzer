@@ -1,10 +1,10 @@
-# About SpectrumAnalyzer
+# About sylwekkominek / SpectrumAnalyzer
 
 SpectrumAnalyzer was created because, since childhood, I liked watching the "jumping bars" moving in sync with music on my Technics EC-EH550 stereo system. Unfortunately, modern audio equipment with built-in spectrum analyzers is no longer available. There are many visualizer apps online, but they usually have limitations: they offer only a few adjustable parameters, which quickly become boring, or they rely on microphone input — which is not ideal because it picks up ambient noise, room echo, and the microphone changes the frequency response. SpectrumAnalyzer in its basic version works well with a microphone, but it is also easy to run on a Raspberry Pi, where you can capture audio samples from an optical input. I use a HiFiBerry DAC + DSP board for this purpose. One of the strengths of the application is its flexibility — users can freely modify colors and frequency bands. The app may not look spectacular yet, but it has great potential for experimentation and educational purposes. It helps new users easily get familiar with digital signal processing (DSP) and graphics programming.
 
 ---
 
-# SpectrumAnalyzer architecture
+# sylwekkominek / SpectrumAnalyzer architecture
 ![SpectrumAnalyzer architecture](https://github.com/user-attachments/assets/7df13dbb-58de-47f7-8432-3631ef989950)
 
 The most important class in the program is **AudioSpectrumAnalyzer**. It manages the whole process using several threads that run in parallel to efficiently process data. These threads are:
