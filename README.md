@@ -42,7 +42,7 @@ It also uses the following third-party libraries:
 
 ### For typical users:
 
-In order to use it following steps are needed (tested on Ubuntu 24.04):
+In order to use it following steps are needed (tested on Ubuntu 24.04). It was also tested on Windows 11 using WSL2, although full performance may not be achievable in that environment:
 ```bash
 sudo apt update && sudo apt install -y g++ cmake python3 python3-pyaudio python3-dev libglfw3-dev libfftw3-dev pkg-config git
 
