@@ -49,10 +49,10 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)).Times(1);
     }
 
-    void expectInitializeGPU(const uint numberOfRectangles, const bool smallRectanglesEnabled)
+    void expectInitializeGPU(const uint32_t numberOfRectangles, const bool smallRectanglesEnabled)
     {
-        const uint backgroundCall{1};
-        const uint numberOfExpectCalls = (smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles);
+        const uint32_t backgroundCall{1};
+        const uint32_t numberOfExpectCalls = (smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles);
 
         EXPECT_CALL(openGL, glCreateShaderProgramv(_,_,_)).Times(6);
         EXPECT_CALL(openGL, glGetProgramInfoLog(_,_,_,_)).Times(6);
@@ -71,11 +71,11 @@ struct WindowTestsBase
         EXPECT_CALL(openGL, glVertexArrayAttribBinding(_,_,_)).Times(2*numberOfExpectCalls+backgroundCall);
     }
 
-    void expectDraw(const uint numberOfRectangles, const bool smallRectanglesEnabled)
+    void expectDraw(const uint32_t numberOfRectangles, const bool smallRectanglesEnabled)
     {
-        const uint backgroundCall{1};
-        const uint numberOfExpectCalls = (smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles)+backgroundCall;
-        const uint timeUpdateCall = 2;
+        const uint32_t backgroundCall{1};
+        const uint32_t numberOfExpectCalls = (smallRectanglesEnabled ? 2 * numberOfRectangles : numberOfRectangles)+backgroundCall;
+        const uint32_t timeUpdateCall = 2;
         EXPECT_CALL(openGL, glClear(_)).Times(1);
         EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(numberOfExpectCalls+timeUpdateCall);
         EXPECT_CALL(openGL, glBindVertexArray(_)).Times(numberOfExpectCalls);
@@ -87,9 +87,9 @@ struct WindowTestsBase
 
     void expectDraw(const std::vector<float> &positions, const bool smallRectanglesEnabled)
     {
-        const uint backgroundCall{1};
-        const uint numberOfRectangles = positions.size();
-        const uint numberOfSmallRectangles = positions.size();
+        const uint32_t backgroundCall{1};
+        const uint32_t numberOfRectangles = positions.size();
+        const uint32_t numberOfSmallRectangles = positions.size();
 
         InSequence s;
 

@@ -290,11 +290,11 @@ std::string ConfigReader::getBackgroundColorSettings()
 
 ColorsOfRectanglePerVertices ConfigReader::getColorsOfRectangleHelper(const std::string& functionName)
 {
-    uint numberOfVerticesInRectangle{4};
+    uint32_t numberOfVerticesInRectangle{4};
 
     ColorsOfRectanglePerVertices colorsPerVertexNumber{};
 
-    for(uint vertex=0;vertex< numberOfVerticesInRectangle;++vertex)
+    for(uint32_t vertex=0;vertex< numberOfVerticesInRectangle;++vertex)
     {
         auto vertexPyValue = PyLong_FromLong(vertex);
         auto pArgs = PyTuple_New(1);

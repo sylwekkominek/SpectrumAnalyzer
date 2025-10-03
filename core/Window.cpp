@@ -99,12 +99,12 @@ void Window::draw(const std::vector<float> &data)
 
     backgroundInsideGpu->draw();
 
-    for(uint i=0;i<config.horizontalLinePositions.size();++i)
+    for(uint32_t i=0;i<config.horizontalLinePositions.size();++i)
     {
         horizontalLinesInsideGpu.at(i).draw(horizontalLinePositions.at(i), config.colorOfStaticLines);
     }
 
-    for(uint i=0;i<config.horizontalLinePositions.size();++i)
+    for(uint32_t i=0;i<config.horizontalLinePositions.size();++i)
     {
         const auto textPositionInPixels = convertPositionInPercentToPixels(horizontalLinePositions.at(i).front().y, yCurrentWindowSize);
         staticTextsInsideGpu.at(i).draw(HorizontalAligment::LEFT, 0,textPositionInPixels);
@@ -118,7 +118,7 @@ void Window::draw(const std::vector<float> &data)
     {
         const auto dynamicMaxHoldElementsPosition = scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(dynamicMaxHoldDbFsValue));
 
-        for(uint i=0;i<dynamicMaxHoldRectanglesInsideGpu.size();++i)
+        for(uint32_t i=0;i<dynamicMaxHoldRectanglesInsideGpu.size();++i)
         {
             dynamicMaxHoldRectanglesInsideGpu.at(i).move(dynamicMaxHoldElementsPosition.at(i));
         }
@@ -126,7 +126,7 @@ void Window::draw(const std::vector<float> &data)
 
     const auto positions = scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(dBFsValues));
 
-    for(uint i=0;i<positions.size();++i)
+    for(uint32_t i=0;i<positions.size();++i)
     {
         rectanglesInsideGpu.at(i).move(positions.at(i));
     }
@@ -210,7 +210,7 @@ std::vector<std::pair<float, float>> Window::horizontalRectanglesBoundariesFacto
     std::vector<std::pair<float, float>> rectangles;
     rectangles.reserve(numberOfRectangles);
 
-    for(uint i=0;i<numberOfRectangles;++i)
+    for(uint32_t i=0;i<numberOfRectangles;++i)
     {
         double xBegin =  xBeginOfZeroElement + i*xWidth*(1.0 + config.gapWidthInRelationToRectangleWidth);
         double xEnd = xBegin + xWidth;
@@ -232,7 +232,7 @@ std::vector<Rectangle> Window::rectanglesFactory(const float heightInPercentOfSc
     std::vector<Rectangle> rectangles;
     rectangles.reserve(numberOfRectangles);
 
-    for(uint i=0;i<numberOfRectangles;++i)
+    for(uint32_t i=0;i<numberOfRectangles;++i)
     {
         /*
         Each rectangle consists of 2 triangles
@@ -291,7 +291,7 @@ std::vector<float> Window::calculateDynamicMaxHoldValues(const std::vector<float
 {
     auto time = steady_clock::now();
 
-    for(uint i=0;i<config.numberOfRectangles;++i)
+    for(uint32_t i=0;i<config.numberOfRectangles;++i)
     {
         uint32_t diffInTime = (duration_cast<milliseconds>(time - timesWhenDynamicMaxHoldValuesHaveBeenUpdated[i])).count();
 
@@ -338,7 +338,7 @@ std::vector<float> Window::extractDataToBePrinted(const std::vector<float> &data
 {
     std::vector<float> positions(config.numberOfRectangles,0);
 
-    for(uint i=0;i<config.numberOfRectangles;++i)
+    for(uint32_t i=0;i<config.numberOfRectangles;++i)
     {
         positions[i] = data.at(indexSelector.getFrequencyIndex(i));
     }
@@ -396,7 +396,7 @@ std::optional<uint16_t> Window::getRectangleIndexOverWhichMouseIsActive(const do
 {
     if(isMouseActive(xMousePos, 0))
     {
-        for(uint i=0;i<config.numberOfRectangles;++i)
+        for(uint32_t i=0;i<config.numberOfRectangles;++i)
         {
             auto horizontalRectangleBoundaries = horizontalRectanglesBoundaries.at(i);
 

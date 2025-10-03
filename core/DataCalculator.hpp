@@ -9,13 +9,14 @@
 #include <algorithm>
 #include <deque>
 #include <functional>
+#include <cstdint>
 
 template<typename T>
 class DataCalculatorBase
 {
 public:
 
-    DataCalculatorBase(uint numberOfSamples, uint numberOfSignalsForProcessing, float initValue=0);
+    DataCalculatorBase(uint32_t numberOfSamples, uint32_t numberOfSignalsForProcessing, float initValue=0);
     virtual std::vector<T> calculate() =0;
 
     void push_back(const std::vector<T>&data);
@@ -31,19 +32,19 @@ protected:
     std::vector<T> calculateWithStoring();
 
     std::function<T(T&,T&)> algorithm;
-    uint numberOfSignalsForProcessing;
+    uint32_t numberOfSignalsForProcessing;
 
 private:
 
     std::deque<std::vector<T>> dataQueue;
     std::vector<T> data;
     float initValue;
-    uint numberOfSamples;
+    uint32_t numberOfSamples;
 };
 
 
 template<typename T>
-DataCalculatorBase<T>::DataCalculatorBase(uint numberOfSamples, uint numberOfSignalsForProcessing, float initValue):
+DataCalculatorBase<T>::DataCalculatorBase(uint32_t numberOfSamples, uint32_t numberOfSignalsForProcessing, float initValue):
     numberOfSamples(numberOfSamples),
     numberOfSignalsForProcessing(numberOfSignalsForProcessing), initValue(initValue), data(numberOfSamples,0)
 {
@@ -63,7 +64,7 @@ std::vector<T> DataCalculatorBase<T>::calculateWithMoving()
     {
         data = std::vector<T>(numberOfSamples,initValue);
 
-        for(uint i =0;i<numberOfSignalsForProcessing;++i)
+        for(uint32_t i =0;i<numberOfSignalsForProcessing;++i)
         {
             std::transform(data.begin(), data.end(), dataQueue[i].begin(), data.begin(), algorithm);
         }
@@ -82,7 +83,7 @@ std::vector<T> DataCalculatorBase<T>::calculateWithClearing()
     {
         data = std::vector<T>(numberOfSamples,initValue);
 
-        for(uint i =0;i<numberOfSignalsForProcessing;++i)
+        for(uint32_t i =0;i<numberOfSignalsForProcessing;++i)
         {
             std::transform(data.begin(), data.end(), dataQueue[i].begin(), data.begin(), algorithm);
         }
@@ -100,7 +101,7 @@ std::vector<T> DataCalculatorBase<T>::calculateWithStoring()
 
     if(dataQueue.size() >= numberOfSignalsForProcessing)
     {
-        for(uint i =0;i<numberOfSignalsForProcessing;++i)
+        for(uint32_t i =0;i<numberOfSignalsForProcessing;++i)
         {
             std::transform(data.begin(), data.end(), dataQueue[i].begin(), data.begin(), algorithm);
         }
@@ -121,7 +122,7 @@ void DataCalculatorBase<T>::clear()
 class DataAverager : public DataCalculatorBase<float>
 {
 public:
-    DataAverager(uint numberOfSamples, uint numberOfSignalsForProcessing);
+    DataAverager(uint32_t numberOfSamples, uint32_t numberOfSignalsForProcessing);
     std::vector<float> calculate() override;
 private:
     void updateAlgorithm() override;
@@ -130,7 +131,7 @@ private:
 class DataMaxHolder : public DataCalculatorBase<float>
 {
 public:
-    DataMaxHolder(uint numberOfSamples, uint numberOfSignalsForProcessing, float initValue=0);
+    DataMaxHolder(uint32_t numberOfSamples, uint32_t numberOfSignalsForProcessing, float initValue=0);
     std::vector<float> calculate() override;
 
 private:
@@ -140,7 +141,7 @@ private:
 class DataSmoother : public DataCalculatorBase<float>
 {
 public:
-    DataSmoother(uint numberOfSamples, float alphaFactor);
+    DataSmoother(uint32_t numberOfSamples, float alphaFactor);
     std::vector<float> calculate() override;
 
 private:

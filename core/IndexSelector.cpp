@@ -14,7 +14,7 @@ IndexSelector::IndexSelector(uint32_t samplingRate, uint32_t fftSize, const Freq
 
     uint32_t fftForRealDataSize=fftSize/2;
 
-    for(uint i=0;i<fftForRealDataSize; ++i)
+    for(uint32_t i=0;i<fftForRealDataSize; ++i)
     {
         allFrequencies.insert(samplingRate * ((float)i / fftSize));
     }
@@ -25,7 +25,7 @@ IndexSelector::IndexSelector(uint32_t samplingRate, uint32_t fftSize, const Freq
 void IndexSelector::updateIndexes(const Frequencies &demandedFrequencies)
 {
 
-    for(uint i=0;i<numberOfRectangles;++i)
+    for(uint32_t i=0;i<numberOfRectangles;++i)
     {
         auto demandedFreq = demandedFrequencies.at(i);
 

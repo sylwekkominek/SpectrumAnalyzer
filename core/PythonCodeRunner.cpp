@@ -143,7 +143,7 @@ std::vector<float> PythonCodeRunner::getValues(PyObject *pointerToPythonFunction
 
         values.reserve(dataSize);
 
-        for(uint i=0;i<dataSize;++i)
+        for(uint32_t i=0;i<dataSize;++i)
         {
             values.push_back(PyFloat_AsDouble(PyTuple_GetItem(pValue, i)));
         }

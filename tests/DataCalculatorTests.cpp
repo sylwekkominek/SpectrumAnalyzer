@@ -25,8 +25,8 @@ public:
 
 TEST_F(DataCalculatorTest, dataAveragerTest)
 {
-    const uint numberOfSamples{8};
-    const uint numberOfSignalsForProcessing{3};
+    const uint32_t numberOfSamples{8};
+    const uint32_t numberOfSignalsForProcessing{3};
 
     DataAverager dataAverager(numberOfSamples, numberOfSignalsForProcessing);
 
@@ -43,8 +43,8 @@ TEST_F(DataCalculatorTest, dataAveragerTest)
 
 TEST_F(DataCalculatorTest, dataAveragerTest2)
 {
-    const uint numberOfSamples{3};
-    const uint numberOfSignalsForProcessing{3};
+    const uint32_t numberOfSamples{3};
+    const uint32_t numberOfSignalsForProcessing{3};
 
     DataAverager dataAverager(numberOfSamples, numberOfSignalsForProcessing);
 
@@ -60,8 +60,8 @@ TEST_F(DataCalculatorTest, dataAveragerTest2)
 
 TEST_F(DataCalculatorTest, dataMaxHolderTest)
 {
-    const uint numberOfSamples{8};
-    const uint numberOfSignalsForProcessing{3};
+    const uint32_t numberOfSamples{8};
+    const uint32_t numberOfSignalsForProcessing{3};
 
     DataMaxHolder dataMaxHolder(numberOfSamples, numberOfSignalsForProcessing);
 
@@ -78,8 +78,8 @@ TEST_F(DataCalculatorTest, dataMaxHolderTest)
 
 TEST_F(DataCalculatorTest, dataMaxHolderTest2)
 {
-    const uint numberOfSamples{3};
-    const uint numberOfSignalsForProcessing{3};
+    const uint32_t numberOfSamples{3};
+    const uint32_t numberOfSignalsForProcessing{3};
 
     DataMaxHolder dataMaxHolder(numberOfSamples, numberOfSignalsForProcessing);
 
@@ -95,7 +95,7 @@ TEST_F(DataCalculatorTest, dataMaxHolderTest2)
 
 TEST_F(DataCalculatorTest, dataSmootherTest)
 {
-    const uint numberOfSamples{3};
+    const uint32_t numberOfSamples{3};
     const float alphaFactor{0.1};
 
     DataSmoother dataSmoother(numberOfSamples, alphaFactor);
@@ -115,7 +115,7 @@ TEST_F(DataCalculatorTest, dataSmootherTest)
 TEST_F(DataCalculatorTest, dataSmootherTest2)
 {
 
-    const uint numberOfSamples{3};
+    const uint32_t numberOfSamples{3};
     const float alphaFactor{0.1};
 
     DataSmoother dataSmoother(numberOfSamples, alphaFactor);

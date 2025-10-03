@@ -25,7 +25,7 @@ std::vector<float> getAverage(const std::vector<float> &left, const std::vector<
 
     std::vector<float> averagedData(numberOfSamples);
 
-    for (uint i = 0; i < numberOfSamples; i++)
+    for (uint32_t i = 0; i < numberOfSamples; i++)
     {
         averagedData[i] = (left[i] + right[i])/2.0;
     }
@@ -57,7 +57,7 @@ std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftDat
 
     std::vector<float> outputData(numberOfSamples);
 
-    for (uint i = 0; i < numberOfSamples; i++)
+    for (uint32_t i = 0; i < numberOfSamples; i++)
     {
         const auto magnitude = std::sqrt(fftData[i].real() * fftData[i].real() + fftData[i].imag() * fftData[i].imag())/(numberOfSamples/2);
         const auto correctedMagnitude = scalingFactor * magnitude + offsetFactor;
@@ -69,7 +69,7 @@ std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftDat
     return outputData;
 }
 
-float calculateOverlappingDiff(const uint desiredNumberOfFramesPerSecond, const uint currentFramesPerSecond)
+float calculateOverlappingDiff(const uint32_t desiredNumberOfFramesPerSecond, const uint32_t currentFramesPerSecond)
 {
     static constexpr float slope = 0.2;
 
@@ -78,7 +78,7 @@ float calculateOverlappingDiff(const uint desiredNumberOfFramesPerSecond, const 
     return (-slope/desiredFps)*currentFramesPerSecond + slope;
 }
 
-float calculateOverlapping(const uint samplingRate, const uint numberOfSamples, const uint numberOfFramesPerSecond)
+float calculateOverlapping(const uint32_t samplingRate, const uint32_t numberOfSamples, const uint32_t numberOfFramesPerSecond)
 {
     auto fps = (numberOfFramesPerSecond == 0) ? 1 : numberOfFramesPerSecond;
 

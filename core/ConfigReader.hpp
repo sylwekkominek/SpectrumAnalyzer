@@ -28,13 +28,13 @@ struct Configuration
     uint16_t normalWindowVerticalSize;
     uint16_t numberOfRectangles;
     double gapWidthInRelationToRectangleWidth;
-    uint numberOfSamples;
-    uint samplingRate;
+    uint32_t numberOfSamples;
+    uint32_t samplingRate;
     float desiredFrameRate;
-    uint numberOfSignalsForAveraging;
-    uint numberOfSignalsForMaxHold;
+    uint32_t numberOfSignalsForAveraging;
+    uint32_t numberOfSignalsForMaxHold;
     float alphaFactor;
-    uint maxQueueSize;
+    uint32_t maxQueueSize;
     float scalingFactor;
     float offsetFactor;
     bool dynamicMaxHoldVisibilityState;

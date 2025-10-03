@@ -5,9 +5,9 @@
  */
 
 #include "DataCalculator.hpp"
+#include <cstdint>
 
-
-DataAverager::DataAverager(uint numberOfSamples, uint numberOfSignalsForProcessing):
+DataAverager::DataAverager(uint32_t numberOfSamples, uint32_t numberOfSignalsForProcessing):
     DataCalculatorBase<float>(numberOfSamples, numberOfSignalsForProcessing)
 
 {
@@ -27,7 +27,7 @@ void DataAverager::updateAlgorithm()
     };
 }
 
-DataMaxHolder::DataMaxHolder(uint numberOfSamples, uint numberOfSignalsForProcessing, float initValue):
+DataMaxHolder::DataMaxHolder(uint32_t numberOfSamples, uint32_t numberOfSignalsForProcessing, float initValue):
     DataCalculatorBase(numberOfSamples, numberOfSignalsForProcessing, initValue)
 
 {
@@ -47,7 +47,7 @@ void DataMaxHolder::updateAlgorithm()
     };
 }
 
-DataSmoother::DataSmoother(uint numberOfSamples, float alphaFactor):
+DataSmoother::DataSmoother(uint32_t numberOfSamples, float alphaFactor):
     DataCalculatorBase(numberOfSamples, 1), alphaFactor(alphaFactor)
 
 {

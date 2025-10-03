@@ -31,10 +31,10 @@ public:
 class FFTCalculatorTest : public FFTCalculatorTestBase
 {
 public:
-    const uint numberOfSamples{8};
-    const uint samplingFrequency{8000};
+    const uint32_t numberOfSamples{8};
+    const uint32_t samplingFrequency{8000};
 
-    std::vector<float> generateTestSignal(uint signalFreqency, float amplitude, uint phaseOffset=0)
+    std::vector<float> generateTestSignal(uint32_t signalFreqency, float amplitude, uint32_t phaseOffset=0)
     {
         return generateSignal(numberOfSamples,samplingFrequency,signalFreqency, amplitude, phaseOffset);
     }
@@ -43,7 +43,7 @@ public:
 TEST_F(FFTCalculatorTest, checkingFftWithSignal1kHz)
 {
 
-    const uint signalFreqency{1000};
+    const uint32_t signalFreqency{1000};
     const float amplitude{1};
 
     FFTCalculator fftCalculator(numberOfSamples);
@@ -61,8 +61,8 @@ TEST_F(FFTCalculatorTest, checkingFftWithSignal1kHz)
 
 TEST_F(FFTCalculatorTest, checkingFftWithSignal2kHzAndPhaseOffset)
 {
-    const uint signalFreqency{2000};
-    const uint phaseOffset{135};
+    const uint32_t signalFreqency{2000};
+    const uint32_t phaseOffset{135};
     const float amplitude{0.5};
 
     FFTCalculator fftCalculator(numberOfSamples);
@@ -78,12 +78,12 @@ TEST_F(FFTCalculatorTest, checkingFftWithSignal2kHzAndPhaseOffset)
 
 TEST_F(FFTCalculatorTest, checkingTwoSignalsAddedTogether)
 {
-    const uint firstSignalFreqency{1000};
+    const uint32_t firstSignalFreqency{1000};
     const float firstSignalAmplitude{1};
 
-    const uint secondSignalFreqency{2000};
+    const uint32_t secondSignalFreqency{2000};
     const float secondSignalAmplitude{0.5};
-    const uint secondSignalPhaseOffset{135};
+    const uint32_t secondSignalPhaseOffset{135};
 
     FFTCalculator fftCalculator(numberOfSamples);
 
@@ -105,11 +105,11 @@ class WelchCalculatorTest : public FFTCalculatorTestBase
 {
 public:
     const float marginOfError = exp(-6);
-    const uint numberOfSamples{16};
+    const uint32_t numberOfSamples{16};
     const uint32_t maxQueueValue{100};
     const float signalAmplitude{1};
 
-    auto generateWindow(uint numberOfSamples)
+    auto generateWindow(uint32_t numberOfSamples)
     {
         return std::vector<float>(numberOfSamples, 1.0);
     }

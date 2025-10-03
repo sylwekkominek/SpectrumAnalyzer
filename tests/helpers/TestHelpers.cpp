@@ -61,7 +61,7 @@ std::vector<float> calculatePhase(const std::vector<std::complex<float>> &signal
     return result;
 }
 
-std::vector<float> generateNoise(uint N, float minValue, float MaxValue)
+std::vector<float> generateNoise(uint32_t N, float minValue, float MaxValue)
 {
 
     std::vector<float> data(N);
@@ -79,11 +79,11 @@ std::vector<float> generateNoise(uint N, float minValue, float MaxValue)
 }
 
 //function returns Blackman window as we need low side lobes in tests
-std::vector<float> getSignalWindow(uint numberOfSamples)
+std::vector<float> getSignalWindow(uint32_t numberOfSamples)
 {
     std::vector<float> signalWindow(numberOfSamples);
 
-    for (uint i = 0; i < numberOfSamples; ++i)
+    for (uint32_t i = 0; i < numberOfSamples; ++i)
     {
         const float ratio = static_cast<float>(i) / (numberOfSamples - 1);
 

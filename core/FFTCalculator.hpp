@@ -44,7 +44,7 @@ private:
 
     const uint32_t fftSize;
     float overlapping;
-    uint numberOfSamplesToBeRemoved;
+    uint32_t numberOfSamplesToBeRemoved;
     std::deque<float> bufforWithDataToBeConverted;
     const std::vector<float> window;
 };

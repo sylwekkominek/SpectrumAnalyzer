@@ -15,7 +15,7 @@ FFTCalculator::FFTCalculator(uint32_t size): inPtr(std::make_unique<std::vector<
 FFTResult FFTCalculator::calculate(const std::vector<float> &inputData)
 {
 
-    for(uint i =0; i<inPtr->size(); ++i)
+    for(uint32_t i =0; i<inPtr->size(); ++i)
     {
         (*inPtr)[i][0] = inputData.at(i);
         (*inPtr)[i][1] = 0;
@@ -27,7 +27,7 @@ FFTResult FFTCalculator::calculate(const std::vector<float> &inputData)
     std::vector<std::complex<float>> outputData;
     outputData.reserve(outPtr->size());
 
-    for(uint i =0; i<outPtr->size(); ++i)
+    for(uint32_t i =0; i<outPtr->size(); ++i)
     {
         outputData.emplace_back((*outPtr)[i][0],(*outPtr)[i][1]);
     }
@@ -68,7 +68,7 @@ void WelchCalculator::calculate(DataExchanger<std::unique_ptr<FFTResult>> &queue
     {
         std::vector<float> dataInTimeDomain(bufforWithDataToBeConverted.begin(), bufforWithDataToBeConverted.begin() + fftSize);
 
-        for (uint i = 0; i < fftSize; i++)
+        for (uint32_t i = 0; i < fftSize; i++)
         {
             dataInTimeDomain[i] = dataInTimeDomain[i] * window.at(i);
         }

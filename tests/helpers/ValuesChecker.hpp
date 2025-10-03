@@ -11,7 +11,7 @@
 template <int indexOfMarginOfError>
 struct ValuesChecker
 {
-    using Position = uint;
+    using Position = uint32_t;
     using ExpectedValue = float;
 
     static void valueChecker(const std::vector<float> &expectedValues, const std::vector<float> &values)
@@ -22,7 +22,7 @@ struct ValuesChecker
         }));
     }
 
-    static void valueChecker(const float expectedValue, const uint expectedVectorSize, const std::vector<float> &values)
+    static void valueChecker(const float expectedValue, const uint32_t expectedVectorSize, const std::vector<float> &values)
     {
         EXPECT_EQ(expectedVectorSize, values.size());
 

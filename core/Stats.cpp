@@ -29,7 +29,7 @@ void Stats::update()
 
 uint32_t Stats::getNumberOfCallsInLast(std::chrono::microseconds numberOfMiliSeconds)
 {
-    uint i{0};
+    uint32_t i{0};
 
 
     for(auto el = queue.rbegin(); el != queue.rend(); ++el)

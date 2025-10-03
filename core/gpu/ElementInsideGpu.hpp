@@ -26,10 +26,10 @@ public:
 protected:
     static void removeShaders(GLuint &pipeline, GLuint &vs, GLuint &fs);
 
-    const uint indexOfRed = 0;
-    const uint indexOfGreen = 1;
-    const uint indexOfBlue = 2;
-    const uint indexOfTransparency = 3;
+    const uint32_t indexOfRed = 0;
+    const uint32_t indexOfGreen = 1;
+    const uint32_t indexOfBlue = 2;
+    const uint32_t indexOfTransparency = 3;
 
 private:
     static GLuint compileShader(const GLchar* source, GLenum stage, const std::string& msg);

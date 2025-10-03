@@ -62,5 +62,5 @@ protected:
     DataExchanger<float> flowControlDataExchanger;
     std::vector<std::thread> threads;
 private:
-    static constexpr uint maxQueueSizeForFlowController = 1;
+    static constexpr uint32_t maxQueueSizeForFlowController = 1;
 };

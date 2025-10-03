@@ -41,7 +41,7 @@ void SamplesCollector::collectDataFromHw()
     rightChannel.reserve(channels.size()/2);
     leftChannel.reserve(channels.size()/2);
 
-    for(uint i=0;i<channels.size();++i)
+    for(uint32_t i=0;i<channels.size();++i)
     {
        if(i % 2)
        {
