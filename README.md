@@ -42,7 +42,9 @@ It also uses the following third-party libraries:
 
 ### For typical users:
 
-In order to use it following steps are needed (tested on Ubuntu 24.04). It was also tested on Windows 11 using WSL2, although full performance may not be achievable in that environment:
+The following steps are required to use it. The setup has been tested on Ubuntu 24.04 and on Windows 11 with WSL2.
+
+By default, the application runs in fullscreen mode with a resolution of 1920x1080 (Full HD). You can change this resolution by editing the config.py file.
 ```bash
 sudo apt update && sudo apt install -y g++ cmake python3 python3-pyaudio python3-dev libglfw3-dev libfftw3-dev pkg-config git
 

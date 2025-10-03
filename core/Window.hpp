@@ -66,8 +66,8 @@ private:
     std::unique_ptr<TextInsideGpu> currentMarkedBarText;
 
     std::vector<float> dynamicMaxHoldValues;
-    const time_point<high_resolution_clock> startTime;
-    std::vector<time_point<high_resolution_clock>> timesWhenDynamicMaxHoldValuesHaveBeenUpdated;
+    const time_point<steady_clock> startTime;
+    std::vector<time_point<steady_clock>> timesWhenDynamicMaxHoldValuesHaveBeenUpdated;
 
     const std::vector<Line> horizontalLinePositions;
     const std::vector<std::pair<float, float>> horizontalRectanglesBoundaries;

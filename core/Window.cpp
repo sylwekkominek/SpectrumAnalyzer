@@ -17,7 +17,7 @@ Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
     config(config),
     indexSelector(config.samplingRate, config.numberOfSamples, config.frequencies),
     dynamicMaxHoldValues(config.numberOfRectangles, getFloorDbFs16bit()),
-    startTime(high_resolution_clock::now()),
+    startTime(steady_clock::now()),
     timesWhenDynamicMaxHoldValuesHaveBeenUpdated(config.numberOfRectangles, startTime),
     horizontalLinePositions(getHorizontalLines(scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(config.horizontalLinePositions)))),
     horizontalRectanglesBoundaries(horizontalRectanglesBoundariesFactory(config.numberOfRectangles)),
@@ -90,7 +90,7 @@ void Window::initializeGPU()
 
 void Window::draw(const std::vector<float> &data)
 {
-    auto timeInMs = std::chrono::duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - startTime).count();
+    auto timeInMs = std::chrono::duration_cast<std::chrono::milliseconds>(steady_clock::now() - startTime).count();
 
     RectangleInsideGpu<RectangleType::BAR>::updateTime(timeInMs);
     RectangleInsideGpu<RectangleType::BACKGROUND>::updateTime(timeInMs);
@@ -289,7 +289,7 @@ std::vector<Line> Window::getHorizontalLines(const Positions &positions)
 
 std::vector<float> Window::calculateDynamicMaxHoldValues(const std::vector<float> &dBFs)
 {
-    auto time = high_resolution_clock::now();
+    auto time = steady_clock::now();
 
     for(uint i=0;i<config.numberOfRectangles;++i)
     {
@@ -304,7 +304,7 @@ std::vector<float> Window::calculateDynamicMaxHoldValues(const std::vector<float
         if(dBFs[i] > newValue)
         {
             dynamicMaxHoldValues[i] = dBFs[i];
-            timesWhenDynamicMaxHoldValuesHaveBeenUpdated[i] = high_resolution_clock::now();
+            timesWhenDynamicMaxHoldValuesHaveBeenUpdated[i] = steady_clock::now();
         }
         else
         {

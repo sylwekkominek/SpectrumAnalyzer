@@ -11,7 +11,7 @@ std::mutex StatsManager::queueMutex{};
 
 void Stats::update()
 {
-    const auto timeNow = high_resolution_clock::now();
+    const auto timeNow = steady_clock::now();
     queue.push_back(timeNow);
 
     while(!queue.empty())

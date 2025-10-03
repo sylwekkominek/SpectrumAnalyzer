@@ -178,7 +178,7 @@ void AudioSpectrumAnalyzer::flowController()
 {
     float coeffUsedInCaseWhenScreenFallsBehindIncomingData = -0.01;
 
-    auto previousTime = high_resolution_clock::now();
+    auto previousTime = steady_clock::now();
 
     while(shouldProceed)
     {
@@ -200,7 +200,7 @@ void AudioSpectrumAnalyzer::flowController()
             flowControlDataExchanger.push_back(std::move(overlapping));
         }
 
-        auto now = high_resolution_clock::now();
+        auto now = steady_clock::now();
 
         if(now - previousTime >= seconds(1))
         {

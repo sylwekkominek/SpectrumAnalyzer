@@ -26,7 +26,7 @@ public:
 
 private:
     static constexpr auto maxNumberOfMilliSecondsKeptInStats{3000ms};
-    std::deque<time_point<high_resolution_clock>> queue;
+    std::deque<time_point<steady_clock>> queue;
 };
 
 class StatsManager
