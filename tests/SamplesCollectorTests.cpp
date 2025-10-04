@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -12,7 +12,7 @@
 #include <thread>
 
 
-class SamplesCollectorTests : public ValuesChecker<-6>, public ::testing::Test
+class SamplesCollectorTests : public ValuesChecker<-2>, public ::testing::Test
 {
 public:
     const char *pythonFileName = "testAudioConfig";

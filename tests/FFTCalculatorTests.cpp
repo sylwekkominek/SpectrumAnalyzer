@@ -12,7 +12,7 @@
 #include <cmath>
 
 
-class FFTCalculatorTestBase : public ValuesChecker<-6>, public ::testing::Test
+class FFTCalculatorTestBase : public ValuesChecker<-4>, public ::testing::Test
 {
 public:
 

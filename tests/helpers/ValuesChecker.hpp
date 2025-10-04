@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -40,5 +40,9 @@ struct ValuesChecker
         }
     }
 
-    static constexpr float marginOfError = exp(indexOfMarginOfError);
+    static const float marginOfError;
 };
+
+template <int indexOfMarginOfError>
+const float ValuesChecker<indexOfMarginOfError>::marginOfError = std::pow(10,indexOfMarginOfError);
+

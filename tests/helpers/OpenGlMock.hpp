@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -7,7 +7,6 @@
 #pragma once
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <gmock/gmock.h>
 
 
@@ -16,25 +15,7 @@ class OpenGlMock
 public:
     OpenGlMock();
 
-    MOCK_METHOD0(glfwInit, int());
-    MOCK_METHOD2(glfwWindowHint, void(int hint, int value));
-    MOCK_METHOD5(glfwCreateWindow, GLFWwindow*(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share));
-    MOCK_METHOD1(glfwMakeContextCurrent, void(GLFWwindow* window));
-    MOCK_METHOD1(glfwSwapInterval, void(int interval));
     MOCK_METHOD0(gladLoadGL, int());
-    MOCK_METHOD1(glfwSwapBuffers, void(GLFWwindow* window));
-    MOCK_METHOD0(glfwTerminate, void());
-    MOCK_METHOD0(glfwPollEvents, void());
-    MOCK_METHOD2(glfwGetKey, int(GLFWwindow* window, int key));
-    MOCK_METHOD2(glfwGetWindowAttrib, int(GLFWwindow* window, int attrib));
-    MOCK_METHOD1(glfwWindowShouldClose, int(GLFWwindow* window));
-    MOCK_METHOD2(glfwSetWindowShouldClose, void(GLFWwindow* window, int value));
-    MOCK_METHOD2(glfwSetFramebufferSizeCallback, GLFWframebuffersizefun(GLFWwindow* window, GLFWframebuffersizefun callback));
-    MOCK_METHOD2(glfwSetWindowMaximizeCallback, GLFWwindowmaximizefun(GLFWwindow* window, GLFWwindowmaximizefun callback));
-    MOCK_METHOD1(glfwDestroyWindow, void(GLFWwindow* glfwWindow));
-    MOCK_METHOD2(glfwSetCursorEnterCallback, GLFWcursorenterfun(GLFWwindow* window, GLFWcursorenterfun callback));
-    MOCK_METHOD3(glfwGetCursorPos, void (GLFWwindow* window, double* xpos, double* ypos));
-
     MOCK_METHOD2(glCreateVertexArrays, void(GLsizei, GLuint *));
     MOCK_METHOD2(glCreateBuffers, void(GLsizei, GLuint *));
     MOCK_METHOD4(glNamedBufferStorage, void(GLuint, GLsizeiptr, const void *, GLbitfield));
@@ -61,7 +42,6 @@ public:
     MOCK_METHOD4(glViewport, void(GLint , GLint ,GLsizei , GLsizei));
     MOCK_METHOD1(glEnable, void(GLenum));
     MOCK_METHOD2(glBlendFunc, void(GLenum, GLenum));
-
 };
 
 

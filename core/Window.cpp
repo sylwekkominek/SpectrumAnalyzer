@@ -9,53 +9,24 @@
 #include "Helpers.hpp"
 #include <algorithm>
 
-std::atomic<uint16_t> Window::xCurrentWindowSize =0;
-std::atomic<uint16_t> Window::yCurrentWindowSize =0;
-
 
 Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
-    config(config),
+    WindowBase(config, isFullScreenEnabled),
     indexSelector(config.samplingRate, config.numberOfSamples, config.frequencies),
     dynamicMaxHoldValues(config.numberOfRectangles, getFloorDbFs16bit()),
     startTime(steady_clock::now()),
     timesWhenDynamicMaxHoldValuesHaveBeenUpdated(config.numberOfRectangles, startTime),
     horizontalLinePositions(getHorizontalLines(scaleDbfsToPercentsOfTheScreen(moveDbFsToPositiveValues(config.horizontalLinePositions)))),
-    horizontalRectanglesBoundaries(horizontalRectanglesBoundariesFactory(config.numberOfRectangles)),
-    isFullScreenEnabled(isFullScreenEnabled)
+    horizontalRectanglesBoundaries(horizontalRectanglesBoundariesFactory(config.numberOfRectangles))
 {
-
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-
-    if(isFullScreenEnabled)
-    {
-        glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-        window = glfwCreateWindow(config.maximizedWindowHorizontalSize, config.maximizedWindowVerticalSize, "SpectrumAnalyzer", glfwGetPrimaryMonitor(), nullptr);
-        updateCurrentWindowSize(config.maximizedWindowHorizontalSize, config.maximizedWindowVerticalSize);
-    }
-    else
-    {
-        glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-        window = glfwCreateWindow(config.normalWindowHorizontalSize, config.normalWindowVerticalSize, "SpectrumAnalyzer", nullptr, nullptr);
-        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-        updateCurrentWindowSize(config.normalWindowHorizontalSize, config.normalWindowVerticalSize);
-    }
-
-    glfwSetCursorEnterCallback(window, cursorEnteredAreaOverWindowCallback);
-
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-    gladLoadGL();
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    createWindow();
 }
 
 void Window::initializeGPU()
 {
+    gladLoadGL();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     RectangleInsideGpu<RectangleType::BACKGROUND>::initialize(config.backgroundColorSettings.c_str());
     RectangleInsideGpu<RectangleType::BAR>::initialize(config.advancedColorSettings.c_str());
@@ -104,11 +75,13 @@ void Window::draw(const std::vector<float> &data)
         horizontalLinesInsideGpu.at(i).draw(horizontalLinePositions.at(i), config.colorOfStaticLines);
     }
 
+    WindowSize windowSize = getWindowSize();
+
     for(uint32_t i=0;i<config.horizontalLinePositions.size();++i)
     {
-        const auto textPositionInPixels = convertPositionInPercentToPixels(horizontalLinePositions.at(i).front().y, yCurrentWindowSize);
+        const auto textPositionInPixels = convertPositionInPercentToPixels(horizontalLinePositions.at(i).front().y, windowSize.y);
         staticTextsInsideGpu.at(i).draw(HorizontalAligment::LEFT, 0,textPositionInPixels);
-        staticTextsInsideGpu.at(i).draw(HorizontalAligment::RIGHT, xCurrentWindowSize, textPositionInPixels);
+        staticTextsInsideGpu.at(i).draw(HorizontalAligment::RIGHT, windowSize.x, textPositionInPixels);
     }
 
     const auto dBFsValues = extractDataToBePrinted(data);
@@ -131,12 +104,9 @@ void Window::draw(const std::vector<float> &data)
         rectanglesInsideGpu.at(i).move(positions.at(i));
     }
 
-    double xpos{0};
-    double ypos{0};
+    CursorPosition cursorPosition = getCursorPosition();
 
-    glfwGetCursorPos(window, &xpos, &ypos);
-
-    auto indexOfRectangle = getRectangleIndexOverWhichMouseIsActive(xpos);
+    auto indexOfRectangle = getRectangleIndexOverWhichMouseIsActive(windowSize, cursorPosition);
 
     if(indexOfRectangle)
     {
@@ -144,7 +114,7 @@ void Window::draw(const std::vector<float> &data)
         auto horizontalRectangleBoundaries = horizontalRectanglesBoundaries.at(indexOfRectangle.value());
 
         rectanglesInsideGpu.at(indexOfRectangle.value()).updateBoundary(horizontalRectangleBoundaries.first, horizontalRectangleBoundaries.second);
-        currentMarkedBarText->draw(dBFsHighlightedValues, (xpos > xCurrentWindowSize-128) ? HorizontalAligment::RIGHT : HorizontalAligment::LEFT , xpos,ypos);
+        currentMarkedBarText->draw(dBFsHighlightedValues, (cursorPosition.x > windowSize.x -128) ? HorizontalAligment::RIGHT : HorizontalAligment::LEFT , cursorPosition.x, cursorPosition.y);
     }
     else if(previousIndexOfRectangleOverWhichMouseIsActive && not indexOfRectangle)
     {
@@ -153,41 +123,7 @@ void Window::draw(const std::vector<float> &data)
 
     previousIndexOfRectangleOverWhichMouseIsActive = indexOfRectangle;
 
-    glfwSwapBuffers(window);
-}
-
-bool Window::checkIfWindowShouldBeClosed()
-{
-    glfwPollEvents();
-    return glfwWindowShouldClose(window);
-}
-
-bool Window::checkIfWindowShouldBeRecreated()
-{
-    glfwPollEvents();
-
-    if((isFullScreenEnabled && glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS))
-    {
-        return true;
-    }
-
-    if((not isFullScreenEnabled) && glfwGetWindowAttrib(window, GLFW_MAXIMIZED))
-    {
-        return true;
-    }
-
-    return false;
-}
-
-void Window::framebufferSizeCallback(GLFWwindow* /*window*/, int width, int height)
-{
-    glViewport(0, 0, width, height);
-    Window::updateCurrentWindowSize(width, height);
-}
-
-void Window::cursorEnteredAreaOverWindowCallback(GLFWwindow* window, int entered)
-{
-    glfwSetInputMode(window, GLFW_CURSOR, (entered ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL));
+    swapBuffers();
 }
 
 Window::~Window()
@@ -196,8 +132,6 @@ Window::~Window()
     RectangleInsideGpu<RectangleType::BAR>::finalize();
     LineInsideGpu::finalize();
     TextInsideGpu::finalize();
-
-    glfwDestroyWindow(window);
 }
 
 std::vector<std::pair<float, float>> Window::horizontalRectanglesBoundariesFactory(const uint16_t numberOfRectangles)
@@ -224,7 +158,6 @@ std::vector<Rectangle> Window::rectanglesFactory(const float heightInPercentOfSc
 {
     const auto xBoundaries = horizontalRectanglesBoundariesFactory(numberOfRectangles);
 
-    const double numberOfGaps = numberOfRectangles -1;
     const float  offset  = (offsetInPercentOffScreenSize/50);
     const float yBegin= (-heightInPercentOfScreenSize/100)+offset;
     const float yEnd = (heightInPercentOfScreenSize/100)+offset;
@@ -346,42 +279,9 @@ std::vector<float> Window::extractDataToBePrinted(const std::vector<float> &data
     return positions;
 }
 
-void Window::updateCurrentWindowSize(const uint16_t x, const uint16_t y)
+bool Window::isMouseLocatedOverCurrentlyBeingUsedRectangle(const WindowSize& windowSize, const CursorPosition& cursorPosition, const double xRectangleBegin, const double xRectangleEnd)
 {
-    xCurrentWindowSize = x;
-    yCurrentWindowSize = y;
-}
-
-bool Window::isMouseActive(const double xMousePos, const double yMousePos)
-{
-    static constexpr uint32_t mouseNotActiveThresholdInMs = 5000;
-    static constexpr double someSmallMouseMoveThreshold = 3;
-    static time_point<steady_clock> lastMouseMoveTime;
-    static double previousMouseXPosition;
-    static double previousMouseYPosition;
-
-    const double xMouseMove = (xMousePos - previousMouseXPosition);
-    const double yMouseMove = (yMousePos - previousMouseYPosition);
-    const double mouseMove = std::sqrt(xMouseMove*xMouseMove + yMouseMove*yMouseMove);
-
-    previousMouseXPosition = xMousePos;
-    previousMouseYPosition = yMousePos;
-
-    if(mouseMove > someSmallMouseMoveThreshold)
-    {
-        lastMouseMoveTime = std::chrono::steady_clock::now();
-        return true;
-    }
-    else if(duration_cast<milliseconds>(std::chrono::steady_clock::now() - lastMouseMoveTime).count() > mouseNotActiveThresholdInMs)
-    {
-        return false;
-    }
-    return true;
-}
-
-bool Window::isMouseLocatedOverCurrentlyBeingUsedRectangle(const double xMousePos, const double xRectangleBegin, const double xRectangleEnd)
-{
-    auto scalledMousePosition = 2*(xMousePos/xCurrentWindowSize)-1;
+    auto scalledMousePosition = 2*(cursorPosition.x/ windowSize.x)-1;
 
     return ((scalledMousePosition > xRectangleBegin) and (scalledMousePosition< xRectangleEnd)) ? true : false;
 }
@@ -392,15 +292,15 @@ float Window::convertPositionInPercentToPixels(const float positionInPercents, c
     return position * screenSize;
 }
 
-std::optional<uint16_t> Window::getRectangleIndexOverWhichMouseIsActive(const double xMousePos)
+std::optional<uint16_t> Window::getRectangleIndexOverWhichMouseIsActive(const WindowSize &windowSize, const CursorPosition& cursorPosition)
 {
-    if(isMouseActive(xMousePos, 0))
+    if(isMouseActive(cursorPosition))
     {
         for(uint32_t i=0;i<config.numberOfRectangles;++i)
         {
             auto horizontalRectangleBoundaries = horizontalRectanglesBoundaries.at(i);
 
-            if(isMouseLocatedOverCurrentlyBeingUsedRectangle(xMousePos, horizontalRectangleBoundaries.first, horizontalRectangleBoundaries.second))
+            if(isMouseLocatedOverCurrentlyBeingUsedRectangle(windowSize, cursorPosition, horizontalRectangleBoundaries.first, horizontalRectangleBoundaries.second))
             {
                 return i;
             }
@@ -425,4 +325,30 @@ std::string Window::getHighlightStringToBePrinted(const float frequency, const f
         return (freq+"\n"+avrPwr+"\n"+maxPwr);
     }
     return {};
+}
+
+bool Window::isMouseActive(const CursorPosition& cursorPosition)
+{
+    static constexpr uint32_t mouseNotActiveThresholdInMs = 5000;
+    static constexpr double someSmallMouseMoveThreshold = 3;
+    static time_point<steady_clock> lastMouseMoveTime;
+    static CursorPosition previousCursorPosition;
+
+    double xMouseMove = cursorPosition.x - previousCursorPosition.x;
+    double yMouseMove = cursorPosition.y - previousCursorPosition.y;
+
+    auto mouseMove = static_cast<float>(std::sqrt(xMouseMove * xMouseMove + yMouseMove * yMouseMove));
+
+    previousCursorPosition = cursorPosition;
+
+    if (mouseMove > someSmallMouseMoveThreshold)
+    {
+        lastMouseMoveTime = std::chrono::steady_clock::now();
+        return true;
+    }
+    else if (duration_cast<milliseconds>(std::chrono::steady_clock::now() - lastMouseMoveTime).count() > mouseNotActiveThresholdInMs)
+    {
+        return false;
+    }
+    return true;
 }

@@ -1,17 +1,18 @@
 find_package(GTest REQUIRED)
 
 add_executable(spectrum-analyzer-tests
-        FFTCalculatorTests.cpp
-        DataCalculatorTests.cpp
-        IndexSelectorTests.cpp
-	StatsTests.cpp
-	ConfigReaderTests.cpp
-        SamplesCollectorTests.cpp
-        WindowTests.cpp
-        AudioSpectrumAnalyzerTests.cpp
         helpers/TextInsideGpuMock.cpp
         helpers/OpenGlMock.cpp
         helpers/TestHelpers.cpp
+        helpers/WindowBaseMock.cpp
+        FFTCalculatorTests.cpp
+        DataCalculatorTests.cpp
+        IndexSelectorTests.cpp
+        StatsTests.cpp
+        ConfigReaderTests.cpp
+        SamplesCollectorTests.cpp
+        WindowTests.cpp
+        AudioSpectrumAnalyzerTests.cpp
         )
 
 target_include_directories(spectrum-analyzer-tests

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -61,52 +61,6 @@ std::function<void(GLint, GLint,GLsizei, GLsizei)> glViewportFunction;
 std::function<void(GLenum)> glEnableFunction;
 std::function<void(GLenum, GLenum)> glBlendFuncFunction;
 
-
-std::function<int()> glfwInitFunction;
-std::function<void(int hint, int value)> glfwWindowHintFunction;
-std::function<GLFWwindow*(int , int , const char* , GLFWmonitor* , GLFWwindow* )> glfwCreateWindowFunction;
-std::function<void(GLFWwindow* window)> glfwMakeContextCurrentFunction;
-std::function<void(int interval)> glfwSwapIntervalFunction;
-std::function<GLFWframebuffersizefun(GLFWwindow*, GLFWframebuffersizefun)> glfwSetFramebufferSizeCallbackFunction;
-std::function<GLFWwindowmaximizefun(GLFWwindow*, GLFWwindowmaximizefun)>  glfwSetWindowMaximizeCallbackFunction;
-std::function<void(GLFWwindow* window)> glfwSwapBuffersFunction;
-std::function<void()> glfwTerminateFunction;
-std::function<void()> glfwPollEventsFunction;
-std::function<int(GLFWwindow* window, int key)> glfwGetKeyFunction;
-std::function<int(GLFWwindow* window, int attrib)> glfwGetWindowAttribFunction;
-std::function<int(GLFWwindow* window)> glfwWindowShouldCloseFunction;
-std::function<void(GLFWwindow* window, int value)> glfwSetWindowShouldCloseFunction;
-std::function<void(GLFWwindow* glfwWindow)>  glfwDestroyWindowFunction;
-std::function<GLFWcursorenterfun(GLFWwindow* window, GLFWcursorenterfun callback)>  glfwSetCursorEnterCallbackFunction;
-std::function<void(GLFWwindow* window, double* xpos, double* ypos)> glfwGetCursorPosFunction;
-
-
-int glfwInit()
-{
-    return glfwInitFunction();
-}
-
-void glfwWindowHint(int hint, int value)
-{
-    glfwWindowHintFunction(hint, value);
-}
-
-GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
-{
-    return glfwCreateWindowFunction(width, height, title, monitor, share);
-}
-
-
-void glfwMakeContextCurrent(GLFWwindow* window)
-{
-    glfwMakeContextCurrentFunction(window);
-}
-
-void glfwSwapInterval(int interval)
-{
-    glfwSwapIntervalFunction(interval);
-}
-
 int gladLoadGL(void)
 {
     return gladLoadGLFunction();
@@ -115,68 +69,6 @@ int gladLoadGL(void)
 int gladLoadGLLoader(GLADloadproc load)
 {
     return 0;
-}
-
-void glfwSwapBuffers(GLFWwindow* window)
-{
-    glfwSwapBuffersFunction(window);
-}
-
-void glfwTerminate()
-{
-    glfwTerminateFunction();
-}
-
-void glfwPollEvents()
-{
-    glfwPollEventsFunction();
-}
-
-int glfwGetKey(GLFWwindow* window, int key)
-{
-    return glfwGetKeyFunction(window, key);
-}
-
-int glfwGetWindowAttrib(GLFWwindow* window, int attrib)
-{
-    return glfwGetWindowAttribFunction(window, attrib);
-}
-
-GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* window, GLFWframebuffersizefun callback)
-{
-    return glfwSetFramebufferSizeCallbackFunction(window, callback);
-}
-
-GLFWwindowmaximizefun glfwSetWindowMaximizeCallback(GLFWwindow* window, GLFWwindowmaximizefun callback)
-{
-    return glfwSetWindowMaximizeCallbackFunction(window, callback);
-}
-
-
-int glfwWindowShouldClose(GLFWwindow* window)
-{
-    return glfwWindowShouldCloseFunction(window);
-}
-
-
-void glfwSetWindowShouldClose(GLFWwindow* window, int value)
-{
-    glfwSetWindowShouldCloseFunction(window, value);
-}
-
-void glfwDestroyWindow(GLFWwindow* window)
-{
-    glfwDestroyWindowFunction(window);
-}
-
-GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcursorenterfun callback)
-{
-    return glfwSetCursorEnterCallbackFunction(window, callback);
-}
-
-void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos)
-{
-    glfwGetCursorPosFunction(window, xpos, ypos);
 }
 
 void glCreateProgramPipelinesMock(GLsizei n, GLuint *pipelines)
@@ -304,99 +196,6 @@ void glBlendFuncMock(GLenum sfactor, GLenum dfactor)
 OpenGlMock::OpenGlMock()
 {
 
-    glfwInitFunction = [this]()
-    {
-        return this->glfwInit();
-    };
-
-    glfwWindowHintFunction = [this](int hint, int value)
-    {
-        return this->glfwWindowHint(hint,value);
-    };
-
-
-    glfwCreateWindowFunction = [this](int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
-    {
-        return this->glfwCreateWindow(width, height, title, monitor, share);
-    };
-
-
-    glfwMakeContextCurrentFunction = [this](GLFWwindow* window)
-    {
-        return this->glfwMakeContextCurrent(window);
-    };
-
-    glfwSwapIntervalFunction = [this](int interval)
-    {
-        return this->glfwSwapInterval(interval);
-    };
-
-    glfwSetFramebufferSizeCallbackFunction = [this](GLFWwindow* window, GLFWframebuffersizefun callback)
-    {
-        return this->glfwSetFramebufferSizeCallback(window, callback);
-    };
-
-    glfwSetWindowMaximizeCallbackFunction = [this](GLFWwindow* window, GLFWwindowmaximizefun callback)
-    {
-        return this->glfwSetWindowMaximizeCallback(window, callback);
-    };
-
-
-    gladLoadGLFunction = [this]()
-    {
-        return this->gladLoadGL();
-    };
-
-    glfwSwapBuffersFunction = [this](GLFWwindow* window)
-    {
-        this->glfwSwapBuffers(window);
-    };
-
-    glfwTerminateFunction = [this]()
-    {
-        this->glfwTerminate();
-    };
-
-    glfwPollEventsFunction = [this]()
-    {
-        this->glfwPollEvents();
-    };
-
-    glfwGetKeyFunction = [this](GLFWwindow* window, int key)
-    {
-        return this->glfwGetKey(window, key);
-    };
-
-    glfwGetWindowAttribFunction = [this](GLFWwindow* window, int attrib)
-    {
-        return this->glfwGetWindowAttrib(window, attrib);
-    };
-
-    glfwWindowShouldCloseFunction = [this](GLFWwindow* window)
-    {
-        return this->glfwWindowShouldClose(window);
-    };
-
-    glfwSetWindowShouldCloseFunction = [this](GLFWwindow* window, int value)
-    {
-        this->glfwSetWindowShouldClose(window, value);
-    };
-
-    glfwSetCursorEnterCallbackFunction =[this](GLFWwindow* window, GLFWcursorenterfun callback)
-    {
-        return this->glfwSetCursorEnterCallback(window, callback);
-    };
-
-    glfwDestroyWindowFunction = [this](GLFWwindow* window)
-    {
-        this->glfwDestroyWindow(window);
-    };
-
-    glfwGetCursorPosFunction = [this](GLFWwindow* window, double* xpos, double* ypos)
-    {
-        this->glfwGetCursorPos(window, xpos, ypos);
-    };
-
     ::glad_glCreateProgramPipelines = glCreateProgramPipelinesMock;
     ::glad_glCreateShaderProgramv = glCreateShaderProgramvMock;
     ::glad_glGetProgramInfoLog = glGetProgramInfoLogMock;
@@ -423,6 +222,11 @@ OpenGlMock::OpenGlMock()
     ::glad_glViewport = glViewportMock;
     ::glad_glEnable = glEnableMock;
     ::glad_glBlendFunc = glBlendFuncMock;
+
+    gladLoadGLFunction = [this]()
+    {
+        return this->gladLoadGL();
+    };
 
     glCreateShaderProgramvFunction = [this](GLenum type, GLsizei count, const GLchar *const* strings)
     {
@@ -513,7 +317,6 @@ OpenGlMock::OpenGlMock()
     {
         this->glProgramUniform4f(program, location, v0, v1, v2, v3);
     };
-
 
     glDrawArraysFunction = [this](GLenum mode, GLint first, GLsizei count)
     {

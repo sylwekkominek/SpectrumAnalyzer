@@ -6,6 +6,7 @@ add_library(spectrum-analyzer-core STATIC
     SamplesCollector.cpp
     ConfigReader.cpp
     FFTCalculator.cpp
+    WindowBase.cpp
     Window.cpp
     IndexSelector.cpp
     DataCalculator.cpp
