@@ -5,18 +5,18 @@
  */
 
 #include "TestHelpers.hpp"
-
-#include <cmath>
 #include <random>
+
+constexpr double PI = 3.14159265358979323846;
 
 float angleInRadiansToDegrees(float radian)
 {
-   return radian * 180 / M_PI;
+   return radian * 180 / PI;
 }
 
 float angleInDegreesToRadians(float degrees)
 {
-   return degrees * M_PI / 180;
+   return degrees * PI / 180;
 }
 
 float dbFsToAmplitude(float dBFsPower)
@@ -33,7 +33,7 @@ std::vector<float> generateSignal(uint32_t numberOfSamples, float samplingFreque
 
     for(int n=0;n<numberOfSamples;++n)
     {
-        data[n]= amplitude * std::sin(2 * M_PI * singalFrequency * n * samplingPeriod + angleInDegreesToRadians(angleInDegrees));
+        data[n]= amplitude * std::sin(2 * PI * singalFrequency * n * samplingPeriod + angleInDegreesToRadians(angleInDegrees));
     }
 
     return data;
@@ -87,7 +87,7 @@ std::vector<float> getSignalWindow(uint32_t numberOfSamples)
     {
         const float ratio = static_cast<float>(i) / (numberOfSamples - 1);
 
-        signalWindow.at(i) = 0.42 - 0.5 * std::cos(2.0 * M_PI * ratio) + 0.08 * std::cos(4.0 * M_PI * ratio);
+        signalWindow.at(i) = 0.42 - 0.5 * std::cos(2.0 * PI * ratio) + 0.08 * std::cos(4.0 * PI * ratio);
     }
 
     return signalWindow;

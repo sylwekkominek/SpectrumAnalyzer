@@ -15,7 +15,7 @@ using Position = float;
 using Frequencies = std::vector<Frequency>;
 using Positions = std::vector<Position>;
 using Color = std::vector<float>;
-using ColorsOfRectanglePerVertices = std::map<uint, Color>;
+using ColorsOfRectanglePerVertices = std::map<uint32_t, Color>;
 
 struct Configuration
 {

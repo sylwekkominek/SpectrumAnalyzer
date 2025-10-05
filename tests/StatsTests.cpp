@@ -66,7 +66,7 @@ TEST_F(StatsTests, checkNumberOfCallsInLastTime)
 
     EXPECT_EQ(numberOfCalls, StatsManager::getStatsFor("test").getNumberOfCallsInLast(1000ms));
 
-    std::this_thread::sleep_for(1000ms);
+    std::this_thread::sleep_for(1001ms);
 
     for(int i=0;i<nextNumberOfCalls; ++i)
     {

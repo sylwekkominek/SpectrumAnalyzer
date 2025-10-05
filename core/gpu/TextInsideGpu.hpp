@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 enum class HorizontalAligment : uint16_t
 {

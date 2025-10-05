@@ -40,11 +40,9 @@ It also uses the following third-party libraries:
 
 ## Preparing the software environment
 
-### For typical users:
 
-The following steps are required to use it. The setup has been tested on Ubuntu 24.04 and on Windows 11 with WSL2.
+### For typical users: Ubuntu 24.04 or Windows 11 with WSL2.
 
-By default, the application runs in fullscreen mode with a resolution of 1920x1080 (Full HD). You can change this resolution by editing the config.py file.
 ```bash
 sudo apt update && sudo apt install -y g++ cmake python3 python3-dev libglfw3-dev portaudio19-dev libfftw3-dev pkg-config git
 
@@ -53,13 +51,46 @@ git clone https://github.com/sylwekkominek/SpectrumAnalyzer.git
 
 **Compilation and running:**
 ```bash
-cd SpectrumAnalyzer && mkdir build && cd build && cmake .. && make -j4
+cd SpectrumAnalyzer && mkdir build && cd build && cmake .. && cmake --build . -j 4
 
 (This step is only required for Raspberry Pi users: export MESA_GL_VERSION_OVERRIDE=4.5)
 
 ./spectrum-analyzer
 ```
 do not forget to configure your input audio device
+By default, the application runs in fullscreen mode with a resolution of 1920x1080 (Full HD). You can change this resolution by editing the config.py file.
+
+---
+
+### For typical users: Windows
+
+Download and install msys2 from https://www.msys2.org/#installation
+
+Open msys2 terminal and run:
+
+```bash
+ pacman -Syu
+```
+
+Close msys2 terminal and reopen it
+
+```bash
+pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python mingw-w64-x86_64-fftw mingw-w64-x86_64-glfw mingw-w64-x86_64-portaudio git
+
+```
+**Compilation and running:**
+
+If you are using a newer Python version, you need to specify a different folder name.
+
+```bash
+export PATH=/C/msys64/mingw64/bin:$PATH
+export PYTHONHOME=/C/msys64/mingw64
+export PYTHONPATH=/C/msys64/mingw64/lib/python3.12:/C/msys64/mingw64/lib/python3.12/lib-dynload
+
+git clone https://github.com/sylwekkominek/SpectrumAnalyzer.git
+cd SpectrumAnalyzer && mkdir build && cd build && cmake .. && cmake --build . -j 4
+./spectrum-analyzer
+```
 
 ---
 ### For advanced users:
