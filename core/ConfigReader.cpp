@@ -31,6 +31,7 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
         }
     };
 
+    os <<"pythonDataSourceEnabled: "<<config.pythonDataSourceEnabled<<std::endl;
     os <<"defaultFullscreenState: "<<config.defaultFullscreenState<<std::endl;
     os <<"maximizedWindowHorizontalSize: "<<config.maximizedWindowHorizontalSize<<std::endl;
     os <<"maximizedWindowVerticalSize: "<<config.maximizedWindowVerticalSize<<std::endl;
@@ -82,7 +83,9 @@ std::ostream& operator<<(std::ostream& os, const Configuration & config)
 
 ConfigReader::ConfigReader(const char *moduleName):
     PythonCodeRunner(moduleName,
-                {"getDefaultFullscreenState",
+                {
+                "getPythonDataSourceEnabled",
+                 "getDefaultFullscreenState",
                  "getMaximizedWindowHorizontalSize",
                  "getMaximizedWindowVerticalSize",
                  "getNormalWindowHorizontalSize",
@@ -117,6 +120,7 @@ Configuration ConfigReader::getConfig()
 {
     if(not isConfigReadOut)
     {
+        config.pythonDataSourceEnabled = getPythonDataSourceEnabled();
         config.defaultFullscreenState = getDefaultFullscreenState();
         config.maximizedWindowHorizontalSize = getMaximizedWindowHorizontalSize();
         config.maximizedWindowVerticalSize = getMaximizedWindowVerticalSize();
@@ -152,7 +156,6 @@ Configuration ConfigReader::getConfig()
     return config;
 }
 
-
 Frequencies ConfigReader::getFrequencies()
 {
     return getValues(pointersToPythonFunctions.at(__func__));
@@ -161,6 +164,11 @@ Frequencies ConfigReader::getFrequencies()
 std::vector<float> ConfigReader::getSignalWindow()
 {
     return getValues(pointersToPythonFunctions.at(__func__));
+}
+
+bool ConfigReader::getPythonDataSourceEnabled()
+{
+    return getValue(pointersToPythonFunctions.at(__func__));
 }
 
 bool ConfigReader::getDefaultFullscreenState()

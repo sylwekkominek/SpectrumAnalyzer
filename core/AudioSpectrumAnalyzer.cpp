@@ -6,6 +6,7 @@
 
 #include "AudioSpectrumAnalyzer.hpp"
 #include "SamplesCollector.hpp"
+#include "AudioSamplesCollector.hpp"
 #include "ConfigReader.hpp"
 #include "Window.hpp"
 #include "Stats.hpp"
@@ -35,19 +36,19 @@ void AudioSpectrumAnalyzer::samplesUpdater()
     const std::string processName{"samplesUpdater"};
     StatsManager statsManager(processName);
 
-    SamplesCollector samplesCollector(audioConfigFile.c_str());
-    samplesCollector.initialize(noOfSamplesToBeCollectedFromHwEachTime, config.samplingRate);
+    std::unique_ptr<SamplesCollectorBase> samplesCollector = config.pythonDataSourceEnabled ?
+        std::unique_ptr<SamplesCollectorBase>(std::make_unique<SamplesCollector>(audioConfigFile.c_str())) :
+        std::unique_ptr<SamplesCollectorBase>(std::make_unique<AudioSamplesCollector>());
+
+    if(samplesCollector->initialize(noOfSamplesToBeCollectedFromHwEachTime, config.samplingRate)==false)
+    {
+        shouldProceed = false;
+    }
 
     while(shouldProceed)
     {
         statsManager.update();
-
-        samplesCollector.collectDataFromHw();
-
-        auto rightdata = samplesCollector.getDataFromRightChannel();
-        auto leftdata  = samplesCollector.getDataFromLeftChannel();
-
-        dataExchanger.push_back(std::make_unique<Data>(std::move(getAverage(leftdata,rightdata))));
+        dataExchanger.push_back(std::make_unique<Data>(std::move(samplesCollector->collectDataFromHw())));
     }
 
     dataExchanger.stop();

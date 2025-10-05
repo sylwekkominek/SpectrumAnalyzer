@@ -1,5 +1,6 @@
 
 pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
+pkg_search_module(PORTAUDIO REQUIRED IMPORTED_TARGET portaudio-2.0)
 
 add_library(spectrum-analyzer-core STATIC
     PythonCodeRunner.cpp
@@ -11,6 +12,7 @@ add_library(spectrum-analyzer-core STATIC
     IndexSelector.cpp
     DataCalculator.cpp
     Stats.cpp
+    AudioSamplesCollector.cpp
     AudioSpectrumAnalyzer.cpp
     Helpers.cpp
     gpu/ElementInsideGpu.cpp
@@ -33,5 +35,6 @@ target_link_libraries(spectrum-analyzer-core
     glfw
     glad
     PkgConfig::FFTW
+    PkgConfig::PORTAUDIO
   )
 

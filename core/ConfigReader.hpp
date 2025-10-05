@@ -21,6 +21,7 @@ struct Configuration
 {
     Frequencies frequencies;
     std::vector<float> signalWindow;
+    bool pythonDataSourceEnabled;
     bool defaultFullscreenState;
     uint16_t maximizedWindowHorizontalSize;
     uint16_t maximizedWindowVerticalSize;
@@ -61,6 +62,7 @@ public:
 private:
     Frequencies getFrequencies();
     std::vector<float> getSignalWindow();
+    bool getPythonDataSourceEnabled();
     bool getDefaultFullscreenState();
     double getMaximizedWindowHorizontalSize();
     double getMaximizedWindowVerticalSize();

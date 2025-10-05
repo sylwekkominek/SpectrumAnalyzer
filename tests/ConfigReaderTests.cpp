@@ -22,6 +22,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
 
     const auto &config = configReader.getConfig();
 
+    EXPECT_EQ(config.pythonDataSourceEnabled, true);
     EXPECT_EQ(config.defaultFullscreenState, false);
     EXPECT_EQ(config.maximizedWindowHorizontalSize, 20);
     EXPECT_EQ(config.maximizedWindowVerticalSize, 21);

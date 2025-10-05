@@ -5,6 +5,7 @@ add_executable(spectrum-analyzer-tests
         helpers/OpenGlMock.cpp
         helpers/TestHelpers.cpp
         helpers/WindowBaseMock.cpp
+        helpers/PortAudioMock.cpp
         FFTCalculatorTests.cpp
         DataCalculatorTests.cpp
         IndexSelectorTests.cpp

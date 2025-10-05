@@ -2,28 +2,29 @@
 # This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
 # see file LICENSE in this source tree.
 
-# Full spec: https://github.com/sylwekkominek/SpectrumAnalyzer/wiki
+import math
 
-import struct
-import pyaudio
+#To enable this script, you need to edit the getPythonDataSourceEnabled function in the config.py file to return True.
 
-p = pyaudio.PyAudio()
-
-
-#Description: This function prepares the hardware or data source to capture chunks of data of size dataLength at the specified samplingRate. It opens an input stream using PyAudio configured for 16-bit stereo input and sets up the system to collect data in real-time. Although designed for audio input, this function is flexible — users can replace or extend it to work with other data sources, such as reading from a WAV file, accelerometer data, or any other stream.
-#Default value: True on success
-
+#The variable numberOfSamples should be set to dataLength. However, to keep the script simple for generating a sine wave, this value is being overwritten with a fixed number (4096).
 def initialize(dataLength, samplingRate):
-    global chunk
-    global inputStream
-    chunk = dataLength
-    inputStream = p.open(format = pyaudio.paInt16, channels=2,rate=samplingRate, input=True, frames_per_buffer=chunk)
+    global numberOfSamples
+    global fs
+
+    numberOfSamples = 4096
+    fs = samplingRate
     return True
 
-
-#Description: This function reads a block of data from the input device. The data contains samples for both left and right audio channels (stereo). It converts the raw bytes into a list of 16-bit signed numbers, alternating between left and right channel samples. This way, you get the latest stereo audio data ready to use.
-#Default value: (Gets the latest data from hardware for left and right channels.)
-
+#The frequency 1001.29 Hz is chosen because the sampling rate (44100 Hz) divided by the data length (4096) is approximately 10.76 Hz. The value 1001.29 Hz is a multiple of this 10.76 Hz to minimize spectral leakage to other frequencies. This ensures that the amplitude aligns correctly with the scale in dBFS
 def getData():
-    data = inputStream.read(chunk, exception_on_overflow=False)
-    return (struct.unpack('{n}h'.format(n= len(data)//2 ), data))
+    signalFrequency = 1001.29 #Hz
+    samplingPeriod = 1.0 / fs
+    fullScaleAmplitude = 32767
+
+    result = tuple()
+
+    for n in range(numberOfSamples):
+        y = fullScaleAmplitude * math.sin(2 * math.pi * n * signalFrequency * samplingPeriod)
+        result += (y,)
+
+    return result

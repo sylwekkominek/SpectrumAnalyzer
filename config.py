@@ -6,6 +6,9 @@
 
 import math
 
+def getPythonDataSourceEnabled():
+    return False
+
 #Description: Determines whether the SpectrumAnalyzer application starts in fullscreen mode by default. Users can choose this to enable fullscreen startup automatically. This is especially useful on devices like Raspberry Pi, where fullscreen improves user experience and system integration.
 #Default value: False (starts in windowed mode)
 

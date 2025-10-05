@@ -14,12 +14,13 @@ struct ValuesChecker
     using Position = uint32_t;
     using ExpectedValue = float;
 
-    static void valueChecker(const std::vector<float> &expectedValues, const std::vector<float> &values)
+    template<typename T1=float, typename T2=float>
+    static void valueChecker(const std::vector<T1> &expectedValues, const std::vector<T2> &values)
     {
         EXPECT_EQ(expectedValues.size(), values.size());
         EXPECT_EQ(true, std::equal(expectedValues.begin(), expectedValues.end(), values.begin(), [&](const auto &first, const auto &second){
-            return (std::abs(first - second) < marginOfError);
-        }));
+                      return (std::abs(first - second) < marginOfError);
+                  }));
     }
 
     static void valueChecker(const float expectedValue, const uint32_t expectedVectorSize, const std::vector<float> &values)

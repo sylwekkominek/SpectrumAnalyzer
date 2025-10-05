@@ -18,7 +18,7 @@ This project is licensed under the **GNU General Public License v2 (GPLv2)**.
 
 It also uses the following third-party libraries:
 
-- PyAudio – MIT License  
+- PortAudio – MIT License  
 - glText – zlib License  
 - FFTW – GNU General Public License v2 (GPLv2)  
 
@@ -46,7 +46,7 @@ The following steps are required to use it. The setup has been tested on Ubuntu 
 
 By default, the application runs in fullscreen mode with a resolution of 1920x1080 (Full HD). You can change this resolution by editing the config.py file.
 ```bash
-sudo apt update && sudo apt install -y g++ cmake python3 python3-pyaudio python3-dev libglfw3-dev libfftw3-dev pkg-config git
+sudo apt update && sudo apt install -y g++ cmake python3 python3-dev libglfw3-dev portaudio19-dev libfftw3-dev pkg-config git
 
 git clone https://github.com/sylwekkominek/SpectrumAnalyzer.git
 ```

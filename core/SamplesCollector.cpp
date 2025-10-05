@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2025, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -11,57 +11,37 @@
 
 SamplesCollector::SamplesCollector(const char *moduleName):
     PythonCodeRunner(moduleName,
-                {"initialize",
-                 "getData"})
+                     {"initialize",
+                      "getData"})
 {
 }
 
-void SamplesCollector::initialize(uint32_t dataLength, uint32_t samplingRate)
+bool SamplesCollector::initialize(uint32_t dataLength, uint32_t samplingRate)
 {
-    auto pArgs = PyTuple_New(2);
-
-    auto dataLengthPyValue = PyLong_FromLong(dataLength);
-    auto samplingRatePyValue = PyLong_FromLong(samplingRate);
-
-    PyTuple_SetItem(pArgs, 0, dataLengthPyValue);
-    PyTuple_SetItem(pArgs, 1, samplingRatePyValue);
-
-    getValue(pointersToPythonFunctions.at(__func__),pArgs);
-    Py_DECREF(pArgs);
-}
-
-void SamplesCollector::collectDataFromHw()
-{
-    auto channels = getData();
-
-    rightChannel.clear();
-    leftChannel.clear();
-
-
-    rightChannel.reserve(channels.size()/2);
-    leftChannel.reserve(channels.size()/2);
-
-    for(uint32_t i=0;i<channels.size();++i)
+    try
     {
-       if(i % 2)
-       {
-           rightChannel.push_back(channels[i]);
-       }
-       else
-       {
-            leftChannel.push_back(channels[i]);
-       }
+        auto pArgs = PyTuple_New(2);
+
+        auto dataLengthPyValue = PyLong_FromLong(dataLength);
+        auto samplingRatePyValue = PyLong_FromLong(samplingRate);
+
+        PyTuple_SetItem(pArgs, 0, dataLengthPyValue);
+        PyTuple_SetItem(pArgs, 1, samplingRatePyValue);
+
+        getValue(pointersToPythonFunctions.at(__func__), pArgs);
+        Py_DECREF(pArgs);
     }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true;
 }
 
-std::vector<float> SamplesCollector::getDataFromRightChannel()
+std::vector<float> SamplesCollector::collectDataFromHw()
 {
-    return rightChannel;
-}
-
-std::vector<float> SamplesCollector::getDataFromLeftChannel()
-{
-    return leftChannel;
+    return getData();
 }
 
 SamplesCollector::~SamplesCollector()
