@@ -30,6 +30,7 @@ It also uses the following third-party libraries:
 **Video on YouTube:** 
 [sylwekkominek/SpectrumAnalyzer – Fully Configurable Open Source Spectrum Analyzer](https://www.youtube.com/watch?v=Sjx05eXpgq4)
 
+![output](https://github.com/user-attachments/assets/0b94cb50-937a-4331-a8e6-710d2abcc987)
 
 <img width="1280" height="512" alt="Drawing1" src="https://github.com/user-attachments/assets/a0a98d55-c578-4493-80b8-421b9f5fcd9f" />
 <img width="1280" height="512" alt="Drawing13" src="https://github.com/user-attachments/assets/d0592877-32b5-414a-8963-7fd0da590757" />
