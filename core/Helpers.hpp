@@ -17,3 +17,5 @@ std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftDat
 float calculateOverlappingDiff(const uint32_t desiredNumberOfFramesPerSecond, const uint32_t currentFramesPerSecond);
 float calculateOverlapping(const uint32_t samplingRate, const uint32_t numberOfSamples, const uint32_t numberOfFramesPerSecond);
 std::string formatFloat(float value, int totalWidth, int precision);
+std::vector<float> scaleDbfsToPercents(const std::vector<float> &signalInDbfs);
+std::vector<float> moveDbFsToPositiveValues(const std::vector<float> &signalInDbfs);

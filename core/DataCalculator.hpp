@@ -70,6 +70,7 @@ std::vector<T> DataCalculatorBase<T>::calculateWithMoving()
         }
 
         dataQueue.pop_front();
+
         return data;
     }
     return {};

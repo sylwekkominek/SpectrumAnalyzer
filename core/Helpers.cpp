@@ -96,6 +96,22 @@ std::string formatFloat(float value, int totalWidth, int precision)
     return oss.str();
 }
 
+std::vector<float> scaleDbfsToPercents(const std::vector<float> &signalInDbfs)
+{
+    const float hundredPercents = 100;
+    const float scallingFactor = hundredPercents/getDynamicRangeOf16bitSignal();
 
+    std::vector<float> outputData(signalInDbfs.size());
+    std::transform(signalInDbfs.begin(), signalInDbfs.end(), outputData.begin(), [&scallingFactor](const auto &el){ return el*scallingFactor; });
+    return outputData;
+}
+
+std::vector<float> moveDbFsToPositiveValues(const std::vector<float> &signalInDbfs)
+{
+    std::vector<float> outputData(signalInDbfs.size());
+
+    std::transform(signalInDbfs.begin(), signalInDbfs.end(), outputData.begin(), [](const auto &el){ return el+getDynamicRangeOf16bitSignal(); });
+    return outputData;
+}
 
 

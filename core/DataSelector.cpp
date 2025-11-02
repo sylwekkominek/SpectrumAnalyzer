@@ -4,12 +4,12 @@
  * see file LICENSE in this source tree.
  */
 
-#include "IndexSelector.hpp"
+#include "DataSelector.hpp"
 #include <iostream>
 
 
-IndexSelector::IndexSelector(uint32_t samplingRate, uint32_t fftSize, const Frequencies &demandedFrequencies)
-    : numberOfRectangles(demandedFrequencies.size())
+DataSelector::DataSelector(uint32_t samplingRate, uint32_t fftSize, const Frequencies &demandedFrequencies)
+    : fftSize(fftSize), numberOfFrequencies(demandedFrequencies.size()), selectedData(numberOfFrequencies,0)
 {
 
     uint32_t fftForRealDataSize=fftSize/2;
@@ -20,12 +20,33 @@ IndexSelector::IndexSelector(uint32_t samplingRate, uint32_t fftSize, const Freq
     }
 
     updateIndexes(demandedFrequencies);
+
 }
 
-void IndexSelector::updateIndexes(const Frequencies &demandedFrequencies)
+std::vector<float> DataSelector::operator()(const std::vector<float> &data)
+{
+    if(data.size() != fftSize)
+    {
+        throw std::runtime_error("Index selector error: not mached fftsize with signal length");
+    }
+
+    for(uint32_t i=0;i<numberOfFrequencies;++i)
+    {
+        selectedData[i] = data.at(getFrequencyIndex(i));
+    }
+
+    return selectedData;
+}
+
+std::vector<float> DataSelector::operator()() const
+{
+    return selectedData;
+}
+
+void DataSelector::updateIndexes(const Frequencies &demandedFrequencies)
 {
 
-    for(uint32_t i=0;i<numberOfRectangles;++i)
+    for(uint32_t i=0;i<numberOfFrequencies;++i)
     {
         auto demandedFreq = demandedFrequencies.at(i);
 
@@ -50,7 +71,9 @@ void IndexSelector::updateIndexes(const Frequencies &demandedFrequencies)
     }
 }
 
-uint32_t IndexSelector::getFrequencyIndex(uint32_t frequencyNumber) const
+
+
+uint32_t DataSelector::getFrequencyIndex(uint32_t frequencyNumber) const
 {
     return indexesMap.at(frequencyNumber);
 }

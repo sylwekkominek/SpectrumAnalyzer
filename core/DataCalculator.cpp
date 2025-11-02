@@ -21,9 +21,9 @@ std::vector<float> DataAverager::calculate()
 
 void DataAverager::updateAlgorithm()
 {
-    algorithm = [this](auto left, auto right)
+    algorithm = [n=numberOfSignalsForProcessing](auto left, auto right)
     {
-        return left + right * (1.0/numberOfSignalsForProcessing);
+        return left + right * (1.0/n);
     };
 }
 

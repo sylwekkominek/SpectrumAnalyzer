@@ -5,8 +5,6 @@
  */
 
 #include "core/DataCalculator.hpp"
-#include "core/Helpers.hpp"
-#include "helpers/TestHelpers.hpp"
 #include "helpers/ValuesChecker.hpp"
 #include <gtest/gtest.h>
 #include <cmath>

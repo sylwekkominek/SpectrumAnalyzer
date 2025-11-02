@@ -11,18 +11,22 @@
 #include <map>
 #include <cstdint>
 
-class IndexSelector
+class DataSelector
 {
 public:
 
-    IndexSelector(uint32_t samplingRate, uint32_t fftSize, const Frequencies &demandedFrequencies);
-    uint32_t getFrequencyIndex(uint32_t frequencyNumber) const;
+    DataSelector(uint32_t samplingRate, uint32_t fftSize, const Frequencies &demandedFrequencies);
+    std::vector<float> operator()(const std::vector<float> &data);
+    std::vector<float> operator()() const;
 private:
+    uint32_t getFrequencyIndex(uint32_t frequencyNumber) const;
     void updateIndexes(const Frequencies &demandedFrequencies);
 
-    uint32_t numberOfRectangles;
+
+    uint32_t fftSize;
+    uint32_t numberOfFrequencies;
     std::set<Frequency> allFrequencies;
     std::map<uint32_t,uint32_t> indexesMap;
+    std::vector<float> selectedData;
 };
-
 

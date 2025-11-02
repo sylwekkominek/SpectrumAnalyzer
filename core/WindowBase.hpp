@@ -7,19 +7,8 @@
 #pragma once
 
 #include "ConfigReader.hpp"
+#include "CommonTypes.hpp"
 #include <memory>
-
-struct CursorPosition
-{
-    double x;
-    double y;
-};
-
-struct WindowSize
-{
-    uint16_t x;
-    uint16_t y;
-};
 
 
 class WindowBase

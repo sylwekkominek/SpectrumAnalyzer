@@ -89,21 +89,19 @@ struct WindowTestsBase
 
         InSequence s;
 
-        EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(1);
-        EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(1);
-
-        EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(1);
-        EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(1);
-
+        EXPECT_CALL(windowBase, getWindowSize).WillOnce(Return(WindowSize{1024,768}));
         EXPECT_CALL(openGL, glClear(_)).Times(1);
 
+        EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(1);
+        EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(1);
+
+        EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(1);
+        EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(1);
 
         EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(1);
         EXPECT_CALL(openGL, glBindVertexArray(_)).Times(1);
         EXPECT_CALL(openGL, glProgramUniform1f(_,_,_)).Times(1);
         EXPECT_CALL(openGL, glDrawArrays(_,_,_)).Times(1);
-
-        EXPECT_CALL(windowBase, getWindowSize).WillOnce(Return(WindowSize{1024,768}));
 
         if(smallRectanglesEnabled)
         {
@@ -126,6 +124,7 @@ struct WindowTestsBase
 
         EXPECT_CALL(windowBase, getCursorPosition()).WillOnce(Return(CursorPosition{0,0}));
         EXPECT_CALL(windowBase, swapBuffers()).Times(1);
+
     }
 
     void expectCheckIfWindowShouldBeClosed(const bool returnValue=true)

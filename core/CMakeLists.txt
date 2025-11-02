@@ -9,16 +9,20 @@ add_library(spectrum-analyzer-core STATIC
     FFTCalculator.cpp
     WindowBase.cpp
     Window.cpp
-    IndexSelector.cpp
+    DataSelector.cpp
     DataCalculator.cpp
     Stats.cpp
     AudioSamplesCollector.cpp
     AudioSpectrumAnalyzer.cpp
     Helpers.cpp
+    RectangleHighligther.cpp
+    DynamicMaxHolder.cpp
     gpu/ElementInsideGpu.cpp
     gpu/LineInsideGpu.cpp
     gpu/RectangleInsideGpu.cpp
     gpu/TextInsideGpu.cpp
+    gpu/FigureGeometryCalculator.cpp
+    gpu/Gpu.cpp
 )
 
 target_include_directories(spectrum-analyzer-core
