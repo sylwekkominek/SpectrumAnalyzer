@@ -1,5 +1,6 @@
 find_package(GTest REQUIRED)
 
+
 add_executable(spectrum-analyzer-tests
         helpers/TextInsideGpuMock.cpp
         helpers/OpenGlMock.cpp
@@ -10,6 +11,7 @@ add_executable(spectrum-analyzer-tests
         DataCalculatorTests.cpp
         DataSelectorTests.cpp
         StatsTests.cpp
+        ConfigFileReaderTests.cpp
         ConfigReaderTests.cpp
         SamplesCollectorTests.cpp
         WindowTests.cpp
@@ -29,16 +31,6 @@ target_link_libraries(spectrum-analyzer-tests PRIVATE
     GTest::gmock_main
 )
 
-
-add_custom_command(
-  OUTPUT
-    ${CMAKE_CURRENT_BINARY_DIR}/testConfig.py
-  COMMAND
-    ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/testConfig.py
-                                          ${CMAKE_CURRENT_BINARY_DIR}/testConfig.py
-  DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/testConfig.py
-  )
 add_custom_command(
   OUTPUT
     ${CMAKE_CURRENT_BINARY_DIR}/testAudioConfig.py
@@ -50,6 +42,5 @@ add_custom_command(
   )
 target_sources(spectrum-analyzer-tests
   PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}/testConfig.py
     ${CMAKE_CURRENT_BINARY_DIR}/testAudioConfig.py
   )

@@ -6,91 +6,45 @@
 
 #pragma once
 
-#include "PythonCodeRunner.hpp"
-#include <ostream>
-#include <vector>
-
-using Frequency = float;
-using Position = float;
-using Frequencies = std::vector<Frequency>;
-using Positions = std::vector<Position>;
-using Color = std::vector<float>;
-using ColorsOfRectanglePerVertices = std::map<uint32_t, Color>;
-
-struct Configuration
-{
-    Frequencies frequencies;
-    std::vector<float> signalWindow;
-    bool pythonDataSourceEnabled;
-    bool defaultFullscreenState;
-    uint16_t maximizedWindowHorizontalSize;
-    uint16_t maximizedWindowVerticalSize;
-    uint16_t normalWindowHorizontalSize;
-    uint16_t normalWindowVerticalSize;
-    uint16_t numberOfRectangles;
-    double gapWidthInRelationToRectangleWidth;
-    uint32_t numberOfSamples;
-    uint32_t samplingRate;
-    float desiredFrameRate;
-    uint32_t numberOfSignalsForAveraging;
-    uint32_t numberOfSignalsForMaxHold;
-    float alphaFactor;
-    uint32_t maxQueueSize;
-    float scalingFactor;
-    float offsetFactor;
-    bool dynamicMaxHoldVisibilityState;
-    float dynamicMaxHoldRectangleHeightInPercentOfScreenSize;
-    float dynamicMaxHoldSpeedOfFalling;
-    bool dynamicMaxHoldAccelerationStateOfFalling;
-    bool advancedColorSettingEnabled;
-    Positions horizontalLinePositions;
-    Color colorOfStaticLines;
-    ColorsOfRectanglePerVertices colorsOfRectangle;
-    ColorsOfRectanglePerVertices colorsOfDynamicMaxHoldRectangle;
-    std::string advancedColorSettings;
-    std::string backgroundColorSettings;
-};
-
-std::ostream& operator<<(std::ostream& os, const Configuration & config);
+#include "Config.hpp"
+#include "ConfigFileReader.hpp"
 
 
-class ConfigReader : public PythonCodeRunner
+class ConfigReader : public ConfigFileReader
 {
 public:
-    ConfigReader(const char *moduleName="config");
+    ConfigReader(const std::string &path="config");
     Configuration getConfig();
+
 private:
-    Frequencies getFrequencies();
-    std::vector<float> getSignalWindow();
-    bool getPythonDataSourceEnabled();
-    bool getDefaultFullscreenState();
-    double getMaximizedWindowHorizontalSize();
-    double getMaximizedWindowVerticalSize();
-    double getNormalWindowHorizontalSize();
-    double getNormalWindowVerticalSize();
-    double getGapWidthInRelationToRectangleWidth();
-    double getNumberOfSamples();
-    double getSamplingRate();
-    double getDesiredFrameRate();
-    double getNumberOfSignalsForAveraging();
-    double getNumberOfSignalsForMaxHold();
-    double getAlphaFactorForSmoothing();
-    double getMaxQueueSize();
-    double getScalingFactor();
-    double getOffsetFactor();
-    bool getDynamicMaxHoldVisibilityState();
-    double getDynamicMaxHoldRectangleHeightInPercentOfScreenSize();
-    double getDynamicMaxHoldSpeedOfFalling();
-    bool getDynamicMaxHoldAccelerationStateOfFalling();
-    Positions getHorizontalLinePositions();
-    Color getColorOfStaticLines();
-    ColorsOfRectanglePerVertices getColorsOfRectangle();
-    ColorsOfRectanglePerVertices getColorsOfDynamicMaxHoldRectangle();
+    Freqs getFrequencies();
+    NumberOfRectangles getNumberOfRectangles();
+    SignalWindow getSignalWindow();
+    PythonDataSourceEnabled getPythonDataSourceEnabled();
+    DefaultFullscreenState getDefaultFullscreenState();
+    MaximizedWindowSize getMaximizedWindowSize();
+    NormalWindowSize getNormalWindowSize();
+    GapWidthInRelationToRectangleWidth getGapWidthInRelationToRectangleWidth();
+    NumberOfSamples getNumberOfSamples();
+    SamplingRate getSamplingRate();
+    DesiredFrameRate getDesiredFrameRate();
+    NumberOfSignalsForAveraging getNumberOfSignalsForAveraging();
+    NumberOfSignalsForMaxHold getNumberOfSignalsForMaxHold();
+    AlphaFactor getAlphaFactorForSmoothing();
+    MaxQueueSize getMaxQueueSize();
+    ScalingFactor getScalingFactor();
+    OffsetFactor getOffsetFactor();
+    DynamicMaxHoldVisibilityState getDynamicMaxHoldVisibilityState();
+    DynamicMaxHoldRectangleHeightInPercentOfScreenSize getDynamicMaxHoldRectangleHeightInPercentOfScreenSize();
+    DynamicMaxHoldSpeedOfFalling getDynamicMaxHoldSpeedOfFalling();
+    DynamicMaxHoldAccelerationStateOfFalling getDynamicMaxHoldAccelerationStateOfFalling();
+    HorizontalLinePositions getHorizontalLinePositions();
+    ColorOfStaticLines getColorOfStaticLines();
+    ColorsOfRectangle getColorsOfRectangle();
+    ColorsOfDynamicMaxHoldRectangle getColorsOfDynamicMaxHoldRectangle();
     ColorsOfRectanglePerVertices getColorsOfRectangleHelper(const std::string& functionName);
-    std::string getAdvancedColorSettings();
-    std::string getBackgroundColorSettings();
+    AdvancedColorSettings getAdvancedColorSettings();
+    BackgroundColorSettings getBackgroundColorSettings();
 
     Configuration config{};
-    bool isConfigReadOut{false};
 };
-

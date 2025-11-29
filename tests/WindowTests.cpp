@@ -15,15 +15,30 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
     Configuration getConfig()
     {
         Configuration config{};
-        config.frequencies = {100,200,300,400,500,600,700,800,900,1000};
-        config.numberOfRectangles = config.frequencies.size();
-        config.numberOfSamples = 2048;
-        config.samplingRate = 44100;
-        config.dynamicMaxHoldVisibilityState = true;
-        config.defaultFullscreenState = false;
-        config.scalingFactor = 1.0;
-        config.colorsOfRectangle ={{0, {1,1,1,1}},{1, {1,1,1,1}},{2,{1,1,1,1}}, {3,{1,1,1,1}}};
-        config.colorsOfDynamicMaxHoldRectangle = {{0, {1,1,1,1}},{1, {1,1,1,1}},{2,{1,1,1,1}}, {3,{1,1,1,1}}};
+
+        uint32_t numberOfSamples = 2048;
+        Frequencies frequencies = {100,200,300,400,500,600,700,800,900,1000};
+
+        config.data.add(Freqs{frequencies});
+        config.data.add(NumberOfRectangles{(uint16_t)frequencies.size()});
+        config.data.add(NumberOfSamples{numberOfSamples});
+        config.data.add(DesiredFrameRate{1});
+        config.data.add(ColorOfStaticLines{{}});
+        config.data.add(HorizontalLinePositions{{}});
+        config.data.add(SamplingRate{44100});
+        config.data.add(DynamicMaxHoldVisibilityState{true});
+        config.data.add(DefaultFullscreenState{false});
+        config.data.add(ScalingFactor{1});
+        config.data.add(ColorsOfRectangle{});
+        config.data.add(ColorsOfDynamicMaxHoldRectangle{});
+        config.data.add(DynamicMaxHoldSpeedOfFalling{});
+        config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
+        config.data.add(AdvancedColorSettings{});
+        config.data.add(BackgroundColorSettings{});
+        config.data.add(GapWidthInRelationToRectangleWidth{});
+        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{});
+
+
         return config;
     }
 };
@@ -31,18 +46,18 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
 TEST_F(WindowTests, checkIfOpenGlFunctionsAreBeingCalled)
 {
     const auto config = getConfig();
-    const std::vector<float> signalToBeDrawn = std::vector<float>(config.numberOfSamples, 100);
+    const std::vector<float> signalToBeDrawn = std::vector<float>(config.data.get<NumberOfSamples>().value, 100);
 
     expectCreateWindow();
-    expectInitializeGPU(config.numberOfRectangles,true);
-    expectDraw(config.numberOfRectangles,true);
+    expectInitializeGPU(config.data.get<NumberOfRectangles>().value, true);
+    expectDraw(config.data.get<NumberOfRectangles>().value, true);
     expectCheckIfWindowShouldBeClosed();
     expectCheckIfWindowShouldRecreated();
     expectDestroyWindow();
 
     Window window(getConfig(),defaultFullscreenState);
     window.initializeGPU();
-    window.draw(std::vector<float>(config.numberOfSamples,0));
+    window.draw(std::vector<float>(config.data.get<NumberOfSamples>().value, 0));
 
     window.checkIfWindowShouldBeClosed();
     window.checkIfWindowShouldBeRecreated();

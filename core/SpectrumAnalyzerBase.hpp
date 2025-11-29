@@ -21,9 +21,9 @@ public:
     SpectrumAnalyzerBase(const Configuration &configuration):
         config(configuration),
         shouldProceed(true),
-        dataExchanger(configuration.maxQueueSize),
-        fftDataExchanger(configuration.maxQueueSize),
-        processedDataExchanger(configuration.maxQueueSize),
+        dataExchanger(configuration.get<MaxQueueSize>()),
+        fftDataExchanger(configuration.get<MaxQueueSize>()),
+        processedDataExchanger(configuration.get<MaxQueueSize>()),
         flowControlDataExchanger(maxQueueSizeForFlowController)
     {
     }

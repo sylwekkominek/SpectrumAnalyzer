@@ -49,19 +49,24 @@ void WindowBase::WindowBaseImpl::createWindow()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    const auto name = "Not Yet Another Spectrum Analyzer";
 
     if (isFullScreenEnabled)
     {
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-        window = glfwCreateWindow(config.maximizedWindowHorizontalSize, config.maximizedWindowVerticalSize, "SpectrumAnalyzer", glfwGetPrimaryMonitor(), nullptr);
-        updateCurrentWindowSize(config.maximizedWindowHorizontalSize, config.maximizedWindowVerticalSize);
+
+        const auto maximizedWindowSize = config.get<MaximizedWindowSize>();
+        window = glfwCreateWindow(maximizedWindowSize.first, maximizedWindowSize.second, name, glfwGetPrimaryMonitor(), nullptr);
+        updateCurrentWindowSize(maximizedWindowSize.first, maximizedWindowSize.second);
+
     }
     else
     {
+        const auto normalWindowSize = config.get<NormalWindowSize>();
         glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-        window = glfwCreateWindow(config.normalWindowHorizontalSize, config.normalWindowVerticalSize, "SpectrumAnalyzer", nullptr, nullptr);
+        window = glfwCreateWindow(normalWindowSize.first, normalWindowSize.second, name, nullptr, nullptr);
         glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-        updateCurrentWindowSize(config.normalWindowHorizontalSize, config.normalWindowVerticalSize);
+        updateCurrentWindowSize(normalWindowSize.first, normalWindowSize.second);
     }
 
     glfwSetCursorEnterCallback(window, cursorEnteredAreaOverWindowCallback);

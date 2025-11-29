@@ -4,20 +4,20 @@
  * see file LICENSE in this source tree.
  */
 
-#include "core/SamplesCollector.hpp"
+#include "core/dataSource/PythonDataSource.hpp"
 #include "helpers/TestHelpers.hpp"
 #include "helpers/ValuesChecker.hpp"
 #include <gtest/gtest.h>
 #include <cmath>
 
 
-class SamplesCollectorTests : public ValuesChecker<-6>, public ::testing::Test
+class PythonDataSourceTests : public ValuesChecker<-6>, public ::testing::Test
 {
 public:
     const char *pythonFileName = "testAudioConfig";
 };
 
-TEST_F(SamplesCollectorTests, samplesCollectorTest)
+TEST_F(PythonDataSourceTests, pythonDataSourceTest)
 {
     const uint32_t numberOfSamples{32};
     const float samplingFrequency{32};
@@ -26,9 +26,9 @@ TEST_F(SamplesCollectorTests, samplesCollectorTest)
 
     const auto expectedSignal = generateSignal(numberOfSamples, samplingFrequency, singalFrequency, amplitude);
 
-    SamplesCollector samplesCollector(pythonFileName);
-    samplesCollector.initialize(numberOfSamples,samplingFrequency);
-    samplesCollector.collectDataFromHw();
+    PythonDataSource pythonDataSource(pythonFileName);
+    pythonDataSource.initialize(numberOfSamples,samplingFrequency);
+    pythonDataSource.collectDataFromHw();
 
-    valueChecker(expectedSignal, samplesCollector.collectDataFromHw());
+    valueChecker(expectedSignal, pythonDataSource.collectDataFromHw());
 }

@@ -32,7 +32,7 @@ std::vector<float> DataSelector::operator()(const std::vector<float> &data)
 
     for(uint32_t i=0;i<numberOfFrequencies;++i)
     {
-        selectedData[i] = data.at(getFrequencyIndex(i));
+        selectedData[i] = data.at(getFrequencyInfo(i).first);
     }
 
     return selectedData;
@@ -41,6 +41,18 @@ std::vector<float> DataSelector::operator()(const std::vector<float> &data)
 std::vector<float> DataSelector::operator()() const
 {
     return selectedData;
+}
+
+Frequencies DataSelector::getSelectedFrequencies() const
+{
+    Frequencies selectedFrequencies;
+
+    for(uint32_t i=0;i<numberOfFrequencies;++i)
+    {
+        selectedFrequencies.push_back(getFrequencyInfo(i).second);
+    }
+
+    return selectedFrequencies;
 }
 
 void DataSelector::updateIndexes(const Frequencies &demandedFrequencies)
@@ -62,18 +74,16 @@ void DataSelector::updateIndexes(const Frequencies &demandedFrequencies)
 
             std::cout<<"lowerFreq: "<< *lowerFreq <<" demanded freq: "<< demandedFreq <<"  upperFreq: "<<*upperFreq<<" used: "<<*shortestDistanceIterator<<" index: "<<index<<std::endl;
 
-            indexesMap.insert({i,index});
+            indexesMap.insert({i,std::make_pair(index, *shortestDistanceIterator)});
         }
         else if( upperFreq == allFrequencies.begin())
         {
-            indexesMap.insert({i,0});
+            indexesMap.insert({i,std::make_pair(0, *allFrequencies.begin())});
         }
     }
 }
 
-
-
-uint32_t DataSelector::getFrequencyIndex(uint32_t frequencyNumber) const
+DataSelector::FrequencyInfo DataSelector::getFrequencyInfo(FreqIndex frequencyNumber) const
 {
     return indexesMap.at(frequencyNumber);
 }

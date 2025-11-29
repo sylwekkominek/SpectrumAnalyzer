@@ -41,6 +41,16 @@ struct ValuesChecker
         }
     }
 
+    static void positionValuesChecker(const std::map<Position,std::vector<ExpectedValue>> &positionExpecetedValues, const std::map<Position,std::vector<float>> &signals)
+    {
+        ASSERT_EQ(positionExpecetedValues.size(), signals.size());
+
+        for(uint16_t i=0; i< signals.size(); ++i)
+        {
+            valueChecker(positionExpecetedValues.at(i), signals.at(i));
+        }
+    }
+
     static const float marginOfError;
 };
 

@@ -38,7 +38,6 @@ int main()
 
     ConfigReader configReader;
     const Configuration &config = configReader.getConfig();
-    std::cout<<"Configuration read out from config.py: "<<std::endl;
     std::cout<<config<<std::endl;
 
     std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = std::make_unique<AudioSpectrumAnalyzer>(config);

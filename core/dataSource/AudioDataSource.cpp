@@ -4,12 +4,12 @@
  * see file LICENSE in this source tree.
  */
 
-#include "AudioSamplesCollector.hpp"
-#include "Helpers.hpp"
+#include "AudioDataSource.hpp"
+#include "../Helpers.hpp"
 #include <iostream>
 
 
-AudioSamplesCollector::AudioSamplesCollector()
+AudioDataSource::AudioDataSource()
 {
     initFunctions.emplace_back("initialize", [](){
         return Pa_Initialize();
@@ -42,7 +42,7 @@ AudioSamplesCollector::AudioSamplesCollector()
     });
 }
 
-bool AudioSamplesCollector::initialize(uint32_t numberOfSamples, uint32_t sampleRate)
+bool AudioDataSource::initialize(uint32_t numberOfSamples, uint32_t sampleRate)
 {
     dataLength = numberOfSamples;
     samplingRate = sampleRate;
@@ -62,7 +62,7 @@ bool AudioSamplesCollector::initialize(uint32_t numberOfSamples, uint32_t sample
     return true;
 }
 
-void AudioSamplesCollector::updateBuffer()
+void AudioDataSource::updateBuffer()
 {
     PaError err = Pa_ReadStream(stream, buffer.data(), dataLength);
 
@@ -72,7 +72,7 @@ void AudioSamplesCollector::updateBuffer()
     }
 }
 
-std::vector<float> AudioSamplesCollector::collectDataFromHw()
+std::vector<float> AudioDataSource::collectDataFromHw()
 {
     updateBuffer();
 
@@ -89,7 +89,7 @@ std::vector<float> AudioSamplesCollector::collectDataFromHw()
     return getAverage(leftChannel, rightChannel);
 }
 
-AudioSamplesCollector::~AudioSamplesCollector()
+AudioDataSource::~AudioDataSource()
 {
     if (stream)
     {

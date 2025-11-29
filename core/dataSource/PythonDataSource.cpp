@@ -4,19 +4,19 @@
  * see file LICENSE in this source tree.
  */
 
-#include "SamplesCollector.hpp"
+#include "PythonDataSource.hpp"
 #include <vector>
 #include <map>
 
 
-SamplesCollector::SamplesCollector(const char *moduleName):
+PythonDataSource::PythonDataSource(const char *moduleName):
     PythonCodeRunner(moduleName,
                      {"initialize",
                       "getData"})
 {
 }
 
-bool SamplesCollector::initialize(uint32_t dataLength, uint32_t samplingRate)
+bool PythonDataSource::initialize(uint32_t dataLength, uint32_t samplingRate)
 {
     try
     {
@@ -39,17 +39,17 @@ bool SamplesCollector::initialize(uint32_t dataLength, uint32_t samplingRate)
     return true;
 }
 
-std::vector<float> SamplesCollector::collectDataFromHw()
+std::vector<float> PythonDataSource::collectDataFromHw()
 {
     return getData();
 }
 
-SamplesCollector::~SamplesCollector()
+PythonDataSource::~PythonDataSource()
 {
     Py_Finalize();
 }
 
-std::vector<float> SamplesCollector::getData()
+std::vector<float> PythonDataSource::getData()
 {
     return getValues(pointersToPythonFunctions.at(__func__));
 }

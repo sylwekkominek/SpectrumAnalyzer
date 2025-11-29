@@ -5,7 +5,7 @@
  */
 
 #pragma once
-#include "ConfigReader.hpp"
+
 #include "WindowBase.hpp"
 #include "gpu/Gpu.hpp"
 #include <vector>

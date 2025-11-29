@@ -6,18 +6,18 @@
 
 #pragma once
 
-#include "SamplesCollectorBase.hpp"
+#include "DataSourceBase.hpp"
 #include "PythonCodeRunner.hpp"
 #include <vector>
 
 
-class SamplesCollector : public PythonCodeRunner, public SamplesCollectorBase
+class PythonDataSource : public PythonCodeRunner, public DataSourceBase
 {
 public:
-    SamplesCollector(const char *moduleName="audioConfig");
+    PythonDataSource(const char *moduleName="audioConfig");
     bool initialize(uint32_t numberOfSamples, uint32_t samplingRate) override;
     std::vector<float> collectDataFromHw() override;
-    ~SamplesCollector();
+    ~PythonDataSource();
 
 private:
 

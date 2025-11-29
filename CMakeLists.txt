@@ -7,15 +7,21 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+option(ENABLE_TESTS "Enable tests" OFF)
+option(NO_PYTHON "Disable python" OFF)
+
 find_package(OpenGL 4.5 REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 
+if(NOT NO_PYTHON OR ENABLE_TESTS)
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+endif()
+
+
 add_subdirectory(glad/)
 add_subdirectory(core/)
 
-option(ENABLE_TESTS "Enable tests" OFF)
 
 if(ENABLE_TESTS)
     message(STATUS "Running tests")
@@ -33,32 +39,22 @@ else()
     target_link_libraries(spectrum-analyzer PRIVATE
         spectrum-analyzer-core)
 
+    if(NOT NO_PYTHON)
+        add_custom_command(
+          OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/audioConfig.py
+          COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/audioConfig.py
+                                                  ${CMAKE_CURRENT_BINARY_DIR}/audioConfig.py
+          DEPENDS
+            ${CMAKE_CURRENT_SOURCE_DIR}/audioConfig.py
+          )
 
-    add_custom_command(
-      OUTPUT
-        ${CMAKE_CURRENT_BINARY_DIR}/audioConfig.py
-      COMMAND
-        ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/audioConfig.py
-                                              ${CMAKE_CURRENT_BINARY_DIR}/audioConfig.py
-      DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/audioConfig.py
-      )
-
-    add_custom_command(
-      OUTPUT
-        ${CMAKE_CURRENT_BINARY_DIR}/config.py
-      COMMAND
-        ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/config.py
-                                              ${CMAKE_CURRENT_BINARY_DIR}/config.py
-      DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/config.py
-      )
-
-    target_sources(spectrum-analyzer
-      PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR}/audioConfig.py
-        ${CMAKE_CURRENT_BINARY_DIR}/config.py
-      )
+        target_sources(spectrum-analyzer
+          PRIVATE
+            ${CMAKE_CURRENT_BINARY_DIR}/audioConfig.py
+          )
+    endif()
 
 endif()
 

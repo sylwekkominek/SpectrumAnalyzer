@@ -11,6 +11,7 @@
 #include <typeindex>
 #include <map>
 #include <optional>
+#include <stdexcept>
 
 struct CursorPosition
 {
@@ -36,7 +37,33 @@ public:
     template <typename T>
     T& get()
     {
-        return std::any_cast<T&>(data.at(typeid(T)));
+        try
+        {
+            return std::any_cast<T&>(data.at(typeid(T)));
+        }
+        catch (const std::out_of_range&)
+        {
+            throw std::runtime_error(std::string("AnyData: missing type: ") + typeid(T).name());
+        }
+    }
+
+    template <typename T>
+    const T& get() const
+    {
+        try
+        {
+            return std::any_cast<const T&>(data.at(typeid(T)));
+        }
+        catch (const std::out_of_range&)
+        {
+            throw std::runtime_error(std::string("AnyData: missing type: ") + typeid(T).name());
+        }
+    }
+
+
+    bool empty() const
+    {
+        return data.empty();
     }
 
 private:

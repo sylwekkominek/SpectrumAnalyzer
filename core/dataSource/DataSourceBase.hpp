@@ -3,11 +3,11 @@
 #include <vector>
 #include <cstdint>
 
-class SamplesCollectorBase
+class DataSourceBase
 {
 public:
-    SamplesCollectorBase()=default;
-    virtual ~SamplesCollectorBase()=default;
+    DataSourceBase()=default;
+    virtual ~DataSourceBase()=default;
     bool virtual initialize(uint32_t numberOfSamples, uint32_t samplingRate)=0;
     std::vector<float> virtual collectDataFromHw()=0;
 

@@ -5,312 +5,690 @@
  */
 
 #include "ConfigReader.hpp"
-#include <iostream>
 
-std::ostream& operator<<(std::ostream& os, const Configuration & config)
-{
-    auto colorPrinter = [](const auto &color)
-    {
-        for(auto & component: color)
-        {
-            std::cout<<component<<" ";
-        }
-        std::cout<<std::endl;
-    };
-
-    auto colorsPrinter = [](const auto &colorsOfRectangle)
-    {
-        for(auto &[vertex, color]: colorsOfRectangle)
-        {
-            std::cout<<"vertex: "<<vertex<<" color: ";
-            for(auto & component: color)
-            {
-                std::cout<<component<<" ";
-            }
-            std::cout<<std::endl;
-        }
-    };
-
-    os <<"pythonDataSourceEnabled: "<<config.pythonDataSourceEnabled<<std::endl;
-    os <<"defaultFullscreenState: "<<config.defaultFullscreenState<<std::endl;
-    os <<"maximizedWindowHorizontalSize: "<<config.maximizedWindowHorizontalSize<<std::endl;
-    os <<"maximizedWindowVerticalSize: "<<config.maximizedWindowVerticalSize<<std::endl;
-    os <<"normalWindowHorizontalSize: "<<config.normalWindowHorizontalSize<<std::endl;
-    os <<"normalWindowVerticalSize: "<<config.normalWindowVerticalSize<<std::endl;
-    os <<"numberOfRectangles: "<<config.numberOfRectangles<<std::endl;
-    os <<"gapWidthInRelationToRectangleWidth: "<<config.gapWidthInRelationToRectangleWidth<<std::endl;
-    os <<"numberOfSamples: "<<config.numberOfSamples<<std::endl;
-    os <<"samplingRate: "<<config.samplingRate<<std::endl;
-    os <<"desiredFrameRate: "<<config.desiredFrameRate<<std::endl;
-    os <<"numberOfSignalsForAveraging: "<<config.numberOfSignalsForAveraging<<std::endl;
-    os <<"numberOfSignalsForMaxHold: "<<config.numberOfSignalsForMaxHold<<std::endl;
-    os <<"alphaFactor: "<<config.alphaFactor<<std::endl;
-    os <<"maxQueueSize: "<<config.maxQueueSize<<std::endl;
-    os <<"scalingFactor: "<<config.scalingFactor<<std::endl;
-    os <<"offsetFactor: "<<config.offsetFactor<<std::endl;
-    os <<"dynamicMaxHoldVisibilityState: "<<config.dynamicMaxHoldVisibilityState<<std::endl;
-    os <<"dynamicMaxHoldRectangleHeightInPercentOfScreenSize: "<<config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize<<std::endl;
-    os <<"dynamicMaxHoldSpeedOfFalling: "<<config.dynamicMaxHoldSpeedOfFalling<<std::endl;
-    os <<"dynamicMaxHoldAccelerationStateOfFalling: "<<config.dynamicMaxHoldAccelerationStateOfFalling<<std::endl;
-    os <<"frequencies: ";
-
-    for(const auto &el: config.frequencies)
-    {
-        os <<el<<" ";
-    }
-    os <<std::endl;
-
-    os <<"signalWindow size: "<<config.signalWindow.size()<<std::endl;
-
-
-    os <<"horizontalLinePositions: ";
-
-    for(const auto &el: config.horizontalLinePositions)
-    {
-        os <<el<<" ";
-    }
-    os <<std::endl;
-
-    os <<"colorOfStaticLines: "<<std::endl;
-    colorPrinter(config.colorOfStaticLines);
-    os <<"colorsOfRectangle: "<<std::endl;
-    colorsPrinter(config.colorsOfRectangle);
-    os <<"colorsOfDynamicMaxHoldRectangle: "<<std::endl;
-    colorsPrinter(config.colorsOfDynamicMaxHoldRectangle);
-
-    return os;
-}
-
-ConfigReader::ConfigReader(const char *moduleName):
-    PythonCodeRunner(moduleName,
-                {
-                "getPythonDataSourceEnabled",
-                 "getDefaultFullscreenState",
-                 "getMaximizedWindowHorizontalSize",
-                 "getMaximizedWindowVerticalSize",
-                 "getNormalWindowHorizontalSize",
-                 "getNormalWindowVerticalSize",
-                 "getGapWidthInRelationToRectangleWidth",
-                 "getNumberOfSamples",
-                 "getSamplingRate",
-                 "getDesiredFrameRate",
-                 "getNumberOfSignalsForAveraging",
-                 "getNumberOfSignalsForMaxHold",
-                 "getAlphaFactorForSmoothing",
-                 "getMaxQueueSize",
-                 "getFrequencies",
-                 "getSignalWindow",
-                 "getScalingFactor",
-                 "getOffsetFactor",
-                 "getDynamicMaxHoldVisibilityState",
-                 "getDynamicMaxHoldRectangleHeightInPercentOfScreenSize",
-                 "getDynamicMaxHoldSpeedOfFalling",
-                 "getDynamicMaxHoldAccelerationStateOfFalling",
-                 "getHorizontalLinePositions",
-                 "getColorOfStaticLines",
-                 "getColorsOfRectangle",
-                 "getColorsOfDynamicMaxHoldRectangle",
-                 "getAdvancedColorSettings",
-                 "getBackgroundColorSettings"
-             })
+ConfigReader::ConfigReader(const std::string &path) : ConfigFileReader(path)
 {
 }
 
 Configuration ConfigReader::getConfig()
 {
-    if(not isConfigReadOut)
+    if(config.data.empty())
     {
-        config.pythonDataSourceEnabled = getPythonDataSourceEnabled();
-        config.defaultFullscreenState = getDefaultFullscreenState();
-        config.maximizedWindowHorizontalSize = getMaximizedWindowHorizontalSize();
-        config.maximizedWindowVerticalSize = getMaximizedWindowVerticalSize();
-        config.normalWindowHorizontalSize = getNormalWindowHorizontalSize();
-        config.normalWindowVerticalSize = getNormalWindowVerticalSize();
-        config.gapWidthInRelationToRectangleWidth = getGapWidthInRelationToRectangleWidth();
-        config.numberOfSamples = getNumberOfSamples();
-        config.samplingRate = getSamplingRate();
-        config.desiredFrameRate = getDesiredFrameRate();
-        config.numberOfSignalsForAveraging = getNumberOfSignalsForAveraging();
-        config.numberOfSignalsForMaxHold = getNumberOfSignalsForMaxHold();
-        config.alphaFactor = getAlphaFactorForSmoothing();
-        config.maxQueueSize = getMaxQueueSize();
-        config.frequencies = getFrequencies();
-        config.signalWindow = getSignalWindow();
-        config.numberOfRectangles = config.frequencies.size();
-        config.scalingFactor = getScalingFactor();
-        config.offsetFactor = getOffsetFactor();
-        config.dynamicMaxHoldVisibilityState = getDynamicMaxHoldVisibilityState();
-        config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize = getDynamicMaxHoldRectangleHeightInPercentOfScreenSize();
-        config.dynamicMaxHoldSpeedOfFalling = getDynamicMaxHoldSpeedOfFalling();
-        config.dynamicMaxHoldAccelerationStateOfFalling = getDynamicMaxHoldAccelerationStateOfFalling();
-        config.horizontalLinePositions = getHorizontalLinePositions();
-        config.colorOfStaticLines = getColorOfStaticLines();
-        config.colorsOfRectangle =  getColorsOfRectangle();
-        config.colorsOfDynamicMaxHoldRectangle =  getColorsOfDynamicMaxHoldRectangle();
-        config.advancedColorSettings = getAdvancedColorSettings();
-        config.backgroundColorSettings = getBackgroundColorSettings();
-        closePython();
-        isConfigReadOut = true;
+        createDirIfNotExists();
+        config.data.add(getPythonDataSourceEnabled());
+        config.data.add(getDefaultFullscreenState());
+        config.data.add(getMaximizedWindowSize());
+        config.data.add(getNormalWindowSize());
+        config.data.add(getGapWidthInRelationToRectangleWidth());
+        config.data.add(getNumberOfSamples());
+        config.data.add(getSamplingRate());
+        config.data.add(getDesiredFrameRate());
+        config.data.add(getNumberOfSignalsForAveraging());
+        config.data.add(getNumberOfSignalsForMaxHold());
+        config.data.add(getAlphaFactorForSmoothing());
+        config.data.add(getMaxQueueSize());
+        config.data.add(getFrequencies());
+        config.data.add(getSignalWindow());
+        config.data.add(getNumberOfRectangles());
+        config.data.add(getScalingFactor());
+        config.data.add(getOffsetFactor());
+        config.data.add(getDynamicMaxHoldVisibilityState());
+        config.data.add(getDynamicMaxHoldRectangleHeightInPercentOfScreenSize());
+        config.data.add(getDynamicMaxHoldSpeedOfFalling());
+        config.data.add(getDynamicMaxHoldAccelerationStateOfFalling());
+        config.data.add(getHorizontalLinePositions());
+        config.data.add(getColorOfStaticLines());
+        config.data.add(getColorsOfRectangle());
+        config.data.add(getColorsOfDynamicMaxHoldRectangle());
+        config.data.add(getAdvancedColorSettings());
+        config.data.add(getBackgroundColorSettings());
     }
 
     return config;
 }
 
-Frequencies ConfigReader::getFrequencies()
+Freqs ConfigReader::getFrequencies()
 {
-    return getValues(pointersToPythonFunctions.at(__func__));
-}
+    Freqs data;
 
-std::vector<float> ConfigReader::getSignalWindow()
-{
-    return getValues(pointersToPythonFunctions.at(__func__));
-}
-
-bool ConfigReader::getPythonDataSourceEnabled()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-bool ConfigReader::getDefaultFullscreenState()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getMaximizedWindowHorizontalSize()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getMaximizedWindowVerticalSize()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getNormalWindowHorizontalSize()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getNormalWindowVerticalSize()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getGapWidthInRelationToRectangleWidth()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getNumberOfSamples()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getSamplingRate()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getDesiredFrameRate()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getNumberOfSignalsForAveraging()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getNumberOfSignalsForMaxHold()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getAlphaFactorForSmoothing()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getMaxQueueSize()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getScalingFactor()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getOffsetFactor()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-bool ConfigReader::getDynamicMaxHoldVisibilityState()
-{
-    return getBooleanValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getDynamicMaxHoldRectangleHeightInPercentOfScreenSize()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-double ConfigReader::getDynamicMaxHoldSpeedOfFalling()
-{
-    return getValue(pointersToPythonFunctions.at(__func__));
-}
-
-bool ConfigReader::getDynamicMaxHoldAccelerationStateOfFalling()
-{
-    return getBooleanValue(pointersToPythonFunctions.at(__func__));
-}
-
-Positions ConfigReader::getHorizontalLinePositions()
-{
-    return getValues(pointersToPythonFunctions.at(__func__));
-}
-
-std::vector<float> ConfigReader::getColorOfStaticLines()
-{
-    return getValues(pointersToPythonFunctions.at(__func__));
-}
-
-ColorsOfRectanglePerVertices ConfigReader::getColorsOfRectangle()
-{
-    return getColorsOfRectangleHelper(__func__);
-}
-
-ColorsOfRectanglePerVertices ConfigReader::getColorsOfDynamicMaxHoldRectangle()
-{
-    return getColorsOfRectangleHelper(__func__);
-}
-
-std::string ConfigReader::getAdvancedColorSettings()
-{
-    return getStringValue(pointersToPythonFunctions.at(__func__));
-}
-
-std::string ConfigReader::getBackgroundColorSettings()
-{
-    return getStringValue(pointersToPythonFunctions.at(__func__));
-}
-
-ColorsOfRectanglePerVertices ConfigReader::getColorsOfRectangleHelper(const std::string& functionName)
-{
-    uint32_t numberOfVerticesInRectangle{4};
-
-    ColorsOfRectanglePerVertices colorsPerVertexNumber{};
-
-    for(uint32_t vertex=0;vertex< numberOfVerticesInRectangle;++vertex)
+    try
     {
-        auto vertexPyValue = PyLong_FromLong(vertex);
-        auto pArgs = PyTuple_New(1);
-        PyTuple_SetItem(pArgs, 0, vertexPyValue);
-        auto colors = getValues(pointersToPythonFunctions.at(functionName), pArgs);
-        Py_DECREF(pArgs);
-        colorsPerVertexNumber.emplace(vertex, colors);
+        const auto fileName = "Frequencies";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), data.value, 1);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName);
+        }
+    }
+    catch(...)
+    {
     }
 
-    return colorsPerVertexNumber;
+    return data;
 }
+
+NumberOfRectangles ConfigReader::getNumberOfRectangles()
+{
+    NumberOfRectangles data;
+
+    try
+    {
+        data.value = getFrequencies().value.size();
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+
+SignalWindow ConfigReader::getSignalWindow()
+{
+    auto numberOfSamples = getNumberOfSamples().value;
+
+    SignalWindow data(numberOfSamples);
+
+    try
+    {
+        const auto fileName = "SignalWindow";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), data.value);
+            return data;
+        }
+
+        const auto dataFromFile = readCSVToVector(fileName);
+
+        if(dataFromFile.size() != numberOfSamples)
+        {
+            writeVectorToCsv(fileName, data.getInfo(), data.value);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+PythonDataSourceEnabled ConfigReader::getPythonDataSourceEnabled()
+{
+    PythonDataSourceEnabled data;
+
+    try
+    {
+        const auto fileName = "PythonDataSourceEnabled";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeBoolToFile(fileName, data.getInfo(), data.value);
+        }
+        else
+        {
+            data.value = readBoolFromFile(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+DefaultFullscreenState ConfigReader::getDefaultFullscreenState()
+{
+    DefaultFullscreenState data;
+
+    try
+    {
+        const auto fileName = "DefaultFullscreenState";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeBoolToFile(fileName, data.getInfo(), data.value);
+        }
+        else
+        {
+            data.value = readBoolFromFile(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+MaximizedWindowSize ConfigReader::getMaximizedWindowSize()
+{
+    MaximizedWindowSize data;
+
+    try
+    {
+        const auto fileName = "MaximizedWindowSize";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), {(float)data.value.first, (float)data.value.second},0);
+        }
+        else
+        {
+            const auto res = readCSVToVector(fileName);
+            data.value.first = res.at(0);
+            data.value.second = res.at(1);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+NormalWindowSize ConfigReader::getNormalWindowSize()
+{
+    NormalWindowSize data;
+
+    try
+    {
+        const auto fileName = "NormalWindowSize";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), {(float)data.value.first, (float)data.value.second},0);
+        }
+        else
+        {
+            const auto res = readCSVToVector(fileName);
+            data.value.first = res.at(0);
+            data.value.second = res.at(1);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+GapWidthInRelationToRectangleWidth ConfigReader::getGapWidthInRelationToRectangleWidth()
+{
+    GapWidthInRelationToRectangleWidth data;
+
+    try
+    {
+        const auto fileName = "GapWidthInRelationToRectangleWidth";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), {data.value});
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+NumberOfSamples ConfigReader::getNumberOfSamples()
+{
+    NumberOfSamples data;
+
+    try
+    {
+        const auto fileName = "NumberOfSamples";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+SamplingRate ConfigReader::getSamplingRate()
+{
+    SamplingRate data;
+
+    try
+    {
+        const auto fileName = "SamplingRate";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+DesiredFrameRate ConfigReader::getDesiredFrameRate()
+{
+    DesiredFrameRate data;
+    try
+    {
+        const auto fileName = "DesiredFrameRate";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+NumberOfSignalsForAveraging ConfigReader::getNumberOfSignalsForAveraging()
+{
+    NumberOfSignalsForAveraging data;
+
+    try
+    {
+        const auto fileName = "NumberOfSignalsForAveraging";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+NumberOfSignalsForMaxHold ConfigReader::getNumberOfSignalsForMaxHold()
+{
+    NumberOfSignalsForMaxHold data;
+
+    try
+    {
+        const auto fileName = "NumberOfSignalsForMaxHold";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+AlphaFactor ConfigReader::getAlphaFactorForSmoothing()
+{
+    AlphaFactor data;
+
+    try
+    {
+        const auto fileName = "AlphaFactor";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), {data.value});
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+MaxQueueSize ConfigReader::getMaxQueueSize()
+{
+    MaxQueueSize data;
+
+    try
+    {
+        const auto fileName = "MaxQueueSize";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), {(float)data.value},0);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+ScalingFactor ConfigReader::getScalingFactor()
+{
+    ScalingFactor data(getSignalWindow().value);
+
+    // Reading from file is intentionally ignored
+
+    return data;
+}
+
+OffsetFactor ConfigReader::getOffsetFactor()
+{
+    OffsetFactor data;
+
+    try
+    {
+        const auto fileName = "OffsetFactor";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), {data.value});
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+DynamicMaxHoldVisibilityState ConfigReader::getDynamicMaxHoldVisibilityState()
+{
+    DynamicMaxHoldVisibilityState data;
+
+    try
+    {
+        const auto fileName = "DynamicMaxHoldVisibilityState";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeBoolToFile(fileName, data.getInfo(), data.value);
+        }
+        else
+        {
+            data.value = readBoolFromFile(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+DynamicMaxHoldRectangleHeightInPercentOfScreenSize ConfigReader::getDynamicMaxHoldRectangleHeightInPercentOfScreenSize()
+{
+    DynamicMaxHoldRectangleHeightInPercentOfScreenSize data;
+
+    try
+    {
+        const auto fileName = "DynamicMaxHoldRectangleHeightInPercentOfScreenSize";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), {data.value});
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+DynamicMaxHoldSpeedOfFalling ConfigReader::getDynamicMaxHoldSpeedOfFalling()
+{
+    DynamicMaxHoldSpeedOfFalling data;
+
+    try
+    {
+        const auto fileName = "DynamicMaxHoldSpeedOfFalling";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), {data.value});
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+DynamicMaxHoldAccelerationStateOfFalling ConfigReader::getDynamicMaxHoldAccelerationStateOfFalling()
+{
+    DynamicMaxHoldAccelerationStateOfFalling data;
+
+    try
+    {
+        const auto fileName = "DynamicMaxHoldAccelerationStateOfFalling";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeBoolToFile(fileName, data.getInfo(), data.value);
+        }
+        else
+        {
+            data.value = readBoolFromFile(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+HorizontalLinePositions ConfigReader::getHorizontalLinePositions()
+{
+    HorizontalLinePositions data;
+
+    try
+    {
+        const auto fileName = "HorizontalLinePositions";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), data.value,2);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+ColorOfStaticLines ConfigReader::getColorOfStaticLines()
+{
+    ColorOfStaticLines data;
+
+    try
+    {
+        const auto fileName = "ColorOfStaticLines";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), data.value,2);
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+ColorsOfRectangle ConfigReader::getColorsOfRectangle()
+{
+    ColorsOfRectangle data;
+
+    try
+    {
+        const auto fileName = "ColorsOfRectangle";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeMapToCsv(fileName, data.getInfo(), data.value, 2);
+        }
+        else
+        {
+            data.value = readCsvToMap(fileName);
+        }
+
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+ColorsOfDynamicMaxHoldRectangle ConfigReader::getColorsOfDynamicMaxHoldRectangle()
+{
+    ColorsOfDynamicMaxHoldRectangle data;
+
+    try
+    {
+        const auto fileName = "ColorsOfDynamicMaxHoldRectangle";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeMapToCsv(fileName, data.getInfo(), data.value, 2);
+        }
+        else
+        {
+            data.value = readCsvToMap(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+AdvancedColorSettings ConfigReader::getAdvancedColorSettings()
+{
+    AdvancedColorSettings data;
+
+    try
+    {
+        const auto fileName = "AdvancedColorSettings";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeStringToFile(fileName, data.getInfo(), data.value);
+        }
+        else
+        {
+            data.value = readWholeFile(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+BackgroundColorSettings ConfigReader::getBackgroundColorSettings()
+{
+    BackgroundColorSettings data;
+
+    try
+    {
+        const auto fileName = "BackgroundColorSettings";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeStringToFile(fileName, data.getInfo(), data.value);
+        }
+        else
+        {
+            data.value = readWholeFile(fileName);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+
+
+
+
+

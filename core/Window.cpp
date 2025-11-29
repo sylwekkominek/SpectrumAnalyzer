@@ -15,12 +15,12 @@ Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
     WindowBase(config, isFullScreenEnabled)
 {
 
-    anyData.add(DataSelector(config.samplingRate, config.numberOfSamples, config.frequencies));
-    anyData.add(Averager(config.desiredFrameRate));
+    anyData.add(DataSelector(config.get<SamplingRate>(), config.get<NumberOfSamples>(), config.get<Freqs>()));
+    anyData.add(Averager(config.get<DesiredFrameRate>()));
     anyData.add(time_point<steady_clock>(steady_clock::now()));
-    anyData.add(FigureGeometryCalculator::getHorizontalLines(scaleDbfsToPercents(moveDbFsToPositiveValues(config.horizontalLinePositions))));
-    anyData.add(DynamicMaxHolder(config.numberOfRectangles, config.dynamicMaxHoldSpeedOfFalling, config.dynamicMaxHoldAccelerationStateOfFalling));
-    anyData.add(RectangleHighligther(config.numberOfRectangles));
+    anyData.add(FigureGeometryCalculator::getHorizontalLines(scaleDbfsToPercents(moveDbFsToPositiveValues(config.get<HorizontalLinePositions>()))));
+    anyData.add(DynamicMaxHolder(config.get<NumberOfRectangles>(), config.get<DynamicMaxHoldSpeedOfFalling>(), config.get<DynamicMaxHoldAccelerationStateOfFalling>()));
+    anyData.add(RectangleHighligther(config.get<NumberOfRectangles>()));
 
     createWindow();
 }
@@ -29,11 +29,11 @@ void Window::initializeGPU()
 {
     gpu.init();
     gpu.enableTransparency();
-    gpu.prepareBackground(config.backgroundColorSettings);
-    gpu.prepareRectangles(config.numberOfRectangles, config.gapWidthInRelationToRectangleWidth, config.colorsOfRectangle, config.advancedColorSettings);
-    gpu.prepareDynamicMaxHoldRectangles(config.numberOfRectangles, config.dynamicMaxHoldRectangleHeightInPercentOfScreenSize, config.gapWidthInRelationToRectangleWidth, config.colorsOfDynamicMaxHoldRectangle);
-    gpu.prepareHorizontalLines(config.horizontalLinePositions.size());
-    gpu.prepareStaticTexts(config.horizontalLinePositions, config.colorOfStaticLines);
+    gpu.prepareBackground(config.get<BackgroundColorSettings>());
+    gpu.prepareRectangles(config.get<NumberOfRectangles>(), config.get<GapWidthInRelationToRectangleWidth>(), config.get<ColorsOfRectangle>(), config.get<AdvancedColorSettings>());
+    gpu.prepareDynamicMaxHoldRectangles(config.get<NumberOfRectangles>(), config.get<DynamicMaxHoldRectangleHeightInPercentOfScreenSize>(), config.get<GapWidthInRelationToRectangleWidth>(), config.get<ColorsOfDynamicMaxHoldRectangle>());
+    gpu.prepareHorizontalLines(config.get<HorizontalLinePositions>().size());
+    gpu.prepareStaticTexts(config.get<HorizontalLinePositions>(), config.get<ColorOfStaticLines>());
     gpu.prepareDynamicText();
 
     operations.emplace_back("prepareData", [&](){
@@ -57,7 +57,7 @@ void Window::initializeGPU()
     });
 
     operations.emplace_back("horizontalLines", [&](){
-        gpu.drawHorizontalLines(anyData.get<std::vector<Line>>(), config.colorOfStaticLines);
+        gpu.drawHorizontalLines(anyData.get<std::vector<Line>>(), config.get<ColorOfStaticLines>());
     });
 
     operations.emplace_back("staticTexts", [&](){
@@ -71,8 +71,12 @@ void Window::initializeGPU()
     });
 
     operations.emplace_back("dynamicMaxHold", [&](){
-        const auto dynamicMaxHoldElementsPosition = scaleDbfsToPercents(moveDbFsToPositiveValues(anyData.get<DynamicMaxHolder>().get()));
-        gpu.drawDynamicMaxHoldRectangles(dynamicMaxHoldElementsPosition);
+
+        if(config.get<DynamicMaxHoldVisibilityState>())
+        {
+            const auto dynamicMaxHoldElementsPosition = scaleDbfsToPercents(moveDbFsToPositiveValues(anyData.get<DynamicMaxHolder>().get()));
+            gpu.drawDynamicMaxHoldRectangles(dynamicMaxHoldElementsPosition);
+        }
     });
 
     operations.emplace_back("highlight", [&](){
@@ -88,7 +92,7 @@ void Window::initializeGPU()
 
             if(averagedDBfs)
             {
-                const auto dBFsHighlightedValues = rectangleHighligther.getStringToBePrinted(config.frequencies.at(hightlightData.current.index),averagedDBfs.value() , anyData.get<DynamicMaxHolder>().get().at(hightlightData.current.index));
+                const auto dBFsHighlightedValues = rectangleHighligther.getStringToBePrinted(config.get<Freqs>().at(hightlightData.current.index),averagedDBfs.value() , anyData.get<DynamicMaxHolder>().get().at(hightlightData.current.index));
                 gpu.drawText(dBFsHighlightedValues, (cursorPosition.x > windowSize.x -128) ? HorizontalAligment::RIGHT : HorizontalAligment::LEFT , cursorPosition.x, cursorPosition.y);
             }
 

@@ -41,8 +41,8 @@ public:
             for(auto signalNo=0; signalNo < numberOfSignalsToBeTransferred; ++signalNo)
             {
                 statsManager.update();
-                const auto data1 = generateSignal(config.numberOfSamples,config.samplingRate,1000, dbFsToAmplitude(-signalNo));
-                const auto data2 = generateSignal(config.numberOfSamples,config.samplingRate,2000, dbFsToAmplitude(-signalNo));
+                const auto data1 = generateSignal(config.data.get<NumberOfSamples>().value,config.data.get<SamplingRate>().value,1000, dbFsToAmplitude(-signalNo));
+                const auto data2 = generateSignal(config.data.get<NumberOfSamples>().value,config.data.get<SamplingRate>().value,2000, dbFsToAmplitude(-signalNo));
                 const auto signal = addSignals(data1,data2);
                 dataExchanger.push_back(std::make_unique<Data>(std::move(signal)));
             }
@@ -94,15 +94,18 @@ public:
     Configuration getConfig()
     {
         Configuration config{};
-        config.numberOfSamples = 2048;
-        config.samplingRate = 8000;
-        config.desiredFrameRate = 1;
-        config.numberOfSignalsForAveraging = 1;
-        config.numberOfSignalsForMaxHold = 1;
-        config.alphaFactor = 1;
-        config.maxQueueSize = 100;
-        config.signalWindow = getSignalWindow(config.numberOfSamples);
-        config.scalingFactor = 1.0;
+
+        uint32_t numberOfSamples = 2048;
+        config.data.add(NumberOfSamples{numberOfSamples});
+        config.data.add(SamplingRate{8000});
+        config.data.add(DesiredFrameRate{1});
+        config.data.add(NumberOfSignalsForAveraging{1});
+        config.data.add(NumberOfSignalsForMaxHold{1});
+        config.data.add(AlphaFactor{1});
+        config.data.add(MaxQueueSize{100});
+        config.data.add(SignalWindow{getSignalWindow(numberOfSamples)});
+        config.data.add(ScalingFactor{1});
+        config.data.add(OffsetFactor{0});
         return config;
     }
 
@@ -188,29 +191,45 @@ public:
     Configuration getConfig()
     {
         Configuration config{};
-        config.pythonDataSourceEnabled = true;
-        config.frequencies = {992,996,1000,1004,1008};
-        config.numberOfRectangles = config.frequencies.size();
-        config.numberOfSamples = 2048;
-        config.signalWindow = getSignalWindow(config.numberOfSamples);
-        config.samplingRate = 8000;
-        config.desiredFrameRate = 1;
-        config.numberOfSignalsForAveraging = 1;
-        config.numberOfSignalsForMaxHold = 1;
-        config.alphaFactor = 1;
-        config.maxQueueSize = 5;
-        config.dynamicMaxHoldVisibilityState = true;
-        config.scalingFactor = 1.0;
-        config.gapWidthInRelationToRectangleWidth = 0;
-        config.colorsOfRectangle = {{0,{1,1,1,1}}, {1,{1,1,1,1}}, {2,{1,1,1,1}}, {3,{1,1,1,1}}};
-        config.colorsOfDynamicMaxHoldRectangle = config.colorsOfRectangle;
+
+        uint32_t numberOfSamples = 2048;
+        Frequencies frequencies = {992,996,1000,1004,1008};
+
+        config.data.add(Freqs{frequencies});
+        config.data.add(NumberOfRectangles{(uint16_t)frequencies.size()});
+        config.data.add(PythonDataSourceEnabled{true});
+        config.data.add(NumberOfSamples{numberOfSamples});
+        config.data.add(SamplingRate{8000});
+        config.data.add(DesiredFrameRate{1});
+        config.data.add(NumberOfSignalsForAveraging{1});
+        config.data.add(NumberOfSignalsForMaxHold{1});
+        config.data.add(AlphaFactor{1});
+        config.data.add(MaxQueueSize{5});
+        config.data.add(SignalWindow{getSignalWindow(numberOfSamples)});
+        config.data.add(ScalingFactor{1});
+        config.data.add(DynamicMaxHoldVisibilityState{true});
+        config.data.add(GapWidthInRelationToRectangleWidth{0});
+        config.data.add(ColorsOfRectangle{});
+        config.data.add(ColorsOfDynamicMaxHoldRectangle{});
+        config.data.add(DefaultFullscreenState{});
+        config.data.add(HorizontalLinePositions{{}});
+        config.data.add(DynamicMaxHoldSpeedOfFalling{});
+        config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
+        config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
+        config.data.add(AdvancedColorSettings{});
+        config.data.add(BackgroundColorSettings{});
+        config.data.add(GapWidthInRelationToRectangleWidth{});
+        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{});
+        config.data.add(ColorOfStaticLines{{}});
+        config.data.add(OffsetFactor{});
+
         return config;
     }
 
     void expectWindowDraw(const Configuration &config)
     {
         expectCreateWindow();
-        expectInitializeGPU(config.numberOfRectangles, true);
+        expectInitializeGPU(config.get<NumberOfRectangles>(), true);
         expectDraw({-0.580129, -0.250016, -0.156546,  -0.250016,-0.580129}, true);
         expectCheckIfWindowShouldBeClosed();
         expectCheckIfWindowShouldRecreated();

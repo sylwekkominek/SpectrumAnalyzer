@@ -5,8 +5,7 @@
  */
 
 #include "AudioSpectrumAnalyzer.hpp"
-#include "SamplesCollector.hpp"
-#include "AudioSamplesCollector.hpp"
+#include "dataSource/SamplesCollector.hpp"
 #include "ConfigReader.hpp"
 #include "Window.hpp"
 #include "Stats.hpp"
@@ -36,11 +35,9 @@ void AudioSpectrumAnalyzer::samplesUpdater()
     const std::string processName{"samplesUpdater"};
     StatsManager statsManager(processName);
 
-    std::unique_ptr<SamplesCollectorBase> samplesCollector = config.pythonDataSourceEnabled ?
-        std::unique_ptr<SamplesCollectorBase>(std::make_unique<SamplesCollector>(audioConfigFile.c_str())) :
-        std::unique_ptr<SamplesCollectorBase>(std::make_unique<AudioSamplesCollector>());
+    SamplesCollector samplesCollector(config.get<PythonDataSourceEnabled>(), audioConfigFile);
 
-    if(samplesCollector->initialize(noOfSamplesToBeCollectedFromHwEachTime, config.samplingRate)==false)
+    if(samplesCollector.initialize(noOfSamplesToBeCollectedFromHwEachTime, config.get<SamplingRate>())==false)
     {
         shouldProceed = false;
     }
@@ -48,7 +45,7 @@ void AudioSpectrumAnalyzer::samplesUpdater()
     while(shouldProceed)
     {
         statsManager.update();
-        dataExchanger.push_back(std::make_unique<Data>(std::move(samplesCollector->collectDataFromHw())));
+        dataExchanger.push_back(std::make_unique<Data>(std::move(samplesCollector.collectDataFromHw())));
     }
 
     dataExchanger.stop();
@@ -59,9 +56,9 @@ void AudioSpectrumAnalyzer::fftCalculator()
     const std::string processName{"fftCalculator"};
     StatsManager statsManager(processName);
 
-    float overlapping = calculateOverlapping(config.samplingRate, config.numberOfSamples, config.desiredFrameRate);
+    float overlapping = calculateOverlapping(config.get<SamplingRate>(), config.get<NumberOfSamples>(), config.get<DesiredFrameRate>());
 
-    WelchCalculator fft(config.numberOfSamples, overlapping, config.signalWindow);
+    WelchCalculator fft(config.get<NumberOfSamples>(), overlapping,  config.get<SignalWindow>());
 
     using namespace std::chrono;
 
@@ -98,9 +95,9 @@ void AudioSpectrumAnalyzer::processing()
     std::deque<Data> fftDataQueue;
     std::deque<Data> averagedDataQueue;
 
-    DataMaxHolder dataMaxHolder(config.numberOfSamples, config.numberOfSignalsForMaxHold, getFloorDbFs16bit());
-    DataAverager dataAverager(config.numberOfSamples, config.numberOfSignalsForAveraging);
-    DataSmoother dataSmoother(config.numberOfSamples, config.alphaFactor);
+    DataMaxHolder dataMaxHolder(config.get<NumberOfSamples>(), config.get<NumberOfSignalsForMaxHold>(), getFloorDbFs16bit());
+    DataAverager dataAverager(config.get<NumberOfSamples>(), config.get<NumberOfSignalsForAveraging>());
+    DataSmoother dataSmoother(config.get<NumberOfSamples>(), config.get<AlphaFactor>());
 
 
     while(shouldProceed)
@@ -114,7 +111,7 @@ void AudioSpectrumAnalyzer::processing()
 
         statsManager.update();
 
-        auto power = calculatePower(*fftResult, config.scalingFactor, config.offsetFactor);
+        auto power = calculatePower(*fftResult, config.get<ScalingFactor>(), config.get<OffsetFactor>());
 
         dataMaxHolder.push_back(power);
         auto dataWithMaxValue = dataMaxHolder.calculate();
@@ -143,7 +140,7 @@ void AudioSpectrumAnalyzer::drafter()
     const std::string processName{"drafter"};
     StatsManager statsManager(processName);
 
-    bool isFullScreenEnabled = config.defaultFullscreenState;
+    bool isFullScreenEnabled = config.get<DefaultFullscreenState>();
 
     std::unique_ptr<Window> window = std::make_unique<Window>(config, isFullScreenEnabled);
     window->initializeGPU();
@@ -186,8 +183,8 @@ void AudioSpectrumAnalyzer::flowController()
         std::this_thread::sleep_for(100ms);
 
         auto numberOfFramesPerSecond = StatsManager::getStatsFor("drafter").getNumberOfCallsInLast(1000ms);
-        auto overlappingDiff = calculateOverlappingDiff(config.desiredFrameRate, numberOfFramesPerSecond);
-        auto overlapping = calculateOverlapping(config.samplingRate, config.numberOfSamples, numberOfFramesPerSecond);
+        auto overlappingDiff = calculateOverlappingDiff(config.get<DesiredFrameRate>(), numberOfFramesPerSecond);
+        auto overlapping = calculateOverlapping(config.get<SamplingRate>(), config.get<NumberOfSamples>(), numberOfFramesPerSecond);
 
         if(processedDataExchanger.getSize() > 1)
         {

@@ -6,24 +6,24 @@
 
 #pragma once
 
-#include "SamplesCollectorBase.hpp"
+#include "DataSourceBase.hpp"
 #include <vector>
 #include <portaudio.h>
 #include <functional>
 #include <string>
 
-class AudioSamplesCollector : public SamplesCollectorBase
+class AudioDataSource : public DataSourceBase
 {
 public:
-    AudioSamplesCollector();
-    ~AudioSamplesCollector();
+    AudioDataSource();
+    ~AudioDataSource();
     bool initialize(uint32_t numberOfSamples, uint32_t sampleRate) override;
     std::vector<float> collectDataFromHw() override;
 
-    AudioSamplesCollector(AudioSamplesCollector&) = delete;
-    AudioSamplesCollector(AudioSamplesCollector&&) = delete;
-    AudioSamplesCollector& operator=(const AudioSamplesCollector&) = delete;
-    AudioSamplesCollector& operator=(AudioSamplesCollector&&) = delete;
+    AudioDataSource(AudioDataSource&) = delete;
+    AudioDataSource(AudioDataSource&&) = delete;
+    AudioDataSource& operator=(const AudioDataSource&) = delete;
+    AudioDataSource& operator=(AudioDataSource&&) = delete;
 
 private:
     void updateBuffer();

@@ -28,6 +28,7 @@ private:
 
     std::unique_ptr<std::vector<fftw_complex>> inPtr;
     std::unique_ptr<std::vector<fftw_complex>> outPtr;
+
     fftw_plan p;
 };
 
