@@ -39,7 +39,16 @@ It also uses the following third-party libraries:
 <img width="1280" height="512" alt="Drawing16" src="https://github.com/user-attachments/assets/3032b880-b481-41ac-8692-ac4809d5c088" />
 <img width="1280" height="512" alt="Drawing17" src="https://github.com/user-attachments/assets/d4b41be7-b6b1-4d63-aa22-050c72a04e58" />
 
-## Preparing the software environment
+---
+
+## A ready-to-download version is available for Windows here:
+
+[Microsoft Store – Not Yet Another Spectrum Analyzer](https://apps.microsoft.com/detail/9ngnl3tjj7bg?hl=en-US&gl=US)
+
+---
+
+
+## For programmers:
 
 
 ### For typical users: Ubuntu 24.04 or Windows 11 with WSL2.
