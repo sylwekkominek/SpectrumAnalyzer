@@ -30,7 +30,7 @@ std::vector<Rectangle> FigureGeometryCalculator::rectanglesFactory(const float h
 {
     const auto xBoundaries = horizontalRectanglesBoundariesFactory(numberOfRectangles, gap);
 
-    const float  offset  = (offsetInPercentOffScreenSize/50);
+    const float offset  = (offsetInPercentOffScreenSize/50);
     const float yBegin= (-heightInPercentOfScreenSize/100)+offset;
     const float yEnd = (heightInPercentOfScreenSize/100)+offset;
 

@@ -214,6 +214,7 @@ public:
         config.data.add(DefaultFullscreenState{});
         config.data.add(HorizontalLinePositions{{}});
         config.data.add(DynamicMaxHoldSpeedOfFalling{});
+        config.data.add(DynamicMaxHoldTransparentSpeedOfFalling{});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
         config.data.add(AdvancedColorSettings{});
@@ -221,6 +222,7 @@ public:
         config.data.add(GapWidthInRelationToRectangleWidth{});
         config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{});
         config.data.add(ColorOfStaticLines{{}});
+        config.data.add(ColorsOfDynamicMaxHoldTransparentRectangle{});
         config.data.add(OffsetFactor{});
 
         return config;

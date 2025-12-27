@@ -13,6 +13,7 @@
 enum class RectangleType
 {
     BAR,
+    TRANSPARENT_BAR,
     BACKGROUND
 };
 
@@ -26,7 +27,8 @@ public:
     void draw();
     static void updateTime(const float timeInMilliSeconds);
     static void updateBoundary(const float xBegin, const float xEnd);
-    static void initialize(const char *fsConfig);
+    static void updateThemeNumber(const uint16_t themeNumber);
+    static void initialize(const char *fsConfig = getDefaultFragmentShader());
     static void finalize();
 private:
     float percentToPositon(float percent);
@@ -44,4 +46,5 @@ private:
     static GLuint pipeline;
     static GLuint timeLoc;
     static GLuint boundaryLoc;
+    static GLuint themeNumberLoc;
 };

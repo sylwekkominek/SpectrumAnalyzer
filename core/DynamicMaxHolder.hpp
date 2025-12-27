@@ -7,8 +7,15 @@
 #pragma once
 #include <vector>
 #include <chrono>
+#include <map>
 
 using namespace std::chrono;
+
+enum class MaxHolderType
+{
+    Dynamic,
+    Transparent
+};
 
 class DynamicMaxHolder
 {
@@ -23,3 +30,5 @@ private:
     std::vector<float> dynamicMaxHoldValues;
     std::vector<time_point<steady_clock>> timesWhenDynamicMaxHoldValuesHaveBeenUpdated;
 };
+
+using DynamicMaxHolders = std::map<MaxHolderType, DynamicMaxHolder>;

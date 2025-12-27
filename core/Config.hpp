@@ -160,6 +160,12 @@ struct DynamicMaxHoldSpeedOfFalling
     float value{900};
 };
 
+struct DynamicMaxHoldTransparentSpeedOfFalling
+{
+    std::string getInfo();
+    float value{1000};
+};
+
 struct DynamicMaxHoldAccelerationStateOfFalling
 {
     std::string getInfo();
@@ -190,6 +196,17 @@ struct ColorsOfRectangle
 };
 
 struct ColorsOfDynamicMaxHoldRectangle
+{
+    std::string getInfo();
+    ColorsOfRectanglePerVertices value{
+        {0,{0.2, 0.2, 0.2,0.1}},
+        {1,{0,0,0,0.1}},
+        {2,{0,0,0,0.1}},
+        {3,{0.2, 0.2, 0.2,0.1}}
+    };
+};
+
+struct ColorsOfDynamicMaxHoldTransparentRectangle
 {
     std::string getInfo();
     ColorsOfRectanglePerVertices value{

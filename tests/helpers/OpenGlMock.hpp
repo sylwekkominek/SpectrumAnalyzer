@@ -30,6 +30,7 @@ public:
     MOCK_METHOD1(glBindVertexArray, void(GLuint));
     MOCK_METHOD2(glGenVertexArrays, void(GLsizei, GLuint *));
     MOCK_METHOD2(glGetUniformLocation, GLint(GLuint, const GLchar *));
+    MOCK_METHOD3(glProgramUniform1ui, void(GLuint, GLint, GLuint));
     MOCK_METHOD3(glProgramUniform1f, void(GLuint, GLint, GLfloat));
     MOCK_METHOD4(glProgramUniform2f, void(GLuint, GLint, GLfloat, GLfloat));
     MOCK_METHOD6(glProgramUniform4f, void(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat));

@@ -36,7 +36,7 @@ public:
 
     RectangleHighligther(const uint16_t numberOfRectangles);
     HighlightData getData(const WindowSize &windowSize, const CursorPosition& cursorPosition);
-    std::string getStringToBePrinted(const float frequency, const float averagedDBFs, const float maxHoldDbFs);
+    std::string getStringToBePrinted(const float frequency, const float averagedDBFs, const float maxHoldDbFs, const float peakDbFs);
 private:
 
     bool isMouseLocatedOverCurrentlyBeingUsedRectangle(const WindowSize& windowSize, const CursorPosition& cursorPosition, const double xRectangleBegin, const double xRectangleEnd);

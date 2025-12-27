@@ -37,11 +37,13 @@ private:
     DynamicMaxHoldVisibilityState getDynamicMaxHoldVisibilityState();
     DynamicMaxHoldRectangleHeightInPercentOfScreenSize getDynamicMaxHoldRectangleHeightInPercentOfScreenSize();
     DynamicMaxHoldSpeedOfFalling getDynamicMaxHoldSpeedOfFalling();
+    DynamicMaxHoldTransparentSpeedOfFalling getDynamicMaxHoldTransparentSpeedOfFalling();
     DynamicMaxHoldAccelerationStateOfFalling getDynamicMaxHoldAccelerationStateOfFalling();
     HorizontalLinePositions getHorizontalLinePositions();
     ColorOfStaticLines getColorOfStaticLines();
     ColorsOfRectangle getColorsOfRectangle();
     ColorsOfDynamicMaxHoldRectangle getColorsOfDynamicMaxHoldRectangle();
+    ColorsOfDynamicMaxHoldTransparentRectangle getColorsOfDynamicMaxHoldTransparentRectangle();
     ColorsOfRectanglePerVertices getColorsOfRectangleHelper(const std::string& functionName);
     AdvancedColorSettings getAdvancedColorSettings();
     BackgroundColorSettings getBackgroundColorSettings();

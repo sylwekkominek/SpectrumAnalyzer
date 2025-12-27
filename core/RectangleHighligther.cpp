@@ -40,14 +40,15 @@ RectangleHighligther::HighlightData RectangleHighligther::getData(const WindowSi
     return highlightData;
 }
 
-std::string RectangleHighligther::getStringToBePrinted(const float frequency, const float averagedDBFs, const float maxHoldDbFs)
+std::string RectangleHighligther::getStringToBePrinted(const float frequency, const float averagedDBFs, const float maxHoldDbFs, const float peakDbFs)
 {
 
     const std::string freq("freq: "+formatFloat(frequency,4,0)+"Hz");
-    const std::string avrPwr("avr pwr: "+formatFloat(averagedDBFs,4,1)+"dBFs");
-    const std::string maxPwr("max pwr: "+formatFloat(maxHoldDbFs,4,1)+"dBFs");
+    const std::string avr("avr: "+formatFloat(averagedDBFs,4,1)+"dBFs");
+    const std::string max("max: "+formatFloat(maxHoldDbFs,4,1)+"dBFs");
+    const std::string peek("peak: "+formatFloat(peakDbFs,4,1)+"dBFs");
 
-    return (freq+"\n"+avrPwr+"\n"+maxPwr);
+    return (freq+"\n"+avr+"\n"+max+"\n"+peek);
 }
 
 bool RectangleHighligther::isMouseLocatedOverCurrentlyBeingUsedRectangle(const WindowSize& windowSize, const CursorPosition& cursorPosition, const double xRectangleBegin, const double xRectangleEnd)

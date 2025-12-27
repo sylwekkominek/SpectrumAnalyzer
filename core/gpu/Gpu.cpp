@@ -43,6 +43,15 @@ void Gpu::prepareDynamicMaxHoldRectangles(const uint16_t numberOfRectangles, con
     }
 }
 
+void Gpu::prepareDynamicMaxHoldTransparentRectangles(const uint16_t numberOfRectangles, const float height, const float gap, const ColorsOfRectanglePerVertices &colorsOfRectangle)
+{
+    RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>::initialize();
+    for(const auto & rectangle : FigureGeometryCalculator::rectanglesFactory(100, numberOfRectangles, 0, gap))
+    {
+        dynamicMaxHoldTransparentRectangles.emplace_back(RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>(rectangle,  colorsOfRectangle));
+    }
+}
+
 void Gpu::prepareHorizontalLines(const uint16_t size)
 {
     LineInsideGpu::initialize();
@@ -71,7 +80,14 @@ void Gpu::prepareDynamicText()
 void Gpu::updateTime(const float timeInMilliSeconds)
 {
     RectangleInsideGpu<RectangleType::BAR>::updateTime(timeInMilliSeconds);
+    RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>::updateTime(timeInMilliSeconds);
     RectangleInsideGpu<RectangleType::BACKGROUND>::updateTime(timeInMilliSeconds);
+}
+
+void Gpu::updateThemeNumber(const uint16_t themeNumber)
+{
+    RectangleInsideGpu<RectangleType::BAR>::updateThemeNumber(themeNumber);
+    RectangleInsideGpu<RectangleType::BACKGROUND>::updateThemeNumber(themeNumber);
 }
 
 void Gpu::drawBackground()
@@ -105,6 +121,14 @@ void Gpu::drawDynamicMaxHoldRectangles(const std::vector<float> &dynamicMaxHoldE
     }
 }
 
+void Gpu::drawDynamicMaxHoldTransparentRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition)
+{
+    for(uint32_t i=0;i<dynamicMaxHoldRectangles.size();++i)
+    {
+        dynamicMaxHoldTransparentRectangles.at(i).move(dynamicMaxHoldElementsPosition.at(i));
+    }
+}
+
 void Gpu::drawRectangles(const std::vector<float> &rectaglesPositions)
 {
     for(uint32_t i=0;i<rectaglesPositions.size();++i)
@@ -131,6 +155,7 @@ void Gpu::clear()
 Gpu::~Gpu()
 {
     RectangleInsideGpu<RectangleType::BACKGROUND>::finalize();
+    RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>::finalize();
     RectangleInsideGpu<RectangleType::BAR>::finalize();
     LineInsideGpu::finalize();
     TextInsideGpu::finalize();

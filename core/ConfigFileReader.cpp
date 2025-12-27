@@ -15,6 +15,11 @@ ConfigFileReader::ConfigFileReader(const std::string &path) : path(path)
 {
 }
 
+std::string ConfigFileReader::getConfigPath()
+{
+    return std::filesystem::absolute(path).string();
+}
+
 std::string ConfigFileReader::getPathWithFileName(const std::string &fileName)
 {
     std::filesystem::path fullPath = path;

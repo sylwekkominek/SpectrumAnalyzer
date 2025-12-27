@@ -5,6 +5,7 @@
  */
 
 #include "ConfigReader.hpp"
+#include <iostream>
 
 ConfigReader::ConfigReader(const std::string &path) : ConfigFileReader(path)
 {
@@ -12,6 +13,8 @@ ConfigReader::ConfigReader(const std::string &path) : ConfigFileReader(path)
 
 Configuration ConfigReader::getConfig()
 {
+    std::cout<<"Reading config from: "<<getConfigPath()<<std::endl;
+
     if(config.data.empty())
     {
         createDirIfNotExists();
@@ -35,11 +38,13 @@ Configuration ConfigReader::getConfig()
         config.data.add(getDynamicMaxHoldVisibilityState());
         config.data.add(getDynamicMaxHoldRectangleHeightInPercentOfScreenSize());
         config.data.add(getDynamicMaxHoldSpeedOfFalling());
+        config.data.add(getDynamicMaxHoldTransparentSpeedOfFalling());
         config.data.add(getDynamicMaxHoldAccelerationStateOfFalling());
         config.data.add(getHorizontalLinePositions());
         config.data.add(getColorOfStaticLines());
         config.data.add(getColorsOfRectangle());
         config.data.add(getColorsOfDynamicMaxHoldRectangle());
+        config.data.add(getColorsOfDynamicMaxHoldTransparentRectangle());
         config.data.add(getAdvancedColorSettings());
         config.data.add(getBackgroundColorSettings());
     }
@@ -518,6 +523,30 @@ DynamicMaxHoldSpeedOfFalling ConfigReader::getDynamicMaxHoldSpeedOfFalling()
     return data;
 }
 
+DynamicMaxHoldTransparentSpeedOfFalling ConfigReader::getDynamicMaxHoldTransparentSpeedOfFalling()
+{
+    DynamicMaxHoldTransparentSpeedOfFalling data;
+
+    try
+    {
+        const auto fileName = "DynamicMaxHoldTransparentSpeedOfFalling";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, data.getInfo(), {data.value});
+        }
+        else
+        {
+            data.value = readCSVToVector(fileName).at(0);
+        }
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
 DynamicMaxHoldAccelerationStateOfFalling ConfigReader::getDynamicMaxHoldAccelerationStateOfFalling()
 {
     DynamicMaxHoldAccelerationStateOfFalling data;
@@ -607,6 +636,30 @@ ColorsOfRectangle ConfigReader::getColorsOfRectangle()
             data.value = readCsvToMap(fileName);
         }
 
+    }
+    catch(...)
+    {
+    }
+
+    return data;
+}
+
+ColorsOfDynamicMaxHoldTransparentRectangle ConfigReader::getColorsOfDynamicMaxHoldTransparentRectangle()
+{
+    ColorsOfDynamicMaxHoldTransparentRectangle data;
+
+    try
+    {
+        const auto fileName = "ColorsOfDynamicMaxHoldTransparentRectangle";
+
+        if(not checkIfFileExists(fileName))
+        {
+            writeMapToCsv(fileName, data.getInfo(), data.value, 2);
+        }
+        else
+        {
+            data.value = readCsvToMap(fileName);
+        }
     }
     catch(...)
     {

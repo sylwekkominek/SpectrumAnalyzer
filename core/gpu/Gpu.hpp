@@ -19,14 +19,17 @@ struct Gpu
     void prepareBackground(const std::string &backgroundConfig);
     void prepareRectangles(const uint16_t numberOfRectangles, const float gap, const ColorsOfRectanglePerVertices &colorsOfRectangle, const std::string &rectanglesConfig);
     void prepareDynamicMaxHoldRectangles(const uint16_t numberOfRectangles, const float height, const float gap, const ColorsOfRectanglePerVertices &colorsOfRectangle);
+    void prepareDynamicMaxHoldTransparentRectangles(const uint16_t numberOfRectangles, const float height, const float gap, const ColorsOfRectanglePerVertices &colorsOfRectangle);
     void prepareHorizontalLines(const uint16_t size);
     void prepareStaticTexts(const Positions &horizontalLinePositions, const Color &colorOfStaticLines);
     void prepareDynamicText();
     void updateTime(const float timeInMilliSeconds);
+    void updateThemeNumber(const uint16_t themeNumber);
     void drawBackground();
     void drawHorizontalLines(const std::vector<Line> &horizontalLinePositions, const Color &colorOfStaticLines);
     void drawStaticTexts(const std::vector<Line> &horizontalLinePositions, const WindowSize &windowSize);
     void drawDynamicMaxHoldRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition);
+    void drawDynamicMaxHoldTransparentRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition);
     void drawRectangles(const std::vector<float> &rectaglesPositions);
     void updateHorizontalRectangleBoundaries(const uint16_t indexOfRectangle, const float start, const float stop);
     void drawText(const std::string &str, const HorizontalAligment aligment, const float x, const float y);
@@ -39,6 +42,7 @@ private:
     std::unique_ptr<RectangleInsideGpu<RectangleType::BACKGROUND>> background;
     std::vector<RectangleInsideGpu<RectangleType::BAR>> rectangles;
     std::vector<RectangleInsideGpu<RectangleType::BAR>> dynamicMaxHoldRectangles;
+    std::vector<RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>> dynamicMaxHoldTransparentRectangles;
     std::vector<LineInsideGpu> horizontalLines;
     std::vector<TextInsideGpu> staticTexts;
     std::unique_ptr<TextInsideGpu> dynamicText;

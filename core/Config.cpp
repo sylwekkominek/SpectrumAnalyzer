@@ -63,28 +63,87 @@ in vec4 calculatedPosition;
 in vec4 vertColor;
 out vec4 Color;
 uniform float timeInMilliSeconds;
-uniform vec2 boundary; // xBegin, xEnd
-uniform float bass;
-vec3 nebulaBarColor(float y)
-{
+uniform vec2 boundary;
+uniform uint themeNumber;
+vec3 defaultNebulaBarColor(float y) {
     vec3 violet  = vec3(0.4, 0.2, 0.7);
     vec3 magenta = vec3(0.8, 0.1, 0.6);
     vec3 red     = vec3(0.9, 0.2, 0.2);
     vec3 orange  = vec3(1.0, 0.5, 0.1);
     vec3 color = mix(violet, magenta, smoothstep(0.0, 0.33, y));
     color = mix(color, red, smoothstep(0.33, 0.66, y));
-    color = mix(color, orange, smoothstep(0.66, 1.0, y));
-    return color;
+    return mix(color, orange, smoothstep(0.66, 1.0, y));
 }
-void main()
-{
-    float t = clamp(calculatedPosition.y, -1.0, 1.0);
-    float y = (t + 1.0) * 0.5;
-    vec3 barColor = nebulaBarColor(y);
-    vec4 baseColor = mix(vec4(barColor, 1.0), vertColor, 0.4);
+vec3 nebulaBarColor(float y) {
+    vec3 violet  = vec3(0.4, 0.2, 0.7);
+    vec3 magenta = vec3(0.8, 0.1, 0.6);
+    vec3 red     = vec3(0.9, 0.2, 0.2);
+    vec3 orange  = vec3(1.0, 0.5, 0.1);
+    vec3 color = mix(violet, magenta, smoothstep(0.0, 0.33, y));
+    color = mix(color, red, smoothstep(0.33, 0.66, y));
+    return mix(color, orange, smoothstep(0.66, 1.0, y));
+}
+vec3 auroraBarColor(float y) {
+    vec3 teal   = vec3(0.0, 0.8, 0.7);
+    vec3 green  = vec3(0.2, 1.0, 0.5);
+    vec3 purple = vec3(0.4, 0.2, 0.6);
+    vec3 pink   = vec3(0.9, 0.4, 0.7);
+    vec3 color = mix(teal, green, smoothstep(0.0, 0.3, y));
+    color = mix(color, purple, smoothstep(0.3, 0.7, y));
+    return mix(color, pink, smoothstep(0.7, 1.0, y));
+}
+vec3 cyberpunkBarColor(float y) {
+    vec3 purple   = vec3(0.6, 0.1, 0.7);
+    vec3 magenta  = vec3(1.0, 0.0, 0.5);
+    vec3 neonBlue = vec3(0.0, 1.0, 1.0);
+    vec3 color = mix(purple, magenta, smoothstep(0.0, 0.5, y));
+    return mix(color, neonBlue, smoothstep(0.5, 1.0, y));
+}
+vec3 synthwaveBarColor(float y) {
+    vec3 darkPink      = vec3(0.9, 0.1, 0.5);
+    vec3 electricBlue  = vec3(0.0, 0.7, 1.0);
+    vec3 neonPurple    = vec3(0.7, 0.0, 0.9);
+    vec3 color = mix(darkPink, electricBlue, smoothstep(0.0, 0.5, y));
+    return mix(color, neonPurple, smoothstep(0.5, 1.0, y));
+}
+void main() {
+    float time = timeInMilliSeconds / 1000.0;
+    float y = (clamp(calculatedPosition.y, -1.0, 1.0) + 1.0) * 0.5;
+    vec3 barColor;
+    if (themeNumber == 0u) {
+        barColor = defaultNebulaBarColor(y);
+    } else if (themeNumber == 1u) {
+        barColor = nebulaBarColor(y);
+    } else if (themeNumber == 2u) {
+        barColor = nebulaBarColor(y);
+    } else if (themeNumber == 3u) {
+        barColor = auroraBarColor(y);
+    }
+    else if ((themeNumber >= 4u) && (themeNumber <= 6u)) {
+        barColor = synthwaveBarColor(y);
+    }else {
+        barColor = defaultNebulaBarColor(y);
+    }
+    vec4 baseColor = mix(vec4(barColor, 1.0), vertColor, 0.35);
+    float flicker = 1.0;
+    if (themeNumber == 0u) {
+        flicker = 0.95 + 0.05 * sin(time * 0.5 + calculatedPosition.y * 5.0);
+    } else if (themeNumber == 1u) {
+        flicker = 0.95 + 0.05 * sin(time * 1.0 + calculatedPosition.y * 8.0);
+    } else if (themeNumber == 2u) {
+        flicker = 0.9 + 0.1 * sin(time * 2.0 + calculatedPosition.y * 15.0);
+    } else if (themeNumber == 3u) {
+        flicker = 0.9 + 0.1 * sin(time * 2.0 + calculatedPosition.y * 15.0);
+    }
+    else if ((themeNumber >= 4u) && (themeNumber <= 6u)) {
+        flicker = 0.85 + 0.15 * sin(time * 1.5 + calculatedPosition.y * 8.0);
+    }
+    else {
+        flicker = 0.95 + 0.05 * sin(time * 0.5 + calculatedPosition.y * 5.0);
+    }
+    baseColor.rgb *= flicker;
     bool insideBoundary = calculatedPosition.x > boundary.x && calculatedPosition.x < boundary.y;
-    if (insideBoundary)
-    {
+    if (insideBoundary) {
         baseColor.rgb = min(baseColor.rgb * 1.5, vec3(1.0));
     }
     Color = baseColor;
@@ -107,30 +166,114 @@ in vec4 calculatedPosition;
 in vec4 vertColor;
 out vec4 Color;
 uniform float timeInMilliSeconds;
+uniform uint themeNumber;
 uniform float bass;
 float noise(vec2 p) {
+    return sin(p.x * 5.0 + p.y * 3.0) * cos(p.y * 7.0 + p.x * 2.0);
+}
+float noiseSimple(vec2 p) {
     return sin(p.x * 3.0) * cos(p.y * 2.0);
 }
-vec3 nebulaGlow(float x)
-{
-    return mix(vec3(0.05, 0.05, 0.1), vec3(0.3, 0.2, 0.5), smoothstep(0.0, 1.0, x));
+vec3 auroraBarColor(float y) {
+    vec3 mint    = vec3(0.25, 0.6, 0.55);
+    vec3 lilac   = vec3(0.5, 0.45, 0.6);
+    vec3 rose    = vec3(0.65, 0.45, 0.5);
+    vec3 dusk    = vec3(0.08, 0.08, 0.1);
+    vec3 color = mix(dusk, mint, smoothstep(0.0, 0.35, y));
+    color = mix(color, lilac, smoothstep(0.35, 0.65, y));
+    color = mix(color, rose,  smoothstep(0.65, 1.0, y));
+    return color;
 }
-void main()
-{
-    float time = timeInMilliSeconds / 1000.0;
-    vec2 uv = calculatedPosition.xy;
+vec3 nebulaEffect(vec2 uv, float time) {
     vec2 warped = uv * 2.0 + vec2(
         cos(time * 0.3 + uv.y * 6.0),
         sin(time * 0.4 + uv.x * 5.0)
     );
-    float pattern = noise(warped + time * 0.5) * 0.5 + 0.5;
-    float pulse = 0.6 + 0.3 * sin(time * 0.7 + length(uv) * 2.0);
+    float n = noise(warped + time * 0.5) * 0.5 + 0.5;
+    return mix(vec3(0.05, 0.05, 0.1), vec3(0.4, 0.3, 0.5), n);
+}
+vec3 nebulaGlowEffect(vec2 uv, float time, float bass) {
+    vec2 warped = uv * 2.0 + vec2(
+        cos(time * 0.3 + uv.y * 6.0),
+        sin(time * 0.4 + uv.x * 5.0)
+    );
+    float pattern = noiseSimple(warped + time * 0.5) * 0.5 + 0.5;
+    float pulse = 0.6 + 0.3 * sin(time * 0.7 + length(uv) * 2.0) * bass;
     pattern *= pulse;
-    vec3 glow = nebulaGlow(pattern);
-    float y = (clamp(calculatedPosition.y, -1.0, 1.0) + 1.0) * 0.5;
+    vec3 glow = mix(vec3(0.05, 0.05, 0.1), vec3(0.3, 0.2, 0.5), smoothstep(0.0, 1.0, pattern));
+    float y = (clamp(uv.y, -1.0, 1.0) + 1.0) * 0.5;
     vec3 gradient = mix(vec3(0.01, 0.01, 0.02), vec3(0.1, 0.1, 0.2), y);
-    vec3 final = mix(gradient, glow, 0.6);
-    Color = vec4(final, 1.0);
+    return mix(gradient, glow, 0.6);
+}
+vec3 auroraEffect(vec2 uv, float time) {
+    vec2 p = uv;
+    float warp1 = sin(p.x * 8.0 + time * 1.5);
+    float warp2 = sin(p.x * 15.0 + time * 0.9 + p.y * 3.0);
+    float warp3 = sin(p.y * 10.0 + time * 1.2);
+    p.y += 0.1 * warp1 + 0.05 * warp2 + 0.03 * warp3;
+    float bands = sin((p.y + time * 0.4) * 30.0 + sin(p.x * 5.0 + time)) * 0.5 + 0.5;
+    vec3 baseColor = auroraBarColor(clamp(p.y, 0.0, 1.0));
+    float glow = pow(bands, 1.5) * 1.2;
+    return clamp(baseColor * glow, 0.0, 1.0);
+}
+vec3 elegantGalaxy(vec2 uv, float time) {
+    vec2 center = vec2(0.5);
+    uv -= center;
+    uv *= 0.7;
+    float angleOffset = -time * 0.2;
+    float cosA = cos(angleOffset);
+    float sinA = sin(angleOffset);
+    vec2 rotatedUV = vec2(
+        uv.x * cosA - uv.y * sinA,
+        uv.x * sinA + uv.y * cosA
+    );
+    float baseRadius = length(rotatedUV);
+    float baseAngle = atan(rotatedUV.y, rotatedUV.x);
+    float wave = sin(baseRadius * 12.0 - time * 1.5 + sin(baseAngle * 6.0)) * 0.15;
+    float warpedRadius = baseRadius + wave;
+    float warpedAngle = baseAngle + 0.1 * sin(baseRadius * 8.0 - time);
+    float spiral = sin(8.0 * warpedAngle + warpedRadius * 10.0 - time * 0.2);
+    float spiralMod = smoothstep(0.4, 0.0, abs(spiral)) * smoothstep(0.0, 1.2, baseRadius);
+    float noiseVal = sin(warpedRadius * 20.0 - time * 0.3 + sin(warpedAngle * 8.0)) * 0.5 + 0.5;
+    float galaxyShape = spiralMod * noiseVal;
+    vec3 deepSpace = vec3(0.01, 0.005, 0.015);
+    vec3 coreColor = vec3(0.9, 0.6, 1.0);
+    vec3 armColor = vec3(0.5, 0.3, 0.8);
+    vec3 color = mix(deepSpace, armColor, galaxyShape);
+    color += coreColor * pow(1.0 - baseRadius, 4.0);
+    color *= 0.9 + 0.1 * sin(time * 0.5);
+    return color;
+}
+vec3 synthwaveEffect(vec2 uv, float time) {
+    float wave = sin((uv.x + time * 0.5) * 15.0) * 0.15 + 0.55;
+    float wave2 = sin((uv.y * 20.0 + time) * 3.0) * 0.15 + 0.55;
+    float gridX = abs(fract(uv.x * 40.0) - 0.5);
+    float gridY = abs(fract(uv.y * 40.0) - 0.5);
+    float grid = smoothstep(0.0, 0.02, 0.05 - gridX) + smoothstep(0.0, 0.02, 0.05 - gridY);
+    vec3 neonPink = vec3(0.6, 0.1, 0.5);
+    vec3 neonBlue = vec3(0.0, 0.5, 0.7);
+    vec3 waveColor = mix(neonPink, neonBlue, wave * wave2);
+    vec3 gridColor = vec3(1.0, 0.6, 0.9) * grid * 0.4;
+    vec3 background = mix(vec3(0.05, 0.0, 0.1), vec3(0.15, 0.0, 0.3), uv.y);
+    return clamp(background + waveColor * 0.4 + gridColor, 0.0, 1.0);
+}
+void main() {
+    float time = timeInMilliSeconds / 1000.0;
+    vec2 uv = calculatedPosition.xy;
+    vec3 finalColor;
+    if (themeNumber == 1u)
+        finalColor = nebulaGlowEffect(uv, time, bass);
+    else if (themeNumber == 2u)
+        finalColor = elegantGalaxy(uv, time);
+    else if (themeNumber == 3u)
+        finalColor = auroraEffect(uv, time);
+    else if (themeNumber == 4u)
+        finalColor = nebulaEffect(uv, time);
+    else if (themeNumber == 5u)
+        finalColor = synthwaveEffect(uv, time);
+    else
+        finalColor = nebulaGlowEffect(uv, time, bass);
+    Color = vec4(finalColor, 1.0);
 })";
 }
 
@@ -503,6 +646,14 @@ R"(//Description: Sets how fast the max hold markers decrease in value, affectin
 )");
 }
 
+std::string DynamicMaxHoldTransparentSpeedOfFalling::getInfo()
+{
+    return std::string(
+        R"(//Description: Sets how fast the transparent max hold markers decrease in value, affecting the speed at which the peak indicators move downward.
+//Default value: 1000
+)");
+}
+
 std::string DynamicMaxHoldAccelerationStateOfFalling::getInfo()
 {
     return std::string(
@@ -539,6 +690,14 @@ std::string ColorsOfDynamicMaxHoldRectangle::getInfo()
 {
     return std::string(
         R"(//Description: Uses the same method of assigning RGBA colors to each of the 4 rectangle vertices as for the main bars. This time, however, it applies to the small visual elements that hold and display the peak (max hold) values over time. By setting the vertex colors, you can control the appearance of these peak indicators, including gradients and transparency.
+//Default value: RGBA color (Red, Green, Blue, Transparency) for each vertex
+)");
+}
+
+std::string ColorsOfDynamicMaxHoldTransparentRectangle::getInfo()
+{
+    return std::string(
+        R"(//Description: Transparent rectangle
 //Default value: RGBA color (Red, Green, Blue, Transparency) for each vertex
 )");
 }

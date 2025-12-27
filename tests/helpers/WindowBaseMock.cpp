@@ -10,6 +10,7 @@
 std::function<void()> createWindowFunction;
 std::function<bool()> checkIfWindowShouldBeClosedFunction;
 std::function<bool()> checkIfWindowShouldBeRecreatedFunction;
+std::function<std::optional<uint16_t>()> getUpdatedThemeNumberFunction;
 std::function<void()> swapBuffersFunction;
 std::function<CursorPosition()> getCursorPositionFunction;
 std::function<WindowSize()> getWindowSizeFunction;
@@ -25,9 +26,8 @@ public:
     }
 };
 
-WindowBase::WindowBase(const Configuration& config, const bool isFullScreenEnabled) :
-    config(config),
-    isFullScreenEnabled(isFullScreenEnabled)
+WindowBase::WindowBase(const Configuration& config, const bool /*isFullScreenEnabled*/) :
+    config(config)
 {
 }
 
@@ -44,6 +44,11 @@ bool WindowBase::checkIfWindowShouldBeClosed()
 bool WindowBase::checkIfWindowShouldBeRecreated()
 {
     return checkIfWindowShouldBeRecreatedFunction();
+}
+
+std::optional<uint16_t> WindowBase::getUpdatedThemeNumber()
+{
+    return getUpdatedThemeNumberFunction();
 }
 
 void WindowBase::swapBuffers()
@@ -80,6 +85,11 @@ WindowBaseMock::WindowBaseMock() : WindowBase({}, false)
     checkIfWindowShouldBeRecreatedFunction = [this]()
     {
         return this->checkIfWindowShouldBeRecreated();
+    };
+
+    getUpdatedThemeNumberFunction = [this]()
+    {
+        return this->getUpdatedThemeNumber();
     };
 
     swapBuffersFunction = [this]()

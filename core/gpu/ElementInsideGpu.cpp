@@ -34,3 +34,19 @@ GLuint ElementInsideGpu::compileShader(const GLchar* source, GLenum stage, const
     std::cout<<msg.c_str()<<": "<<log.c_str()<<std::endl;
     return shdr;
 }
+
+const char* ElementInsideGpu::getDefaultFragmentShader()
+{
+    const char* fragmentShaderSrc = R"(
+#version 330 core
+in vec4 calculatedPosition;
+in vec4 vertColor;
+out vec4 Color;
+
+void main() {
+    Color = vertColor;
+}
+)";
+
+    return fragmentShaderSrc;
+}

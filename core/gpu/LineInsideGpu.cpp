@@ -40,7 +40,7 @@ float LineInsideGpu::percentToPositon(float percent)
 
 void LineInsideGpu::initialize()
 {
-    prepareShaders(pipeline, vs, fs, getVertexShader(),getFragmentShader());
+    prepareShaders(pipeline, vs, fs, getVertexShader(), getFragmentShader());
     p0Loc = glGetUniformLocation(vs, "p0");
     p1Loc = glGetUniformLocation(vs, "p1");
 }

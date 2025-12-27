@@ -31,7 +31,9 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
         config.data.add(ScalingFactor{1});
         config.data.add(ColorsOfRectangle{});
         config.data.add(ColorsOfDynamicMaxHoldRectangle{});
+        config.data.add(ColorsOfDynamicMaxHoldTransparentRectangle{});
         config.data.add(DynamicMaxHoldSpeedOfFalling{});
+        config.data.add(DynamicMaxHoldTransparentSpeedOfFalling{});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
         config.data.add(AdvancedColorSettings{});
         config.data.add(BackgroundColorSettings{});

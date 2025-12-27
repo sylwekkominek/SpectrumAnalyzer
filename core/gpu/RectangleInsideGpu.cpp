@@ -22,6 +22,10 @@ template<RectangleType rectangleType>
 GLuint RectangleInsideGpu<rectangleType>::boundaryLoc = 0;
 
 template<RectangleType rectangleType>
+GLuint RectangleInsideGpu<rectangleType>::themeNumberLoc = 0;
+
+
+template<RectangleType rectangleType>
 RectangleInsideGpu<rectangleType>::RectangleInsideGpu(const Rectangle &rectangle)
 {
     glCreateVertexArrays(1, &vao);
@@ -65,6 +69,7 @@ void RectangleInsideGpu<rectangleType>::initialize(const char *fsConfig)
     prepareShaders(pipeline, vs, fs, getVertexShader(),fsConfig);
     timeLoc = glGetUniformLocation(fs, "timeInMilliSeconds");
     boundaryLoc = glGetUniformLocation(fs, "boundary");
+    themeNumberLoc = glGetUniformLocation(fs, "themeNumber");
 }
 
 template<RectangleType rectangleType>
@@ -116,6 +121,13 @@ void RectangleInsideGpu<rectangleType>::updateBoundary(const float xBegin, const
 }
 
 template<RectangleType rectangleType>
+void RectangleInsideGpu<rectangleType>::updateThemeNumber(const uint16_t themeNumber)
+{
+    glBindProgramPipeline(pipeline);
+    glProgramUniform1ui(fs, themeNumberLoc, themeNumber);
+}
+
+template<RectangleType rectangleType>
 void RectangleInsideGpu<rectangleType>::move(const float y)
 {
     glBindProgramPipeline(pipeline);
@@ -130,6 +142,7 @@ void RectangleInsideGpu<rectangleType>::draw()
     move(0);
 }
 
-
 template class RectangleInsideGpu<RectangleType::BAR>;
+template class RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>;
 template class RectangleInsideGpu<RectangleType::BACKGROUND>;
+

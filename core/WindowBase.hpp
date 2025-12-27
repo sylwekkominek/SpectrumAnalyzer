@@ -22,14 +22,15 @@ public:
 
 protected:
 
+    std::optional<uint16_t> getUpdatedThemeNumber();
     void swapBuffers();
 
     CursorPosition getCursorPosition();
     WindowSize getWindowSize();
 
     const Configuration config{};
-    const bool isFullScreenEnabled{};
     static constexpr float fullScreenSizeInPercents{100};
+
 
 private:
     class WindowBaseImpl;

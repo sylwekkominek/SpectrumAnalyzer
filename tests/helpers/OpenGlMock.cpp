@@ -22,6 +22,7 @@ PFNGLDRAWARRAYSPROC glad_glDrawArrays = nullptr;
 PFNGLENABLEVERTEXARRAYATTRIBPROC glad_glEnableVertexArrayAttrib = nullptr;
 PFNGLGETPROGRAMINFOLOGPROC glad_glGetProgramInfoLog = nullptr;
 PFNGLNAMEDBUFFERSTORAGEPROC glad_glNamedBufferStorage = nullptr;
+PFNGLPROGRAMUNIFORM1UIPROC glad_glProgramUniform1ui = nullptr;
 PFNGLPROGRAMUNIFORM1FPROC glad_glProgramUniform1f = nullptr;
 PFNGLPROGRAMUNIFORM2FPROC glad_glProgramUniform2f = nullptr;
 PFNGLPROGRAMUNIFORM4FPROC glad_glProgramUniform4f = nullptr;
@@ -49,6 +50,7 @@ std::function<void(GLuint)> glBindProgramPipelineFunction;
 std::function<void(GLuint)> glBindVertexArrayFunction;
 std::function<void(GLsizei, GLuint *)> glGenVertexArraysFunction;
 std::function<GLint(GLuint, const GLchar *)> glGetUniformLocationFunction;
+std::function<void(GLuint, GLint, GLuint)> glProgramUniform1uiFunction;
 std::function<void(GLuint, GLint, GLfloat)> glProgramUniform1fFunction;
 std::function<void(GLuint, GLint, GLfloat, GLfloat)> glProgramUniform2fFunction;
 std::function<void(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat)> glProgramUniform4fFunction;
@@ -130,38 +132,51 @@ void glBindProgramPipelineMock(GLuint pipeline)
 {
     glBindProgramPipelineFunction(pipeline);
 }
+
 void glBindVertexArrayMock(GLuint array)
 {
     glBindVertexArrayFunction(array);
 }
+
 void glGenVertexArraysMock(GLsizei n, GLuint *arrays)
 {
     glGenVertexArraysFunction(n, arrays);
 }
+
 GLint glGetUniformLocationMock(GLuint program, const GLchar *name)
 {
     return glGetUniformLocationFunction(program, name);
 }
+void glProgramUniform1uiMock(GLuint program, GLint location, GLuint v0)
+{
+    glProgramUniform1fFunction(program, location, v0);
+}
+
 void glProgramUniform1fMock(GLuint program, GLint location, GLfloat v0)
 {
     glProgramUniform1fFunction(program, location, v0);
 }
+
 void glProgramUniform2fMock(GLuint program, GLint location, GLfloat v0, GLfloat v1)
 {
     glProgramUniform2fFunction(program, location, v0, v1);
 }
+
 void glProgramUniform4fMock(GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 {
     glProgramUniform4fFunction(program, location, v0, v1, v2, v3);
 }
+
 void glDrawArraysMock(GLenum mode, GLint first, GLsizei count)
 {
     glDrawArraysFunction(mode, first, count);
 }
+
 void glDeleteProgramPipelinesMock(GLsizei n, const GLuint *pipelines)
 {
     glDeleteProgramPipelinesFunction(n, pipelines);
 }
+
 void glDeleteProgramMock(GLuint program)
 {
     glDeleteProgramFunction(program);
@@ -211,6 +226,7 @@ OpenGlMock::OpenGlMock()
     ::glad_glBindVertexArray = glBindVertexArrayMock;
     ::glad_glGenVertexArrays = glGenVertexArraysMock;
     ::glad_glGetUniformLocation = glGetUniformLocationMock;
+    ::glad_glProgramUniform1ui = glProgramUniform1uiMock;
     ::glad_glProgramUniform1f = glProgramUniform1fMock;
     ::glad_glProgramUniform2f = glProgramUniform2fMock;
     ::glad_glProgramUniform4f = glProgramUniform4fMock;
@@ -301,6 +317,11 @@ OpenGlMock::OpenGlMock()
     glGetUniformLocationFunction = [this](GLuint program, const GLchar *name)
     {
         return this->glGetUniformLocation(program, name);
+    };
+
+    glProgramUniform1uiFunction = [this](GLuint program, GLint location, GLuint v0)
+    {
+        this->glProgramUniform1ui(program, location, v0);
     };
 
     glProgramUniform1fFunction = [this](GLuint program, GLint location, GLfloat v0)

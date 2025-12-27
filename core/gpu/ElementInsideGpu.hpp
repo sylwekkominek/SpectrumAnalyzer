@@ -25,6 +25,7 @@ public:
     static void prepareShaders(GLuint &pipeline, GLuint &vs, GLuint &fs, const char * vsConfig, const char *fsConfig);
 protected:
     static void removeShaders(GLuint &pipeline, GLuint &vs, GLuint &fs);
+    static const char* getDefaultFragmentShader();
 
     const uint32_t indexOfRed = 0;
     const uint32_t indexOfGreen = 1;

@@ -8,7 +8,6 @@
 #include <GLFW/glfw3.h>
 #include <atomic>
 
-
 class WindowBase::WindowBaseImpl
 {
 public:
@@ -16,6 +15,7 @@ public:
     void createWindow();
     bool checkIfWindowShouldBeClosed();
     bool checkIfWindowShouldBeRecreated();
+    std::optional<uint16_t> getUpdatedThemeNumber();
     void swapBuffers();
     CursorPosition getCursorPosition();
     WindowSize getWindowSize();
@@ -58,7 +58,6 @@ void WindowBase::WindowBaseImpl::createWindow()
         const auto maximizedWindowSize = config.get<MaximizedWindowSize>();
         window = glfwCreateWindow(maximizedWindowSize.first, maximizedWindowSize.second, name, glfwGetPrimaryMonitor(), nullptr);
         updateCurrentWindowSize(maximizedWindowSize.first, maximizedWindowSize.second);
-
     }
     else
     {
@@ -90,15 +89,31 @@ bool WindowBase::WindowBaseImpl::checkIfWindowShouldBeRecreated()
         return true;
     }
 
-    if((not isFullScreenEnabled) && glfwGetWindowAttrib(window, GLFW_MAXIMIZED))
+    if((not isFullScreenEnabled && glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS))
     {
+        isFullScreenEnabled = true;
         return true;
     }
 
     return false;
 }
 
-void WindowBase::WindowBaseImpl::framebufferSizeCallback(GLFWwindow* /*window*/, int width, int height)
+std::optional<uint16_t> WindowBase::WindowBaseImpl::getUpdatedThemeNumber()
+{
+    glfwPollEvents();
+
+    for (int i = 0; i <= 9; ++i)
+    {
+        if (glfwGetKey(window, GLFW_KEY_0 + i) == GLFW_PRESS)
+        {
+            return i;
+        }
+    }
+
+    return std::nullopt;
+}
+
+void WindowBase::WindowBaseImpl::framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
     updateCurrentWindowSize(width, height);
@@ -138,7 +153,6 @@ WindowSize WindowBase::WindowBaseImpl::getWindowSize()
 
 WindowBase::WindowBase(const Configuration& config, const bool isFullScreenEnabled) :
     config(config),
-    isFullScreenEnabled(isFullScreenEnabled),
     windowBaseImpl(std::make_unique<WindowBaseImpl>(config, isFullScreenEnabled))
 {
 }
@@ -156,6 +170,11 @@ bool WindowBase::checkIfWindowShouldBeClosed()
 bool WindowBase::checkIfWindowShouldBeRecreated()
 {
     return windowBaseImpl->checkIfWindowShouldBeRecreated();
+}
+
+std::optional<uint16_t> WindowBase::getUpdatedThemeNumber()
+{
+    return windowBaseImpl->getUpdatedThemeNumber();
 }
 
 WindowBase::~WindowBase()

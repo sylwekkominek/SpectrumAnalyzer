@@ -11,6 +11,8 @@ void printLicense()
 {
     const std::string license = R"(Copyright (C) 2024-2025, Sylwester Kominek
 
+Source code: https://github.com/sylwekkominek/SpectrumAnalyzer
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or
@@ -24,6 +26,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
+
+
+PRESS 0–9 TO CHANGE THE COLOR THEME
 )";
 
     std::cout<<license<<std::endl;

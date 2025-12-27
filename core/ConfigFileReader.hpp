@@ -26,6 +26,7 @@ public:
     std::map<uint32_t, std::vector<float>> readCsvToMap(const std::string& fileName);
     bool readBoolFromFile(const std::string& fileName);
     void createDirIfNotExists();
+    std::string getConfigPath();
 
 protected:
 

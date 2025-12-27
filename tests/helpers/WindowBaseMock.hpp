@@ -17,6 +17,7 @@ public:
     MOCK_METHOD0(createWindow, void());
     MOCK_METHOD0(checkIfWindowShouldBeClosed, bool());
     MOCK_METHOD0(checkIfWindowShouldBeRecreated, bool());
+    MOCK_METHOD0(getUpdatedThemeNumber, std::optional<uint16_t>());
     MOCK_METHOD0(swapBuffers, void());
     MOCK_METHOD0(getCursorPosition, CursorPosition());
     MOCK_METHOD0(getWindowSize, WindowSize());
