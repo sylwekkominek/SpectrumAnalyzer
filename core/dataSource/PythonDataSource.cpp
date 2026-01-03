@@ -18,6 +18,8 @@ PythonDataSource::PythonDataSource(const char *moduleName):
 
 bool PythonDataSource::initialize(uint32_t dataLength, uint32_t samplingRate)
 {
+    errorOccured = false;
+
     try
     {
         auto pArgs = PyTuple_New(2);
@@ -33,6 +35,7 @@ bool PythonDataSource::initialize(uint32_t dataLength, uint32_t samplingRate)
     }
     catch (...)
     {
+        errorOccured = true;
         return false;
     }
 
@@ -44,6 +47,11 @@ std::vector<float> PythonDataSource::collectDataFromHw()
     return getData();
 }
 
+bool PythonDataSource::checkIfErrorOccured()
+{
+    return errorOccured;
+}
+
 PythonDataSource::~PythonDataSource()
 {
     Py_Finalize();
@@ -51,5 +59,13 @@ PythonDataSource::~PythonDataSource()
 
 std::vector<float> PythonDataSource::getData()
 {
-    return getValues(pointersToPythonFunctions.at(__func__));
+    try
+    {
+        return getValues(pointersToPythonFunctions.at(__func__));
+    }
+    catch(...)
+    {
+        errorOccured = true;
+    }
+    return std::vector<float>{};
 }

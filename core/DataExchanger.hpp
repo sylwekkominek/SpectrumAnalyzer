@@ -30,7 +30,6 @@ private:
     uint32_t maxQueueSize;
 };
 
-
 template<typename T>
 DataExchanger<T>::DataExchanger(uint32_t maxQueueSize):
     maxQueueSize(maxQueueSize)
@@ -41,8 +40,9 @@ template<typename T>
 void DataExchanger<T>::push_back(T &&value)
 {
     std::lock_guard<std::mutex> lg(queueMutex);
+
     queue.push(std::move(value));
-    queueConditionVariable.notify_one();
+
     if(queue.size()>maxQueueSize)
     {
         while(not queue.empty())
@@ -50,6 +50,8 @@ void DataExchanger<T>::push_back(T &&value)
             queue.pop();
         }
     }
+
+    queueConditionVariable.notify_one();
 }
 
 template<typename T>
@@ -89,8 +91,6 @@ void DataExchanger<T>::stop()
 template<typename T>
 uint32_t DataExchanger<T>::getSize()
 {
-
     std::unique_lock<std::mutex> ul(queueMutex);
-    queueConditionVariable.wait(ul,[this](){return not this->queue.empty();});
     return queue.size();
 }

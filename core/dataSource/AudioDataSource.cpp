@@ -46,7 +46,9 @@ bool AudioDataSource::initialize(uint32_t numberOfSamples, uint32_t sampleRate)
 {
     dataLength = numberOfSamples;
     samplingRate = sampleRate;
-    buffer.resize(dataLength * numberOfChannels);
+    errorOccured = false;
+
+    buffer.emplace(std::vector<int16_t>(dataLength * numberOfChannels));
 
     for(auto &[procedureName, procedure]: initFunctions)
     {
@@ -55,6 +57,8 @@ bool AudioDataSource::initialize(uint32_t numberOfSamples, uint32_t sampleRate)
         if(result != paNoError)
         {
             std::cout << "PortAudio error while: " <<procedureName<<" : "<<Pa_GetErrorText(result) << std::endl;
+            errorOccured = true;
+            closeStreamAndBuffer();
             return false;
         }
     }
@@ -62,13 +66,20 @@ bool AudioDataSource::initialize(uint32_t numberOfSamples, uint32_t sampleRate)
     return true;
 }
 
+bool AudioDataSource::checkIfErrorOccured()
+{
+    return errorOccured;
+}
+
 void AudioDataSource::updateBuffer()
 {
-    PaError err = Pa_ReadStream(stream, buffer.data(), dataLength);
+    PaError err = Pa_ReadStream(stream, buffer.value().data(), dataLength);
 
     if ((err != paNoError) && (err != paInputOverflowed))
     {
         std::cout << "PortAudio error while collecting samples from hw: " << Pa_GetErrorText(err) << std::endl;
+        buffer = std::nullopt;
+        checkIfCriticalErrorOccured(err);
     }
 }
 
@@ -76,20 +87,43 @@ std::vector<float> AudioDataSource::collectDataFromHw()
 {
     updateBuffer();
 
-    std::vector<float> leftChannel;
-    std::vector<float> rightChannel;
-
-    rightChannel.reserve(dataLength);
-    leftChannel.reserve(dataLength);
-
-    for (uint32_t i = 0; i < buffer.size(); ++i)
+    if(buffer != std::nullopt)
     {
-        (i % 2) ? rightChannel.emplace_back(buffer[i]) : leftChannel.emplace_back(buffer[i]);
+        std::vector<float> leftChannel;
+        std::vector<float> rightChannel;
+
+        rightChannel.reserve(dataLength);
+        leftChannel.reserve(dataLength);
+
+        for (uint32_t i = 0; i < buffer.value().size(); ++i)
+        {
+            (i % 2) ? rightChannel.emplace_back(buffer.value()[i]) : leftChannel.emplace_back(buffer.value()[i]);
+        }
+        return getAverage(leftChannel, rightChannel);
     }
-    return getAverage(leftChannel, rightChannel);
+    return {};
 }
 
-AudioDataSource::~AudioDataSource()
+void AudioDataSource::checkIfCriticalErrorOccured(const PaError &err)
+{
+    const PaError criticalErrors[] = {
+        paNotInitialized,
+        paUnanticipatedHostError,
+        paInternalError,
+        paDeviceUnavailable,
+        paHostApiNotFound,
+        paInvalidHostApi
+    };
+
+    if (std::any_of(std::begin(criticalErrors), std::end(criticalErrors),
+                    [err](const PaError &e){ return e == err; }))
+    {
+        errorOccured = true;
+        closeStreamAndBuffer();
+    }
+}
+
+void AudioDataSource::closeStreamAndBuffer()
 {
     if (stream)
     {
@@ -97,5 +131,11 @@ AudioDataSource::~AudioDataSource()
         Pa_CloseStream(stream);
         Pa_Terminate();
         stream = nullptr;
+        buffer = std::nullopt;
     }
+}
+
+AudioDataSource::~AudioDataSource()
+{
+    closeStreamAndBuffer();
 }

@@ -18,11 +18,9 @@ public:
     SamplesCollector(const bool pythonDataSourceEnabled, const std::string &audioConfigFile="audioConfig");
 
     bool initialize(uint32_t numberOfSamples, uint32_t sampleRate);
+    bool checkIfErrorOccured();
     std::vector<float> collectDataFromHw();
 
 private:
     std::unique_ptr<DataSourceBase> dataSourceImpl;
 };
-
-
-

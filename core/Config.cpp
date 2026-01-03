@@ -92,19 +92,122 @@ vec3 auroraBarColor(float y) {
     color = mix(color, purple, smoothstep(0.3, 0.7, y));
     return mix(color, pink, smoothstep(0.7, 1.0, y));
 }
-vec3 cyberpunkBarColor(float y) {
-    vec3 purple   = vec3(0.6, 0.1, 0.7);
-    vec3 magenta  = vec3(1.0, 0.0, 0.5);
-    vec3 neonBlue = vec3(0.0, 1.0, 1.0);
-    vec3 color = mix(purple, magenta, smoothstep(0.0, 0.5, y));
-    return mix(color, neonBlue, smoothstep(0.5, 1.0, y));
-}
 vec3 synthwaveBarColor(float y) {
-    vec3 darkPink      = vec3(0.9, 0.1, 0.5);
-    vec3 electricBlue  = vec3(0.0, 0.7, 1.0);
-    vec3 neonPurple    = vec3(0.7, 0.0, 0.9);
+    vec3 darkPink     = vec3(0.9, 0.1, 0.5);
+    vec3 electricBlue = vec3(0.0, 0.7, 1.0);
+    vec3 neonPurple   = vec3(0.7, 0.0, 0.9);
     vec3 color = mix(darkPink, electricBlue, smoothstep(0.0, 0.5, y));
     return mix(color, neonPurple, smoothstep(0.5, 1.0, y));
+}
+float hash(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+}
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(a, b, u.x)
+         + (c - a) * u.y * (1.0 - u.x)
+         + (d - b) * u.x * u.y;
+}
+float fbm(vec2 p) {
+    float total = 0.0;
+    float amp = 0.5;
+    for (int i = 0; i < 5; i++) {
+        total += amp * noise(p);
+        p *= 2.0;
+        amp *= 0.5;
+    }
+    return total;
+}
+vec3 smokeBarColor() {
+    float time = timeInMilliSeconds / 1000.0;
+    vec2 uv = calculatedPosition.xy * 0.5 + 0.5;
+    vec2 motion = vec2(
+        sin(time * 0.6) * 0.35,
+        -time * 0.35
+    );
+    vec2 p = uv * vec2(3.0, 5.0) + motion;
+    float s = fbm(p);
+    s = pow(s, 1.6);
+    float fade = smoothstep(0.0, 0.9, 1.0 - uv.y);
+    s *= fade;
+    return mix(vec3(0.15), vec3(0.95), s);
+}
+vec3 firePalette(float t) {
+    vec3 c1 = vec3(0.6, 0.1, 0.0);
+    vec3 c2 = vec3(1.0, 0.4, 0.0);
+    vec3 c3 = vec3(1.0, 1.0, 0.3);
+    if (t < 0.5)
+        return mix(c1, c2, t * 2.0);
+    else
+        return mix(c2, c3, (t - 0.5) * 2.0);
+}
+vec3 fireBarColor() {
+    float time = timeInMilliSeconds / 1000.0;
+    vec2 uv = calculatedPosition.xy * 0.5 + 0.5;
+    float yOffset = time * 0.7;
+    float noisePos = uv.y * 3.0 - yOffset;
+    float n = fbm(vec2(uv.x * 3.0, noisePos));
+    n += 0.5 * fbm(vec2(uv.x * 6.0, noisePos * 2.0));
+    n += 0.25 * fbm(vec2(uv.x * 12.0, noisePos * 4.0));
+    n = clamp(n, 0.0, 1.0);
+    float shape = smoothstep(0.0, 0.7, uv.y);
+    float intensity = n * (1.0 - shape);
+    vec3 fireCol = firePalette(intensity);
+    fireCol *= smoothstep(0.0, 0.2, 1.0 - uv.y);
+    return fireCol;
+}
+vec3 hsv2rgb(vec3 c) {
+    vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+vec3 rainbowBarColor() {
+    float time = timeInMilliSeconds * 0.001;
+    float x = (calculatedPosition.x + 1.0) * 0.5;
+    float y = (calculatedPosition.y + 1.0) * 0.5;
+    float hue = mod(time * 0.05 + x * 0.5 + y * 0.5, 1.0);
+    float saturation = 0.8 + 0.2 * sin(time * 1.0 + x * 10.0);
+    float value = 0.7 + 0.3 * sin(time * 2.0 + y * 15.0);
+    vec3 color = hsv2rgb(vec3(hue, saturation, value));
+    float wave = sin(10.0 * (x + y) - time * 2.0);
+    float brightness = 0.5 + 0.5 * smoothstep(0.0, 1.0, wave);
+    color *= brightness;
+    float flicker = 0.8 + 0.2 * sin(time * 10.0 + (x + y) * 20.0);
+    color *= flicker;
+    return color;
+}
+float fakeNoise(vec2 p) {
+    return sin(p.x) * sin(p.y);
+}
+vec3 nebulaGlowColor(float x) {
+    return mix(vec3(0.2, 0.0, 0.4),
+               vec3(1.0, 0.3, 0.8),
+               smoothstep(0.0, 1.0, x));
+}
+vec3 nebulaEnergyBarColor() {
+    float time = timeInMilliSeconds / 1000.0;
+    vec2 uv = calculatedPosition.xy;
+    vec2 warped = uv * 3.0 + vec2(
+        sin(time * 0.5 + uv.y * 5.0),
+        cos(time * 0.4 + uv.x * 5.0)
+    );
+    float pattern = fakeNoise(warped + time) * 0.5 + 0.5;
+    float pulse = 0.5 + 0.5 * sin(time * 2.0 + length(uv) * 5.0);
+    pattern *= pulse;
+    vec3 glow = nebulaGlowColor(pattern);
+    float y = (clamp(calculatedPosition.y, -1.0, 1.0) + 1.0) * 0.5;
+    vec3 baseGradient = mix(vec3(0.0, 0.0, 0.1),
+                            vec3(0.4, 0.0, 0.2),
+                            y);
+    return mix(baseGradient, glow, 0.7);
 }
 void main() {
     float time = timeInMilliSeconds / 1000.0;
@@ -118,31 +221,32 @@ void main() {
         barColor = nebulaBarColor(y);
     } else if (themeNumber == 3u) {
         barColor = auroraBarColor(y);
-    }
-    else if ((themeNumber >= 4u) && (themeNumber <= 6u)) {
+    } else if ((themeNumber >= 4u) && (themeNumber <= 5u)) {
         barColor = synthwaveBarColor(y);
-    }else {
+    } else if (themeNumber == 6u) {
+        barColor = smokeBarColor();
+    } else if (themeNumber == 7u) {
+        barColor = fireBarColor();
+    } else if (themeNumber == 8u) {
+        barColor = rainbowBarColor();
+    } else if (themeNumber == 9u) {
+        barColor = nebulaEnergyBarColor();
+    } else {
         barColor = defaultNebulaBarColor(y);
     }
     vec4 baseColor = mix(vec4(barColor, 1.0), vertColor, 0.35);
     float flicker = 1.0;
-    if (themeNumber == 0u) {
+    if (themeNumber <= 1u) {
         flicker = 0.95 + 0.05 * sin(time * 0.5 + calculatedPosition.y * 5.0);
-    } else if (themeNumber == 1u) {
-        flicker = 0.95 + 0.05 * sin(time * 1.0 + calculatedPosition.y * 8.0);
-    } else if (themeNumber == 2u) {
+    } else if (themeNumber <= 3u) {
         flicker = 0.9 + 0.1 * sin(time * 2.0 + calculatedPosition.y * 15.0);
-    } else if (themeNumber == 3u) {
-        flicker = 0.9 + 0.1 * sin(time * 2.0 + calculatedPosition.y * 15.0);
-    }
-    else if ((themeNumber >= 4u) && (themeNumber <= 6u)) {
+    } else {
         flicker = 0.85 + 0.15 * sin(time * 1.5 + calculatedPosition.y * 8.0);
     }
-    else {
-        flicker = 0.95 + 0.05 * sin(time * 0.5 + calculatedPosition.y * 5.0);
-    }
     baseColor.rgb *= flicker;
-    bool insideBoundary = calculatedPosition.x > boundary.x && calculatedPosition.x < boundary.y;
+    bool insideBoundary =
+        calculatedPosition.x > boundary.x &&
+        calculatedPosition.x < boundary.y;
     if (insideBoundary) {
         baseColor.rgb = min(baseColor.rgb * 1.5, vec3(1.0));
     }
@@ -257,22 +361,38 @@ vec3 synthwaveEffect(vec2 uv, float time) {
     vec3 background = mix(vec3(0.05, 0.0, 0.1), vec3(0.15, 0.0, 0.3), uv.y);
     return clamp(background + waveColor * 0.4 + gridColor, 0.0, 1.0);
 }
-void main() {
-    float time = timeInMilliSeconds / 1000.0;
+void main()
+{
+    float time = timeInMilliSeconds * 0.001;
     vec2 uv = calculatedPosition.xy;
     vec3 finalColor;
-    if (themeNumber == 1u)
-        finalColor = nebulaGlowEffect(uv, time, bass);
-    else if (themeNumber == 2u)
-        finalColor = elegantGalaxy(uv, time);
-    else if (themeNumber == 3u)
-        finalColor = auroraEffect(uv, time);
-    else if (themeNumber == 4u)
-        finalColor = nebulaEffect(uv, time);
-    else if (themeNumber == 5u)
-        finalColor = synthwaveEffect(uv, time);
-    else
-        finalColor = nebulaGlowEffect(uv, time, bass);
+    switch (themeNumber)
+    {
+        case 1u:
+            finalColor = nebulaGlowEffect(uv, time, bass);
+            break;
+        case 2u:
+            finalColor = elegantGalaxy(uv, time);
+            break;
+        case 3u:
+            finalColor = auroraEffect(uv, time);
+            break;
+        case 4u:
+            finalColor = nebulaEffect(uv, time);
+            break;
+        case 5u:
+            finalColor = synthwaveEffect(uv, time);
+            break;
+        case 6u:
+        case 7u:
+        case 8u:
+        case 9u:
+            finalColor = vec3(0.0);
+            break;
+        default:
+            finalColor = nebulaGlowEffect(uv, time, bass);
+            break;
+    }
     Color = vec4(finalColor, 1.0);
 })";
 }

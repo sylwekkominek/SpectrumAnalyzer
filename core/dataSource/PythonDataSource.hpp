@@ -16,11 +16,13 @@ class PythonDataSource : public PythonCodeRunner, public DataSourceBase
 public:
     PythonDataSource(const char *moduleName="audioConfig");
     bool initialize(uint32_t numberOfSamples, uint32_t samplingRate) override;
+    bool checkIfErrorOccured() override;
     std::vector<float> collectDataFromHw() override;
     ~PythonDataSource();
 
 private:
 
     std::vector<float> getData();
+    bool errorOccured{};
 
 };

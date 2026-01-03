@@ -11,6 +11,7 @@
 #include <portaudio.h>
 #include <functional>
 #include <string>
+#include <optional>
 
 class AudioDataSource : public DataSourceBase
 {
@@ -18,6 +19,7 @@ public:
     AudioDataSource();
     ~AudioDataSource();
     bool initialize(uint32_t numberOfSamples, uint32_t sampleRate) override;
+    bool checkIfErrorOccured() override;
     std::vector<float> collectDataFromHw() override;
 
     AudioDataSource(AudioDataSource&) = delete;
@@ -27,13 +29,16 @@ public:
 
 private:
     void updateBuffer();
+    void checkIfCriticalErrorOccured(const PaError &err);
+    void closeStreamAndBuffer();
 
     std::vector<std::pair<std::string, std::function<PaError()>>> initFunctions;
     PaStreamParameters inputParams{};
     PaStream* stream{};
     PaDeviceIndex device{paNoDevice};
     uint32_t samplingRate{};
-    std::vector<int16_t> buffer;
+    std::optional<std::vector<int16_t>> buffer;
+    bool errorOccured{};
 };
 
 

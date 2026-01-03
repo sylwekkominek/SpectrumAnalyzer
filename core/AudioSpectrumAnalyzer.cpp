@@ -6,7 +6,6 @@
 
 #include "AudioSpectrumAnalyzer.hpp"
 #include "dataSource/SamplesCollector.hpp"
-#include "ConfigReader.hpp"
 #include "Window.hpp"
 #include "Stats.hpp"
 #include "Helpers.hpp"
@@ -37,15 +36,32 @@ void AudioSpectrumAnalyzer::samplesUpdater()
 
     SamplesCollector samplesCollector(config.get<PythonDataSourceEnabled>(), audioConfigFile);
 
-    if(samplesCollector.initialize(noOfSamplesToBeCollectedFromHwEachTime, config.get<SamplingRate>())==false)
-    {
-        shouldProceed = false;
-    }
+    samplesCollector.initialize(noOfSamplesToBeCollectedFromHwEachTime, config.get<SamplingRate>());
 
     while(shouldProceed)
     {
         statsManager.update();
-        dataExchanger.push_back(std::make_unique<Data>(std::move(samplesCollector.collectDataFromHw())));
+
+        if(samplesCollector.checkIfErrorOccured())
+        {
+            for(int i=0;i< config.get<DesiredFrameRate>();++i)
+            {
+                dataExchanger.push_back(std::make_unique<Data>(std::move(std::vector<float>(config.get<NumberOfSamples>(),getFloorDbFs16bit()))));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000 / config.get<DesiredFrameRate>()));
+            }
+
+            std::cout<<"PLEASE ENABLE YOUR MICROPHONE OR ANOTHER AUDIO INPUT DEVICE."<<std::endl;
+
+            samplesCollector.initialize(noOfSamplesToBeCollectedFromHwEachTime, config.get<SamplingRate>());
+        }
+        else
+        {
+            auto data = samplesCollector.collectDataFromHw();
+            if(not data.empty())
+            {
+                dataExchanger.push_back(std::make_unique<Data>(std::move(data)));
+            }
+        }
     }
 
     dataExchanger.stop();
@@ -86,7 +102,6 @@ void AudioSpectrumAnalyzer::fftCalculator()
 
     fftDataExchanger.stop();
 }
-
 
 void AudioSpectrumAnalyzer::processing()
 {
@@ -155,7 +170,6 @@ void AudioSpectrumAnalyzer::drafter()
         }
 
         statsManager.update();
-
         window->draw(*data);
 
         if(window->checkIfWindowShouldBeClosed())
@@ -170,7 +184,6 @@ void AudioSpectrumAnalyzer::drafter()
             window->initializeGPU();
         }
     }
-
 }
 void AudioSpectrumAnalyzer::flowController()
 {
@@ -181,7 +194,6 @@ void AudioSpectrumAnalyzer::flowController()
     while(shouldProceed)
     {
         std::this_thread::sleep_for(100ms);
-
         auto numberOfFramesPerSecond = StatsManager::getStatsFor("drafter").getNumberOfCallsInLast(1000ms);
         auto overlappingDiff = calculateOverlappingDiff(config.get<DesiredFrameRate>(), numberOfFramesPerSecond);
         auto overlapping = calculateOverlapping(config.get<SamplingRate>(), config.get<NumberOfSamples>(), numberOfFramesPerSecond);
@@ -197,7 +209,6 @@ void AudioSpectrumAnalyzer::flowController()
         {
             flowControlDataExchanger.push_back(std::move(overlapping));
         }
-
         auto now = steady_clock::now();
 
         if(now - previousTime >= seconds(1))

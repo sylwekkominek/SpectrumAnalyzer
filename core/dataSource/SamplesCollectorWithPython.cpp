@@ -25,3 +25,7 @@ std::vector<float> SamplesCollector::collectDataFromHw()
     return dataSourceImpl->collectDataFromHw();
 }
 
+bool SamplesCollector::checkIfErrorOccured()
+{
+    return dataSourceImpl->checkIfErrorOccured();
+}
