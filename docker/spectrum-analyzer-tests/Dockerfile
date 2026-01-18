@@ -6,19 +6,11 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-dev \
     libglfw3-dev \
+    portaudio19-dev \
+    libfftw3-dev \
     pkg-config \
     libgtest-dev \
-    libgmock-dev \
-    wget
-
-WORKDIR /tmp
-RUN wget http://www.fftw.org/fftw-3.3.10.tar.gz && \
-    tar -xzf fftw-3.3.10.tar.gz && \
-    cd fftw-3.3.10 && \
-    ./configure && \
-    make -j4 && \
-    make install
-
+    libgmock-dev
 WORKDIR /app
 COPY . /app
 

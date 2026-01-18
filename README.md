@@ -111,7 +111,7 @@ sudo apt update && sudo apt install -y libgtest-dev libgmock-dev
 cd SpectrumAnalyzer && mkdir build && cd build && cmake .. -DENABLE_TESTS=ON && make -j4 && cd tests
 ./spectrum-analyzer-tests
 ```
-**Docker - running app**
+**Docker - Running an App with Microphone**
 
 Depending on your system configuration, you may need to adjust the Docker arguments (especially for GUI and audio support).
 ```bash
@@ -123,6 +123,19 @@ xhost +local:docker
 
 docker run  -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix   --device /dev/dri  --device /dev/snd   spectrum-analyzer
 ```
+**Docker - Running an App with Audio Loopback**
+
+Depending on your system configuration, you may need to adjust the Docker arguments (especially for GUI and audio support).
+```bash
+cd SpectrumAnalyzer
+
+docker build -t spectrum-analyzer-loopback -f docker/spectrum-analyzer-loopback/Dockerfile .
+
+xhost +local:docker
+
+docker run -it --device /dev/dri --device /dev/snd -v /tmp/.X11-unix:/tmp/.X11-unix -v $XDG_RUNTIME_DIR/pulse:/run/user/1000/pulse -e DISPLAY=$DISPLAY -e PULSE_SERVER=unix:/run/user/1000/pulse/native spectrum-analyzer-loopback
+```
+
 **Docker - running tests**
 ```bash
 cd SpectrumAnalyzer
