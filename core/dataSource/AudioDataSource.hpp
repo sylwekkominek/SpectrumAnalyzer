@@ -31,6 +31,7 @@ private:
     void updateBuffer();
     void checkIfCriticalErrorOccured(const PaError &err);
     void closeStreamAndBuffer();
+    bool isDataAvailable();
 
     std::vector<std::pair<std::string, std::function<PaError()>>> initFunctions;
     PaStreamParameters inputParams{};

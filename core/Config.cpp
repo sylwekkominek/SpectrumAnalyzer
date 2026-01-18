@@ -684,7 +684,7 @@ std::string SamplingRate::getInfo()
 {
     return std::string(
 R"(//Description: This parameter is rarely changed but can be useful when analyzing audio at non-standard sample rates. It also allows experimenting with oversampling or downsampling (which PyAudio supports). Additionally, you might need to adjust it when connecting external devices with different sampling frequencies.
-//Default value: 44100 Hz
+//Default value: 48000 Hz
 )");
 }
 

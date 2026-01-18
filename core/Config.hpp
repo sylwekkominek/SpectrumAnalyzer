@@ -93,7 +93,7 @@ struct NumberOfSamples
 struct SamplingRate
 {
     std::string getInfo();
-    uint32_t value{44100};
+    uint32_t value{48000};
 };
 
 struct DesiredFrameRate

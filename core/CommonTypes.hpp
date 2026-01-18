@@ -25,6 +25,7 @@ struct WindowSize
     uint16_t y;
 };
 
+
 class AnyData
 {
 public:

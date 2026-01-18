@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(ENABLE_TESTS "Enable tests" OFF)
 option(NO_PYTHON "Disable python" OFF)
+option(ENABLE_LOOPBACK "Enable loopback" OFF)
 
 find_package(OpenGL 4.5 REQUIRED)
 find_package(glfw3 REQUIRED)

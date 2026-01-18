@@ -9,7 +9,7 @@
 #include <iostream>
 void printLicense()
 {
-    const std::string license = R"(Copyright (C) 2024-2025, Sylwester Kominek
+    const std::string license = R"(Copyright (C) 2024-2026, Sylwester Kominek
 
 Source code: https://github.com/sylwekkominek/SpectrumAnalyzer
 

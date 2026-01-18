@@ -57,9 +57,14 @@ void AudioSpectrumAnalyzer::samplesUpdater()
         else
         {
             auto data = samplesCollector.collectDataFromHw();
-            if(not data.empty())
+
+            if(!data.empty())
             {
                 dataExchanger.push_back(std::make_unique<Data>(std::move(data)));
+            }
+            else
+            {
+                dataExchanger.push_back(std::make_unique<Data>(std::move(std::vector<float>(config.get<NumberOfSamples>(), getFloorDbFs16bit()))));
             }
         }
     }

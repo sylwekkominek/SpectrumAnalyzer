@@ -5,9 +5,11 @@
  */
 
 #include "AudioDataSource.hpp"
+#include "AudioDataSourceDevice.hpp"
 #include "../Helpers.hpp"
 #include <iostream>
-
+#include <chrono>
+#include <thread>
 
 AudioDataSource::AudioDataSource()
 {
@@ -15,14 +17,19 @@ AudioDataSource::AudioDataSource()
         return Pa_Initialize();
     });
 
-    initFunctions.emplace_back("updateAudioInputDeviceParams", [&](){
+    initFunctions.emplace_back("updateAudioInputDevice", [&](){
 
-        device = Pa_GetDefaultInputDevice();
+        device = getAudioSourceDevice();
 
         if(device == paNoDevice)
         {
             return paInvalidDevice;
         }
+
+        return paNoError;
+    });
+
+    initFunctions.emplace_back("updateAudioInputDeviceParams", [&](){
 
         inputParams.device = device;
         inputParams.channelCount = numberOfChannels;
@@ -30,8 +37,39 @@ AudioDataSource::AudioDataSource()
         inputParams.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency;
         inputParams.hostApiSpecificStreamInfo = nullptr;
 
+        PaError err = Pa_IsFormatSupported(
+            &inputParams,
+            nullptr,
+            samplingRate
+            );
+
+        if(err != paNoError)
+        {
+            auto deviceInfo = Pa_GetDeviceInfo(device);
+            const auto supportedSampleRate = deviceInfo->defaultSampleRate;
+            const char* deviceName = deviceInfo->name;
+
+            std::ostringstream warning;
+
+            warning << R"(WARNING: THE APPLICATION IS USING THE DEFAULT AUDIO CONFIGURATION
+FROM WINDOWS BECAUSE THE SAMPLE RATE SPECIFIED IN THE CONFIG FILE IS NOT
+SUPPORTED BY THE CURRENT OUTPUT DEVICE: )" << deviceName << R"(
+AUDIO FREQUENCIES MAY BE CALCULATED INCORRECTLY.
+
+FIX OPTION 1: MODIFY SamplingRate.txt FILE WITH SAMPLE RATE: )" << supportedSampleRate << R"(
+
+FIX OPTION 2: CHANGE THE DEFAULT AUDIO FORMAT IN WINDOWS:
+            CLICK THE SPEAKER ICON -> SOUND SETTINGS -> DEVICE PROPERTIES ->
+            OUTPUT SETTINGS -> FORMAT -> CHOOSE SAMPLE RATE: )" << samplingRate;
+
+            std::cout << std::endl<<warning.str() << std::endl;
+
+            samplingRate = supportedSampleRate;
+         }
+
         return paNoError;
     });
+
 
     initFunctions.emplace_back("openStream", [&](){
         return Pa_OpenStream(&stream, &inputParams, nullptr, samplingRate, dataLength, paClipOff, nullptr, nullptr);
@@ -85,22 +123,27 @@ void AudioDataSource::updateBuffer()
 
 std::vector<float> AudioDataSource::collectDataFromHw()
 {
-    updateBuffer();
-
-    if(buffer != std::nullopt)
+    if (isDataAvailable())
     {
-        std::vector<float> leftChannel;
-        std::vector<float> rightChannel;
+        updateBuffer();
 
-        rightChannel.reserve(dataLength);
-        leftChannel.reserve(dataLength);
-
-        for (uint32_t i = 0; i < buffer.value().size(); ++i)
+        if(buffer != std::nullopt)
         {
-            (i % 2) ? rightChannel.emplace_back(buffer.value()[i]) : leftChannel.emplace_back(buffer.value()[i]);
+            std::vector<float> leftChannel;
+            std::vector<float> rightChannel;
+
+            rightChannel.reserve(dataLength);
+            leftChannel.reserve(dataLength);
+
+            for (uint32_t i = 0; i < buffer.value().size(); ++i)
+            {
+                (i % 2) ? rightChannel.emplace_back(buffer.value()[i]) : leftChannel.emplace_back(buffer.value()[i]);
+            }
+            return getAverage(leftChannel, rightChannel);
         }
-        return getAverage(leftChannel, rightChannel);
     }
+
+    std::cout << "No input data " <<std::endl;
     return {};
 }
 
@@ -134,6 +177,28 @@ void AudioDataSource::closeStreamAndBuffer()
         buffer = std::nullopt;
     }
 }
+
+bool AudioDataSource::isDataAvailable()
+{
+    constexpr int maxWaitMs = 60;
+    constexpr int delayInMs = 1;
+
+    int waitedMs = 0;
+
+    while (waitedMs < maxWaitMs)
+    {
+        if (Pa_GetStreamReadAvailable(stream) >= dataLength)
+        {
+            return true;
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(delayInMs));
+        waitedMs += delayInMs;
+    }
+
+    return false;
+}
+
 
 AudioDataSource::~AudioDataSource()
 {

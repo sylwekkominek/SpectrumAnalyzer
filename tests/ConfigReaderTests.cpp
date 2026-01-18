@@ -42,7 +42,7 @@ public:
         EXPECT_EQ(config.get<NormalWindowSize>().first, 1280);
         EXPECT_EQ(config.get<NormalWindowSize>().second, 512);
         EXPECT_EQ(config.get<NumberOfSamples>(), 4096);
-        EXPECT_EQ(config.get<SamplingRate>(), 44100);
+        EXPECT_EQ(config.get<SamplingRate>(), 48000);
         EXPECT_EQ(config.get<DesiredFrameRate>(), 60);
         EXPECT_EQ(config.get<GapWidthInRelationToRectangleWidth>(), 0);
         EXPECT_EQ(config.get<NumberOfSignalsForAveraging>(), 1);
