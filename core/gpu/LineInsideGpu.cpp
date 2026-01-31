@@ -1,12 +1,10 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
 
 #include "LineInsideGpu.hpp"
-#include <iostream>
-
 
 GLuint LineInsideGpu::vs = 0;
 GLuint LineInsideGpu::fs = 0;
@@ -19,7 +17,6 @@ GLint LineInsideGpu::colorLoc = 0;
 LineInsideGpu::LineInsideGpu()
 {
     glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
 }
 
 void LineInsideGpu::draw(const Line &line, const std::vector<float> &color)

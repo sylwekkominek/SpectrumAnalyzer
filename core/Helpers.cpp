@@ -6,7 +6,6 @@
 
 #include "Helpers.hpp"
 #include "CommonData.hpp"
-#include <cmath>
 #include <iostream>
 #include <algorithm>
 #include <cstdint>

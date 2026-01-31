@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -35,16 +35,26 @@ Configuration ConfigReader::getConfig()
         config.data.add(getNumberOfRectangles());
         config.data.add(getScalingFactor());
         config.data.add(getOffsetFactor());
+        config.data.add(getRectanglesVisibilityState());
+        config.data.add(getLinesVisibilityState());
         config.data.add(getDynamicMaxHoldVisibilityState());
+        config.data.add(getDynamicMaxHoldSecondaryVisibilityState());
         config.data.add(getDynamicMaxHoldRectangleHeightInPercentOfScreenSize());
         config.data.add(getDynamicMaxHoldSpeedOfFalling());
-        config.data.add(getDynamicMaxHoldTransparentSpeedOfFalling());
+        config.data.add(getDynamicMaxHoldSecondarySpeedOfFalling());
         config.data.add(getDynamicMaxHoldAccelerationStateOfFalling());
         config.data.add(getHorizontalLinePositions());
+        config.data.add(getVerticalLinePositions());
+        config.data.add(getFrequencyTextPositions());
+        config.data.add(getColorOfLine());
         config.data.add(getColorOfStaticLines());
+        config.data.add(getColorOfDynamicMaxHoldLine());
+        config.data.add(getColorOfDynamicMaxHoldSecondaryLine());
         config.data.add(getColorsOfRectangle());
+        config.data.add(getColorOfDynamicMaxHoldLine());
         config.data.add(getColorsOfDynamicMaxHoldRectangle());
-        config.data.add(getColorsOfDynamicMaxHoldTransparentRectangle());
+        config.data.add(getColorOfStaticText());
+        config.data.add(getColorsOfDynamicMaxHoldSecondaryRectangle());
         config.data.add(getAdvancedColorSettings());
         config.data.add(getBackgroundColorSettings());
     }
@@ -52,25 +62,16 @@ Configuration ConfigReader::getConfig()
     return config;
 }
 
+
 Freqs ConfigReader::getFrequencies()
 {
     Freqs data;
 
-    try
-    {
-        const auto fileName = "Frequencies";
+    auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 1);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), data.value, 1);
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = std::move(*value);
     }
 
     return data;
@@ -91,7 +92,6 @@ NumberOfRectangles ConfigReader::getNumberOfRectangles()
     return data;
 }
 
-
 SignalWindow ConfigReader::getSignalWindow()
 {
     auto numberOfSamples = getNumberOfSamples().value;
@@ -100,23 +100,21 @@ SignalWindow ConfigReader::getSignalWindow()
 
     try
     {
-        const auto fileName = "SignalWindow";
-
-        if(not checkIfFileExists(fileName))
+        if(not checkIfFileExists(data.name))
         {
-            writeVectorToCsv(fileName, data.getInfo(), data.value);
+            writeVectorToCsv(data.name, data.getInfo(), data.value);
             return data;
         }
 
-        const auto dataFromFile = readCSVToVector(fileName);
+        const auto dataFromFile = readCSVToVector(data.name);
 
         if(dataFromFile.size() != numberOfSamples)
         {
-            writeVectorToCsv(fileName, data.getInfo(), data.value);
+            writeVectorToCsv(data.name, data.getInfo(), data.value);
         }
         else
         {
-            data.value = readCSVToVector(fileName);
+            data.value = readCSVToVector(data.name);
         }
     }
     catch(...)
@@ -130,21 +128,11 @@ PythonDataSourceEnabled ConfigReader::getPythonDataSourceEnabled()
 {
     PythonDataSourceEnabled data;
 
-    try
-    {
-        const auto fileName = "PythonDataSourceEnabled";
+    auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeBoolToFile(fileName, data.getInfo(), data.value);
-        }
-        else
-        {
-            data.value = readBoolFromFile(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = *value;
     }
 
     return data;
@@ -154,21 +142,11 @@ DefaultFullscreenState ConfigReader::getDefaultFullscreenState()
 {
     DefaultFullscreenState data;
 
-    try
-    {
-        const auto fileName = "DefaultFullscreenState";
+    auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeBoolToFile(fileName, data.getInfo(), data.value);
-        }
-        else
-        {
-            data.value = readBoolFromFile(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = *value;
     }
 
     return data;
@@ -178,23 +156,12 @@ MaximizedWindowSize ConfigReader::getMaximizedWindowSize()
 {
     MaximizedWindowSize data;
 
-    try
-    {
-        const auto fileName = "MaximizedWindowSize";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value.first, (float)data.value.second},0);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), {(float)data.value.first, (float)data.value.second},0);
-        }
-        else
-        {
-            const auto res = readCSVToVector(fileName);
-            data.value.first = res.at(0);
-            data.value.second = res.at(1);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value.first = value->at(0);
+        data.value.second = value->at(1);
     }
 
     return data;
@@ -204,23 +171,12 @@ NormalWindowSize ConfigReader::getNormalWindowSize()
 {
     NormalWindowSize data;
 
-    try
-    {
-        const auto fileName = "NormalWindowSize";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value.first, (float)data.value.second},0);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), {(float)data.value.first, (float)data.value.second},0);
-        }
-        else
-        {
-            const auto res = readCSVToVector(fileName);
-            data.value.first = res.at(0);
-            data.value.second = res.at(1);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value.first = value->at(0);
+        data.value.second = value->at(1);
     }
 
     return data;
@@ -230,21 +186,11 @@ GapWidthInRelationToRectangleWidth ConfigReader::getGapWidthInRelationToRectangl
 {
     GapWidthInRelationToRectangleWidth data;
 
-    try
-    {
-        const auto fileName = "GapWidthInRelationToRectangleWidth";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {data.value}, 8);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), {data.value});
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -254,21 +200,11 @@ NumberOfSamples ConfigReader::getNumberOfSamples()
 {
     NumberOfSamples data;
 
-    try
-    {
-        const auto fileName = "NumberOfSamples";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -278,22 +214,11 @@ SamplingRate ConfigReader::getSamplingRate()
 {
     SamplingRate data;
 
-    try
-    {
-        const auto fileName = "SamplingRate";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -302,21 +227,12 @@ SamplingRate ConfigReader::getSamplingRate()
 DesiredFrameRate ConfigReader::getDesiredFrameRate()
 {
     DesiredFrameRate data;
-    try
-    {
-        const auto fileName = "DesiredFrameRate";
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
+
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -326,21 +242,11 @@ NumberOfSignalsForAveraging ConfigReader::getNumberOfSignalsForAveraging()
 {
     NumberOfSignalsForAveraging data;
 
-    try
-    {
-        const auto fileName = "NumberOfSignalsForAveraging";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -350,21 +256,11 @@ NumberOfSignalsForMaxHold ConfigReader::getNumberOfSignalsForMaxHold()
 {
     NumberOfSignalsForMaxHold data;
 
-    try
-    {
-        const auto fileName = "NumberOfSignalsForMaxHold";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(),{(float)data.value},0);
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -374,21 +270,11 @@ AlphaFactor ConfigReader::getAlphaFactorForSmoothing()
 {
     AlphaFactor data;
 
-    try
-    {
-        const auto fileName = "AlphaFactor";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value},8);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), {data.value});
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -398,21 +284,11 @@ MaxQueueSize ConfigReader::getMaxQueueSize()
 {
     MaxQueueSize data;
 
-    try
-    {
-        const auto fileName = "MaxQueueSize";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value},0);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), {(float)data.value},0);
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -431,21 +307,39 @@ OffsetFactor ConfigReader::getOffsetFactor()
 {
     OffsetFactor data;
 
-    try
-    {
-        const auto fileName = "OffsetFactor";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value},8);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), {data.value});
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
+    }
+
+    return data;
+}
+
+RectanglesVisibilityState ConfigReader::getRectanglesVisibilityState()
+{
+    RectanglesVisibilityState data;
+
+    auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
+
+    if(value)
+    {
+        data.value = *value;
+    }
+
+    return data;
+}
+
+LinesVisibilityState ConfigReader::getLinesVisibilityState()
+{
+    LinesVisibilityState data;
+
+    auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
+
+    if(value)
+    {
+        data.value = *value;
     }
 
     return data;
@@ -455,21 +349,25 @@ DynamicMaxHoldVisibilityState ConfigReader::getDynamicMaxHoldVisibilityState()
 {
     DynamicMaxHoldVisibilityState data;
 
-    try
-    {
-        const auto fileName = "DynamicMaxHoldVisibilityState";
+    auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeBoolToFile(fileName, data.getInfo(), data.value);
-        }
-        else
-        {
-            data.value = readBoolFromFile(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = *value;
+    }
+
+    return data;
+}
+
+DynamicMaxHoldSecondaryVisibilityState ConfigReader::getDynamicMaxHoldSecondaryVisibilityState()
+{
+    DynamicMaxHoldSecondaryVisibilityState data;
+
+    auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
+
+    if(value)
+    {
+        data.value = *value;
     }
 
     return data;
@@ -479,21 +377,11 @@ DynamicMaxHoldRectangleHeightInPercentOfScreenSize ConfigReader::getDynamicMaxHo
 {
     DynamicMaxHoldRectangleHeightInPercentOfScreenSize data;
 
-    try
-    {
-        const auto fileName = "DynamicMaxHoldRectangleHeightInPercentOfScreenSize";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {data.value},8);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), {data.value});
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -503,45 +391,25 @@ DynamicMaxHoldSpeedOfFalling ConfigReader::getDynamicMaxHoldSpeedOfFalling()
 {
     DynamicMaxHoldSpeedOfFalling data;
 
-    try
-    {
-        const auto fileName = "DynamicMaxHoldSpeedOfFalling";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {data.value},8);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), {data.value});
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
 }
 
-DynamicMaxHoldTransparentSpeedOfFalling ConfigReader::getDynamicMaxHoldTransparentSpeedOfFalling()
+DynamicMaxHoldSecondarySpeedOfFalling ConfigReader::getDynamicMaxHoldSecondarySpeedOfFalling()
 {
-    DynamicMaxHoldTransparentSpeedOfFalling data;
+    DynamicMaxHoldSecondarySpeedOfFalling data;
 
-    try
-    {
-        const auto fileName = "DynamicMaxHoldTransparentSpeedOfFalling";
+    auto value = loadVectorConfig(data.name, data.getInfo(), {data.value},8);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), {data.value});
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName).at(0);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = value->at(0);
     }
 
     return data;
@@ -551,21 +419,11 @@ DynamicMaxHoldAccelerationStateOfFalling ConfigReader::getDynamicMaxHoldAccelera
 {
     DynamicMaxHoldAccelerationStateOfFalling data;
 
-    try
-    {
-        const auto fileName = "DynamicMaxHoldAccelerationStateOfFalling";
+    auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeBoolToFile(fileName, data.getInfo(), data.value);
-        }
-        else
-        {
-            data.value = readBoolFromFile(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = *value;
     }
 
     return data;
@@ -575,21 +433,53 @@ HorizontalLinePositions ConfigReader::getHorizontalLinePositions()
 {
     HorizontalLinePositions data;
 
-    try
-    {
-        const auto fileName = "HorizontalLinePositions";
+    auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), data.value,2);
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = std::move(*value);
+    }
+
+    return data;
+}
+
+VerticalLinePositions ConfigReader::getVerticalLinePositions()
+{
+    VerticalLinePositions data;
+
+    auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
+
+    if(value)
+    {
+        data.value = std::move(*value);
+    }
+
+    return data;
+}
+
+FrequencyTextPositions ConfigReader::getFrequencyTextPositions()
+{
+    FrequencyTextPositions data;
+
+    auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
+
+    if(value)
+    {
+        data.value = std::move(*value);
+    }
+
+    return data;
+}
+
+ColorOfLine ConfigReader::getColorOfLine()
+{
+    ColorOfLine data;
+
+    auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
+
+    if(value)
+    {
+        data.value = std::move(*value);
     }
 
     return data;
@@ -599,21 +489,25 @@ ColorOfStaticLines ConfigReader::getColorOfStaticLines()
 {
     ColorOfStaticLines data;
 
-    try
-    {
-        const auto fileName = "ColorOfStaticLines";
+    auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeVectorToCsv(fileName, data.getInfo(), data.value,2);
-        }
-        else
-        {
-            data.value = readCSVToVector(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = std::move(*value);
+    }
+
+    return data;
+}
+
+ColorOfStaticText ConfigReader::getColorOfStaticText()
+{
+    ColorOfStaticText data;
+
+    auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
+
+    if(value)
+    {
+        data.value = std::move(*value);
     }
 
     return data;
@@ -623,46 +517,53 @@ ColorsOfRectangle ConfigReader::getColorsOfRectangle()
 {
     ColorsOfRectangle data;
 
-    try
-    {
-        const auto fileName = "ColorsOfRectangle";
+    auto value = loadMapConfig(data.name, data.getInfo(), data.value, 2);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeMapToCsv(fileName, data.getInfo(), data.value, 2);
-        }
-        else
-        {
-            data.value = readCsvToMap(fileName);
-        }
-
-    }
-    catch(...)
+    if(value)
     {
+        data.value = std::move(*value);
     }
 
     return data;
 }
 
-ColorsOfDynamicMaxHoldTransparentRectangle ConfigReader::getColorsOfDynamicMaxHoldTransparentRectangle()
+ColorOfDynamicMaxHoldLine ConfigReader::getColorOfDynamicMaxHoldLine()
 {
-    ColorsOfDynamicMaxHoldTransparentRectangle data;
+    ColorOfDynamicMaxHoldLine data;
 
-    try
+    auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
+
+    if(value)
     {
-        const auto fileName = "ColorsOfDynamicMaxHoldTransparentRectangle";
-
-        if(not checkIfFileExists(fileName))
-        {
-            writeMapToCsv(fileName, data.getInfo(), data.value, 2);
-        }
-        else
-        {
-            data.value = readCsvToMap(fileName);
-        }
+        data.value = std::move(*value);
     }
-    catch(...)
+
+    return data;
+}
+
+ColorOfDynamicMaxHoldSecondaryLine ConfigReader::getColorOfDynamicMaxHoldSecondaryLine()
+{
+    ColorOfDynamicMaxHoldSecondaryLine data;
+
+    auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
+
+    if(value)
     {
+        data.value = std::move(*value);
+    }
+
+    return data;
+}
+
+ColorsOfDynamicMaxHoldSecondaryRectangle ConfigReader::getColorsOfDynamicMaxHoldSecondaryRectangle()
+{
+    ColorsOfDynamicMaxHoldSecondaryRectangle data;
+
+    auto value = loadMapConfig(data.name, data.getInfo(), data.value, 2);
+
+    if(value)
+    {
+        data.value = std::move(*value);
     }
 
     return data;
@@ -672,21 +573,11 @@ ColorsOfDynamicMaxHoldRectangle ConfigReader::getColorsOfDynamicMaxHoldRectangle
 {
     ColorsOfDynamicMaxHoldRectangle data;
 
-    try
-    {
-        const auto fileName = "ColorsOfDynamicMaxHoldRectangle";
+    auto value = loadMapConfig(data.name, data.getInfo(), data.value, 2);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeMapToCsv(fileName, data.getInfo(), data.value, 2);
-        }
-        else
-        {
-            data.value = readCsvToMap(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = std::move(*value);
     }
 
     return data;
@@ -696,21 +587,11 @@ AdvancedColorSettings ConfigReader::getAdvancedColorSettings()
 {
     AdvancedColorSettings data;
 
-    try
-    {
-        const auto fileName = "AdvancedColorSettings";
+    auto value = loadStringConfig(data.name, data.getInfo(), data.value);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeStringToFile(fileName, data.getInfo(), data.value);
-        }
-        else
-        {
-            data.value = readWholeFile(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = std::move(*value);
     }
 
     return data;
@@ -720,21 +601,11 @@ BackgroundColorSettings ConfigReader::getBackgroundColorSettings()
 {
     BackgroundColorSettings data;
 
-    try
-    {
-        const auto fileName = "BackgroundColorSettings";
+    auto value = loadStringConfig(data.name, data.getInfo(), data.value);
 
-        if(not checkIfFileExists(fileName))
-        {
-            writeStringToFile(fileName, data.getInfo(), data.value);
-        }
-        else
-        {
-            data.value = readWholeFile(fileName);
-        }
-    }
-    catch(...)
+    if(value)
     {
+        data.value = std::move(*value);
     }
 
     return data;

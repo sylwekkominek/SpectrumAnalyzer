@@ -65,7 +65,7 @@ FIX OPTION 2: CHANGE THE DEFAULT AUDIO FORMAT IN WINDOWS:
             std::cout << std::endl<<warning.str() << std::endl;
 
             samplingRate = supportedSampleRate;
-         }
+        }
 
         return paNoError;
     });

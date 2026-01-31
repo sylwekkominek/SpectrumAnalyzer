@@ -499,9 +499,27 @@ std::ostream& operator<<(std::ostream& os, const OffsetFactor &offsetFactor)
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const RectanglesVisibilityState &rectanglesVisibilityState)
+{
+    os <<"rectanglesVisibilityState: "<<rectanglesVisibilityState.value<<std::endl;
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const LinesVisibilityState &linesVisibilityState)
+{
+    os <<"linesVisibilityState: "<<linesVisibilityState.value<<std::endl;
+    return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const DynamicMaxHoldVisibilityState &dynamicMaxHoldVisibilityState)
 {
     os <<"dynamicMaxHoldVisibilityState: "<<dynamicMaxHoldVisibilityState.value<<std::endl;
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const DynamicMaxHoldSecondaryVisibilityState &dynamicMaxHoldSecondaryVisibilityState)
+{
+    os <<"dynamicMaxHoldSecondaryVisibilityState: "<<dynamicMaxHoldSecondaryVisibilityState.value<<std::endl;
     return os;
 }
 
@@ -536,10 +554,84 @@ std::ostream& operator<<(std::ostream& os, const HorizontalLinePositions &horizo
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const VerticalLinePositions &verticalLinePositions)
+{
+    os <<"verticalLinePositions: ";
+
+    for(const auto &el: verticalLinePositions.value)
+    {
+        os <<el<<" ";
+    }
+    os <<std::endl;
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const FrequencyTextPositions &frequencyTextPositions)
+{
+    os <<"frequencyTextPositions: ";
+
+    for(const auto &el: frequencyTextPositions.value)
+    {
+        os <<el<<" ";
+    }
+    os <<std::endl;
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const ColorOfStaticText &colorOfStaticText)
+{
+    os<<"colorOfStaticText: ";
+    for(auto & component: colorOfStaticText.value)
+    {
+        os<<component<<" ";
+    }
+    os<<std::endl;
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const ColorOfLine &colorOfLine)
+{
+    os<<"colorOfLine: ";
+    for(auto & component: colorOfLine.value)
+    {
+        os<<component<<" ";
+    }
+    os<<std::endl;
+
+    return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const ColorOfStaticLines &colorOfStaticLines)
 {
     os<<"colorOfStaticLines: ";
     for(auto & component: colorOfStaticLines.value)
+    {
+        os<<component<<" ";
+    }
+    os<<std::endl;
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const ColorOfDynamicMaxHoldLine &colorOfDynamicMaxHoldLine)
+{
+    os<<"colorOfDynamicMaxHoldLine: ";
+    for(auto & component: colorOfDynamicMaxHoldLine.value)
+    {
+        os<<component<<" ";
+    }
+    os<<std::endl;
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const ColorOfDynamicMaxHoldSecondaryLine &colorOfDynamicMaxHoldSecondaryLine)
+{
+    os<<"colorOfDynamicMaxHoldSecondaryLine: ";
+    for(auto & component: colorOfDynamicMaxHoldSecondaryLine.value)
     {
         os<<component<<" ";
     }
@@ -603,13 +695,21 @@ std::ostream& operator<<(std::ostream& os, const Configuration &config)
     os<<config.data.get<MaxQueueSize>();
     os<<config.data.get<ScalingFactor>();
     os<<config.data.get<OffsetFactor>();
+    os<<config.data.get<RectanglesVisibilityState>();
+    os<<config.data.get<LinesVisibilityState>();
     os<<config.data.get<DynamicMaxHoldVisibilityState>();
+    os<<config.data.get<DynamicMaxHoldSecondaryVisibilityState>();
     os<<config.data.get<DynamicMaxHoldRectangleHeightInPercentOfScreenSize>();
     os<<config.data.get<DynamicMaxHoldAccelerationStateOfFalling>();
     os<<config.data.get<Freqs>();
     os<<config.data.get<SignalWindow>();
     os<<config.data.get<HorizontalLinePositions>();
+    os<<config.data.get<VerticalLinePositions>();
+    os<<config.data.get<ColorOfLine>();
+    os<<config.data.get<ColorOfStaticText>();
     os<<config.data.get<ColorOfStaticLines>();
+    os<<config.data.get<ColorOfDynamicMaxHoldLine>();
+    os<<config.data.get<ColorOfDynamicMaxHoldSecondaryLine>();
     os<<config.data.get<ColorsOfRectangle>();
     os<<config.data.get<ColorsOfDynamicMaxHoldRectangle>();
 
@@ -692,7 +792,7 @@ std::string DesiredFrameRate::getInfo()
 {
     return std::string(
 R"(//Description: Sets the target number of frames per second (FPS) displayed on the screen. Since the number of samples and sampling rate limit how frequently new data can be processed, the program increases the frame rate by using overlapping. For example, with 4096 samples at a 44100 Hz sampling rate, the default frame rate is about 11 FPS. To reach higher rates like 60 FPS, the program applies Welch’s method, processing overlapping segments of the signal to effectively analyze more data per second. This parameter also allows adjusting the application to run smoothly on hardware with limited performance, such as a Raspberry Pi, which may struggle with higher frame rates, especially at higher resolutions.
-//Default value: 60 FPS
+//Default value: 55 FPS
 )");
 }
 
@@ -742,10 +842,35 @@ R"(//Description: Allows precise adjustment of the signal amplitude, useful when
 )");
 }
 
+std::string RectanglesVisibilityState::getInfo()
+{
+    return std::string(
+        R"(//Description: Enables the visibility of rectangles on the display.
+//Default value: true
+)");
+}
+
+std::string LinesVisibilityState::getInfo()
+{
+    return std::string(
+        R"(//Description: Enables the visibility of lines on the display.
+//Default value: false
+)");
+}
+
+
 std::string DynamicMaxHoldVisibilityState::getInfo()
 {
     return std::string(
-R"(//Description: Toggles the visibility of on-screen elements that display the peak (max hold) values over time. When enabled, small markers show the highest recent signal levels.
+R"(//Description: Toggles the visibility of on-screen elements that display the peak (max hold) values over time. When enabled, markers show the highest recent signal levels.
+//Default value: True
+)");
+}
+
+std::string DynamicMaxHoldSecondaryVisibilityState::getInfo()
+{
+    return std::string(
+        R"(//Description: Toggles the visibility of secondary on-screen elements that display the peak (max hold) values over time. When enabled, secondary markers show the highest recent signal levels.
 //Default value: True
 )");
 }
@@ -766,10 +891,10 @@ R"(//Description: Sets how fast the max hold markers decrease in value, affectin
 )");
 }
 
-std::string DynamicMaxHoldTransparentSpeedOfFalling::getInfo()
+std::string DynamicMaxHoldSecondarySpeedOfFalling::getInfo()
 {
     return std::string(
-        R"(//Description: Sets how fast the transparent max hold markers decrease in value, affecting the speed at which the peak indicators move downward.
+        R"(//Description: Sets how fast the secondary max hold markers decrease in value, affecting the speed at which the peak indicators move downward.
 //Default value: 1000
 )");
 }
@@ -790,11 +915,44 @@ R"(//Description: Lets the user define how many horizontal lines are shown on th
 )");
 }
 
+std::string VerticalLinePositions::getInfo()
+{
+    return std::string(
+        R"(//Description: Allows selecting the frequency at which a vertical line can be placed.
+//Any frequency value can be entered, but it will be automatically adjusted to the nearest
+//calculated FFT frequency, in the same way as in the Frequencies.txt file.
+)");
+}
+
+std::string FrequencyTextPositions::getInfo()
+{
+    return std::string(
+        R"(//Description: Allows selecting the frequency at which a frequency label can be placed.
+//Any value can be entered, but it will be automatically adjusted to the nearest
+//calculated FFT frequency, as done in the Frequencies.txt file.
+)");
+}
+
+std::string ColorOfLine::getInfo()
+{
+    return std::string(
+        R"(//Description: Allows you to customize the color (RGB) and transparency of lines that display changing dBFS values on the screen.
+//Default value: RGBA color (Red, Green, Blue, Transparency)
+)");
+}
+
 std::string ColorOfStaticLines::getInfo()
 {
     return std::string(
 R"(//Description: Allows you to customize the color (RGB) and transparency of static lines that remain constant on the display.
-//Default value: (0.15,0.15,0.15,0.15)
+//Default value: RGBA color (Red, Green, Blue, Transparency)
+)");
+}
+std::string ColorOfStaticText::getInfo()
+{
+    return std::string(
+        R"(//Description: Allows you to customize the color (RGB) and transparency of static text that remains constant on the display.
+//Default value: RGBA color (Red, Green, Blue, Transparency)
 )");
 }
 
@@ -814,12 +972,27 @@ std::string ColorsOfDynamicMaxHoldRectangle::getInfo()
 )");
 }
 
-std::string ColorsOfDynamicMaxHoldTransparentRectangle::getInfo()
+std::string ColorOfDynamicMaxHoldLine::getInfo()
 {
     return std::string(
-        R"(//Description: Transparent rectangle
-//Default value: RGBA color (Red, Green, Blue, Transparency) for each vertex
+        R"(//Description: Allows you to customize the color (RGB) and transparency of dynamic max hold lines that hold and display the peak (max hold) values over time.
+//Default value: RGBA color (Red, Green, Blue, Transparency)
 )");
+}
+
+std::string ColorOfDynamicMaxHoldSecondaryLine::getInfo()
+{
+    return std::string(
+        R"(//Description: Allows you to customize the color (RGB) and transparency of secondary dynamic max hold lines that hold and display the peak (max hold) values over time.
+//Default value: RGBA color (Red, Green, Blue, Transparency)
+)");
+}
+
+std::string ColorsOfDynamicMaxHoldSecondaryRectangle::getInfo()
+{
+    return std::string(
+        R"(//Description: Uses the same method of assigning RGBA colors to each of the 4 rectangle vertices as for the main bars. This time, however, it applies to the secondary visual elements that hold and display the peak (max hold) values over time. By setting the vertex colors, you can control the appearance of these peak indicators, including gradients and transparency.
+//Default value: RGBA color (Red, Green, Blue, Transparency) for each vertex)");
 }
 
 std::string AdvancedColorSettings::getInfo()

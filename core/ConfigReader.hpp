@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -17,6 +17,7 @@ public:
     Configuration getConfig();
 
 private:
+
     Freqs getFrequencies();
     NumberOfRectangles getNumberOfRectangles();
     SignalWindow getSignalWindow();
@@ -34,16 +35,25 @@ private:
     MaxQueueSize getMaxQueueSize();
     ScalingFactor getScalingFactor();
     OffsetFactor getOffsetFactor();
+    RectanglesVisibilityState getRectanglesVisibilityState();
+    LinesVisibilityState getLinesVisibilityState();
     DynamicMaxHoldVisibilityState getDynamicMaxHoldVisibilityState();
+    DynamicMaxHoldSecondaryVisibilityState getDynamicMaxHoldSecondaryVisibilityState();
     DynamicMaxHoldRectangleHeightInPercentOfScreenSize getDynamicMaxHoldRectangleHeightInPercentOfScreenSize();
     DynamicMaxHoldSpeedOfFalling getDynamicMaxHoldSpeedOfFalling();
-    DynamicMaxHoldTransparentSpeedOfFalling getDynamicMaxHoldTransparentSpeedOfFalling();
+    DynamicMaxHoldSecondarySpeedOfFalling getDynamicMaxHoldSecondarySpeedOfFalling();
     DynamicMaxHoldAccelerationStateOfFalling getDynamicMaxHoldAccelerationStateOfFalling();
     HorizontalLinePositions getHorizontalLinePositions();
+    VerticalLinePositions getVerticalLinePositions();
+    FrequencyTextPositions getFrequencyTextPositions();
+    ColorOfLine getColorOfLine();
     ColorOfStaticLines getColorOfStaticLines();
+    ColorOfStaticText getColorOfStaticText();
     ColorsOfRectangle getColorsOfRectangle();
+    ColorOfDynamicMaxHoldLine getColorOfDynamicMaxHoldLine();
+    ColorOfDynamicMaxHoldSecondaryLine getColorOfDynamicMaxHoldSecondaryLine();
     ColorsOfDynamicMaxHoldRectangle getColorsOfDynamicMaxHoldRectangle();
-    ColorsOfDynamicMaxHoldTransparentRectangle getColorsOfDynamicMaxHoldTransparentRectangle();
+    ColorsOfDynamicMaxHoldSecondaryRectangle getColorsOfDynamicMaxHoldSecondaryRectangle();
     ColorsOfRectanglePerVertices getColorsOfRectangleHelper(const std::string& functionName);
     AdvancedColorSettings getAdvancedColorSettings();
     BackgroundColorSettings getBackgroundColorSettings();

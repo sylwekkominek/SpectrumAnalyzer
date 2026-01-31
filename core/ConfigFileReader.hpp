@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -10,11 +10,17 @@
 #include <vector>
 #include <map>
 #include <cstdint>
+#include <optional>
 
 class ConfigFileReader
 {
 public:
     ConfigFileReader(const std::string &path="config");
+
+    std::optional<std::string> loadStringConfig(const std::string &fileName, const std::string &info, const std::string& defaultValue);
+    std::optional<std::map<uint32_t, std::vector<float>>> loadMapConfig(const std::string &fileName, const std::string &info, const std::map<uint32_t, std::vector<float>>& defaultValue, const uint8_t precision);
+    std::optional<std::vector<float> > loadVectorConfig(const std::string &fileName, const std::string &info, const std::vector<float>& defaultValue, const uint8_t precision);
+    std::optional<bool> loadBoolConfig(const std::string &fileName, const std::string &info, const bool defaultValue);
 
     void writeStringToFile(const std::string& fileName, const std::string &comment, const std::string& content);
     void writeVectorToCsv(const std::string& fileName, const std::string &comment, const std::vector<float>& values, const uint8_t precision=8);

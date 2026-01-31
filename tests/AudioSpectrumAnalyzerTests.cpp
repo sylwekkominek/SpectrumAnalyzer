@@ -196,6 +196,8 @@ public:
         Frequencies frequencies = {992,996,1000,1004,1008};
 
         config.data.add(Freqs{frequencies});
+        config.data.add(VerticalLinePositions{{}});
+        config.data.add(FrequencyTextPositions{{}});
         config.data.add(NumberOfRectangles{(uint16_t)frequencies.size()});
         config.data.add(PythonDataSourceEnabled{true});
         config.data.add(NumberOfSamples{numberOfSamples});
@@ -214,7 +216,7 @@ public:
         config.data.add(DefaultFullscreenState{});
         config.data.add(HorizontalLinePositions{{}});
         config.data.add(DynamicMaxHoldSpeedOfFalling{});
-        config.data.add(DynamicMaxHoldTransparentSpeedOfFalling{});
+        config.data.add(DynamicMaxHoldSecondarySpeedOfFalling{});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
         config.data.add(AdvancedColorSettings{});
@@ -222,8 +224,12 @@ public:
         config.data.add(GapWidthInRelationToRectangleWidth{});
         config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{});
         config.data.add(ColorOfStaticLines{{}});
-        config.data.add(ColorsOfDynamicMaxHoldTransparentRectangle{});
+        config.data.add(ColorOfStaticText{{}});
+        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{});
         config.data.add(OffsetFactor{});
+        config.data.add(RectanglesVisibilityState{true});
+        config.data.add(LinesVisibilityState{false});
+        config.data.add(DynamicMaxHoldSecondaryVisibilityState{true});
 
         return config;
     }

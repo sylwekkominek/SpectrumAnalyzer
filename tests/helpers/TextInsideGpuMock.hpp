@@ -16,8 +16,11 @@ public:
     using TextInsideGpu::TextInsideGpu;
     TextInsideGpuMock();
 
-    MOCK_METHOD3(draw, void(const HorizontalAligment, const float, const float));
-    MOCK_METHOD4(draw, void(const std::string &, const HorizontalAligment, const float, const float));
+    MOCK_METHOD2(draw, void(const HorizontalAligment, const VerticalAligment));
+    MOCK_METHOD4(draw, void(const HorizontalAligment, const VerticalAligment verticalAligment, const float, const float));
+    MOCK_METHOD5(draw, void(const std::string &, const HorizontalAligment, const VerticalAligment verticalAligment, const float, const float));
     MOCK_METHOD0(initialize, void());
     MOCK_METHOD0(finalize, void());
 };
+
+

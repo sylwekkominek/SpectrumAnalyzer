@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -16,8 +16,8 @@ class TextInsideGpu::TextInsideGpuImpl
 {
 public:
     TextInsideGpuImpl(const std::string &str, const std::vector<float> &color);
-    void draw(const uint16_t horizontalAligment, const float x, const float y);
-    void draw(const std::string &str, const uint16_t horizontalAligment, const float x, const float y);
+    void draw(const uint16_t horizontalAligment, const uint16_t verticalAligment, const float x, const float y);
+    void draw(const std::string &str, const uint16_t horizontalAligment, const uint16_t verticalAligment, const float x, const float y);
     static void initialize();
     static void finalize();
     ~TextInsideGpuImpl() = default;
@@ -37,32 +37,31 @@ TextInsideGpu::TextInsideGpuImpl::TextInsideGpuImpl(const std::string &str, cons
     gltSetText(textPtr.get(), str.c_str());
 }
 
-void TextInsideGpu::TextInsideGpuImpl::draw(const uint16_t horizontalAligment, const float x, const float y)
+void TextInsideGpu::TextInsideGpuImpl::draw(const uint16_t horizontalAligment, const uint16_t verticalAligment, const float x, const float y)
 {
     gltBeginDraw();
     gltColor(color.at(0), color.at(1), color.at(2), color.at(3));
 
     gltDrawText2DAligned(textPtr.get(),
-                         (GLfloat)(x),
-                         (GLfloat)(y),
+                         (GLfloat)x,
+                         (GLfloat)y,
                          1.0f,
-                         horizontalAligment, GLT_CENTER);
-
+                         horizontalAligment, verticalAligment);
     gltEndDraw();
     glUseProgram(0);
 }
 
-void TextInsideGpu::TextInsideGpuImpl::draw(const std::string &str,const uint16_t horizontalAligment, const float x, const float y)
+void TextInsideGpu::TextInsideGpuImpl::draw(const std::string &str, const uint16_t horizontalAligment, const uint16_t verticalAligment, const float x, const float y)
 {
     gltSetText(textPtr.get(), str.c_str());
     gltBeginDraw();
     gltColor(color.at(0), color.at(1), color.at(2), color.at(3));
 
     gltDrawText2DAligned(textPtr.get(),
-                         (GLfloat)(x),
-                         (GLfloat)(y),
+                         (GLfloat)x,
+                         (GLfloat)y,
                          1.0f,
-                         horizontalAligment, GLT_BOTTOM);
+                         horizontalAligment, verticalAligment);
 
     gltEndDraw();
     glUseProgram(0);
@@ -81,19 +80,28 @@ TextInsideGpu::TextInsideGpu(const std::string &str, const std::vector<float> &c
 {
 }
 
+TextInsideGpu::TextInsideGpu(const std::string &str, const float x, const float y, const std::vector<float> &color) : textInsideGpuImpl(std::make_unique<TextInsideGpuImpl>(str, color)), x(x), y(y)
+{
+}
+
 void TextInsideGpu::initialize()
 {
     TextInsideGpuImpl::initialize();
 }
 
-void TextInsideGpu::draw(const HorizontalAligment horizontalAligment, const float x, const float y)
+void TextInsideGpu::draw(const HorizontalAligment horizontalAligment, const VerticalAligment verticalAligment)
 {
-    textInsideGpuImpl->draw((uint16_t)horizontalAligment, x, y);
+    textInsideGpuImpl->draw((uint16_t)horizontalAligment, (uint16_t)verticalAligment, x, y);
 }
 
-void TextInsideGpu::draw(const std::string &str, const HorizontalAligment horizontalAligment, const float x, const float y)
+void TextInsideGpu::draw(const HorizontalAligment horizontalAligment, const VerticalAligment verticalAligment, const float x, const float y)
 {
-    textInsideGpuImpl->draw(str,(uint16_t)horizontalAligment, x, y);
+    textInsideGpuImpl->draw((uint16_t)horizontalAligment, (uint16_t)verticalAligment, x, y);
+}
+
+void TextInsideGpu::draw(const std::string &str, const HorizontalAligment horizontalAligment, const VerticalAligment verticalAligment, const float x, const float y)
+{
+    textInsideGpuImpl->draw(str,(uint16_t)horizontalAligment, (uint16_t)verticalAligment, x, y);
 }
 
 void TextInsideGpu::finalize()
@@ -106,9 +114,8 @@ float TextInsideGpu::percentToPositon(float percent)
     return (100-percent)/100;
 }
 
-
 TextInsideGpu::~TextInsideGpu() = default;
 TextInsideGpu::TextInsideGpu(TextInsideGpu&&) = default;
-TextInsideGpu& TextInsideGpu::operator=(TextInsideGpu&&) = default;
+TextInsideGpu& TextInsideGpu::operator=(TextInsideGpu&& textInsideGpu) = default;
 
 

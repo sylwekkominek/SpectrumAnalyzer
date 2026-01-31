@@ -143,6 +143,6 @@ void RectangleInsideGpu<rectangleType>::draw()
 }
 
 template class RectangleInsideGpu<RectangleType::BAR>;
-template class RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>;
+template class RectangleInsideGpu<RectangleType::SECONDARY_BAR>;
 template class RectangleInsideGpu<RectangleType::BACKGROUND>;
 

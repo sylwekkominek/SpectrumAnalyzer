@@ -1,15 +1,14 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
 
 #include "DataSelector.hpp"
-#include <iostream>
-
+#include "Helpers.hpp"
 
 DataSelector::DataSelector(uint32_t samplingRate, uint32_t fftSize, const Frequencies &demandedFrequencies)
-    : fftSize(fftSize), numberOfFrequencies(demandedFrequencies.size()), selectedData(numberOfFrequencies,0)
+    : fftSize(fftSize), numberOfRectangles(demandedFrequencies.size()), selectedData(numberOfRectangles,0)
 {
 
     uint32_t fftForRealDataSize=fftSize/2;
@@ -30,7 +29,7 @@ std::vector<float> DataSelector::operator()(const std::vector<float> &data)
         throw std::runtime_error("Index selector error: not mached fftsize with signal length");
     }
 
-    for(uint32_t i=0;i<numberOfFrequencies;++i)
+    for(uint32_t i=0;i<numberOfRectangles;++i)
     {
         selectedData[i] = data.at(getFrequencyInfo(i).first);
     }
@@ -47,7 +46,7 @@ Frequencies DataSelector::getSelectedFrequencies() const
 {
     Frequencies selectedFrequencies;
 
-    for(uint32_t i=0;i<numberOfFrequencies;++i)
+    for(uint32_t i=0;i<numberOfRectangles;++i)
     {
         selectedFrequencies.push_back(getFrequencyInfo(i).second);
     }
@@ -55,38 +54,68 @@ Frequencies DataSelector::getSelectedFrequencies() const
     return selectedFrequencies;
 }
 
-void DataSelector::updateIndexes(const Frequencies &demandedFrequencies)
+std::vector<uint16_t> DataSelector::getRectangleIndexesClosestToFrequencies(const Frequencies &demandedFrequencies)
 {
+    std::vector<ClosestFrequency> closestFrequencies;
+    std::vector<uint16_t> indexes;
+    std::set<Frequency> rectanglesFrequencies;
 
-    for(uint32_t i=0;i<numberOfFrequencies;++i)
+    for(const auto &[rectangleIndex, frequencyInfo] : indexesMap)
+    {
+        rectanglesFrequencies.emplace(frequencyInfo.second);
+    }
+
+    updateContainer(rectanglesFrequencies, demandedFrequencies, [&](const RectangleIndex &, const FrequencyInfo &frequencyInfo){
+        closestFrequencies.push_back(frequencyInfo.second);
+    });
+
+    for(const auto &closestFrequency : closestFrequencies)
+    {
+        for(auto &[rectangleIndex, frequencyInfo] : indexesMap)
+        {
+            if(isEqual<float>(frequencyInfo.second, closestFrequency))
+            {
+                indexes.push_back(rectangleIndex);
+            }
+        }
+    }
+
+    return indexes;
+}
+
+void DataSelector::updateContainer(std::set<Frequency> availableFrequencies, const Frequencies &demandedFrequencies, std::function<void(const RectangleIndex &, const FrequencyInfo &)> function)
+{
+    for(uint32_t i=0;i<demandedFrequencies.size();++i)
     {
         auto demandedFreq = demandedFrequencies.at(i);
 
-        auto upperFreq = allFrequencies.upper_bound(demandedFreq);
+        auto upperFreq = availableFrequencies.upper_bound(demandedFreq);
         auto lowerFreq = upperFreq;
 
-        if((upperFreq != allFrequencies.end()) and (upperFreq != allFrequencies.begin()))
+        if((upperFreq != availableFrequencies.end()) and (upperFreq != availableFrequencies.begin()))
         {
-           --lowerFreq;
+            --lowerFreq;
 
             const auto shortestDistanceIterator = (demandedFreq- *lowerFreq) <= (*upperFreq-demandedFreq) ? lowerFreq : upperFreq;
-            const auto index = std::distance(allFrequencies.begin(),shortestDistanceIterator);
+            const auto index = std::distance(availableFrequencies.begin(),shortestDistanceIterator);
 
-            std::cout<<"lowerFreq: "<< *lowerFreq <<" demanded freq: "<< demandedFreq <<"  upperFreq: "<<*upperFreq<<" used: "<<*shortestDistanceIterator<<" index: "<<index<<std::endl;
-
-            indexesMap.insert({i,std::make_pair(index, *shortestDistanceIterator)});
+            function(i,std::make_pair(index, *shortestDistanceIterator));
         }
-        else if( upperFreq == allFrequencies.begin())
+        else if( upperFreq == availableFrequencies.begin())
         {
-            indexesMap.insert({i,std::make_pair(0, *allFrequencies.begin())});
+            function(i,std::make_pair(0, *availableFrequencies.begin()));
         }
     }
 }
 
-DataSelector::FrequencyInfo DataSelector::getFrequencyInfo(FreqIndex frequencyNumber) const
+void DataSelector::updateIndexes(const Frequencies &demandedFrequencies)
 {
-    return indexesMap.at(frequencyNumber);
+    updateContainer(allFrequencies, demandedFrequencies, [this](const RectangleIndex &rectangleIndex, const FrequencyInfo &frequencyInfo){
+        indexesMap.insert({rectangleIndex,frequencyInfo});
+    });
 }
 
-
-
+DataSelector::FrequencyInfo DataSelector::getFrequencyInfo(RectangleIndex rectangleNumber) const
+{
+    return indexesMap.at(rectangleNumber);
+}

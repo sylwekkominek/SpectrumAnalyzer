@@ -1,16 +1,15 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
 
 #include "Gpu.hpp"
-#include "FigureGeometryCalculator.hpp"
 #include "Helpers.hpp"
 
 void Gpu::init()
 {
-    gladLoadGL();
+    gladLoadGL(); 
 }
 
 void Gpu::enableTransparency()
@@ -19,56 +18,105 @@ void Gpu::enableTransparency()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Gpu::prepareBackground(const std::string &backgroundConfig)
+void Gpu::initLines()
 {
-    RectangleInsideGpu<RectangleType::BACKGROUND>::initialize(backgroundConfig.c_str());
-    background = std::make_unique<RectangleInsideGpu<RectangleType::BACKGROUND>>(FigureGeometryCalculator::rectanglesFactory(100, 1,100).front());
+    LineInsideGpu::initialize();
 }
 
-void Gpu::prepareRectangles(const uint16_t numberOfRectangles, const float gap, const ColorsOfRectanglePerVertices &colorsOfRectangle, const std::string &rectanglesConfig)
+void Gpu::initText()
 {
-    RectangleInsideGpu<RectangleType::BAR>::initialize(rectanglesConfig.c_str());
+    TextInsideGpu::initialize();
+}
 
-    for(const auto & rectangle : FigureGeometryCalculator::rectanglesFactory(100, numberOfRectangles, 0, gap))
+void Gpu::initRectangles(const std::string &backgroundConfig, const std::string &rectanglesConfig)
+{
+    RectangleInsideGpu<RectangleType::BACKGROUND>::initialize(backgroundConfig.c_str());
+    RectangleInsideGpu<RectangleType::BAR>::initialize(rectanglesConfig.c_str());
+    RectangleInsideGpu<RectangleType::SECONDARY_BAR>::initialize();
+}
+
+void Gpu::prepareBackground(const Rectangles &rectangles)
+{
+    background = std::make_unique<RectangleInsideGpu<RectangleType::BACKGROUND>>(rectangles.front());
+}
+
+void Gpu::prepareRectangles(const Rectangles &rectangles, const ColorsOfRectanglePerVertices &colorsOfRectangle)
+{
+    for(const auto & rectangle : rectangles)
     {
-        rectangles.emplace_back(RectangleInsideGpu<RectangleType::BAR>(rectangle, colorsOfRectangle));
+        this->rectangles.emplace_back(RectangleInsideGpu<RectangleType::BAR>(rectangle, colorsOfRectangle));
     }
 }
 
-void Gpu::prepareDynamicMaxHoldRectangles(const uint16_t numberOfRectangles, const float height, const float gap, const ColorsOfRectanglePerVertices &colorsOfRectangle)
+void Gpu::prepareDynamicMaxHoldRectangles(const Rectangles &rectangles, const ColorsOfRectanglePerVertices &colorsOfRectangle)
 {
-    for(const auto & rectangle : FigureGeometryCalculator::rectanglesFactory(height, numberOfRectangles, 50 + height/2, gap))
+    for(const auto & rectangle : rectangles)
     {
         dynamicMaxHoldRectangles.emplace_back(RectangleInsideGpu<RectangleType::BAR>(rectangle,  colorsOfRectangle));
     }
 }
 
-void Gpu::prepareDynamicMaxHoldTransparentRectangles(const uint16_t numberOfRectangles, const float height, const float gap, const ColorsOfRectanglePerVertices &colorsOfRectangle)
+void Gpu::prepareDynamicMaxHoldSecondaryRectangles(const Rectangles &rectangles, const ColorsOfRectanglePerVertices &colorsOfRectangle)
 {
-    RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>::initialize();
-    for(const auto & rectangle : FigureGeometryCalculator::rectanglesFactory(100, numberOfRectangles, 0, gap))
+    for(const auto & rectangle : rectangles)
     {
-        dynamicMaxHoldTransparentRectangles.emplace_back(RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>(rectangle,  colorsOfRectangle));
+        dynamicMaxHoldSecondaryRectangles.emplace_back(RectangleInsideGpu<RectangleType::SECONDARY_BAR>(rectangle,  colorsOfRectangle));
     }
 }
 
 void Gpu::prepareHorizontalLines(const uint16_t size)
 {
-    LineInsideGpu::initialize();
-
     for(uint16_t i=0;i<size;++i)
     {
         horizontalLines.emplace_back(LineInsideGpu());
     }
 }
 
-void Gpu::prepareStaticTexts(const Positions &horizontalLinePositions, const Color &colorOfStaticLines)
+void Gpu::prepareVerticalLines(const uint16_t size)
 {
-    TextInsideGpu::initialize();
-
-    for(uint16_t i=0;i<horizontalLinePositions.size();++i)
+    for(uint16_t i=0;i<size;++i)
     {
-        staticTexts.emplace_back(formatFloat(horizontalLinePositions.at(i),4,2), colorOfStaticLines);
+        verticalLines.emplace_back(LineInsideGpu());
+    }
+}
+
+void Gpu::prepareDynamicLines(const uint16_t size)
+{
+    for(uint16_t i=0;i<size;++i)
+    {
+        dynamicLines.emplace_back(LineInsideGpu());
+    }
+}
+
+void Gpu::prepareDynamicMaxHoldLines(const uint16_t size)
+{
+    for(uint16_t i=0;i<size;++i)
+    {
+        dynamicMaxHoldLines.emplace_back(LineInsideGpu());
+    }
+}
+
+void Gpu::prepareDynamicMaxHoldSecondaryLines(const uint16_t size)
+{
+    for(uint16_t i=0;i<size;++i)
+    {
+        dynamicMaxHoldSecondaryLines.emplace_back(LineInsideGpu());
+    }
+}
+
+void Gpu::prepareHorizontalLineStaticTexts(const std::vector<float> &dbfsValues, const Color &colorOfStaticLines)
+{
+    for(uint16_t i=0;i<dbfsValues.size();++i)
+    {
+        horizontalLineStaticTexts.emplace_back(formatFloat(dbfsValues.at(i),4,2), colorOfStaticLines);
+    }
+}
+
+void Gpu::prepareVerticalLineStaticTexts(const Frequencies &frequencies, const Color &colorOfStaticLines)
+{
+    for(uint16_t i=0;i<frequencies.size();++i)
+    {
+        verticalLineStaticTexts.emplace_back(formatFloat(frequencies.at(i),4,0), colorOfStaticLines);
     }
 }
 
@@ -80,7 +128,7 @@ void Gpu::prepareDynamicText()
 void Gpu::updateTime(const float timeInMilliSeconds)
 {
     RectangleInsideGpu<RectangleType::BAR>::updateTime(timeInMilliSeconds);
-    RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>::updateTime(timeInMilliSeconds);
+    RectangleInsideGpu<RectangleType::SECONDARY_BAR>::updateTime(timeInMilliSeconds);
     RectangleInsideGpu<RectangleType::BACKGROUND>::updateTime(timeInMilliSeconds);
 }
 
@@ -95,7 +143,7 @@ void Gpu::drawBackground()
     background->draw();
 }
 
-void Gpu::drawHorizontalLines(const std::vector<Line> &horizontalLinePositions, const Color &colorOfStaticLines)
+void Gpu::drawHorizontalLines(const Lines &horizontalLinePositions, const Color &colorOfStaticLines)
 {
     for(uint32_t i=0;i<horizontalLinePositions.size();++i)
     {
@@ -103,13 +151,64 @@ void Gpu::drawHorizontalLines(const std::vector<Line> &horizontalLinePositions, 
     }
 }
 
-void Gpu::drawStaticTexts(const std::vector<Line> &horizontalLinePositions, const WindowSize &windowSize)
+void Gpu::drawVerticalLines(const Lines &verticalLinePositions, const Color &colorOfStaticLines)
 {
+    for(uint32_t i=0;i<verticalLinePositions.size();++i)
+    {
+        verticalLines.at(i).draw(verticalLinePositions.at(i), colorOfStaticLines);
+    }
+}
+
+void Gpu::drawDynamicLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines)
+{
+    for(uint32_t i=0;i<dynamicLinePositions.size();++i)
+    {
+        dynamicLines.at(i).draw(dynamicLinePositions.at(i), colorOfDynamicLines);
+    }
+}
+
+void Gpu::drawDynamicMaxHoldLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines)
+{
+    for(uint32_t i=0;i<dynamicLinePositions.size();++i)
+    {
+        dynamicMaxHoldLines.at(i).draw(dynamicLinePositions.at(i), colorOfDynamicLines);
+    }
+}
+
+void Gpu::drawDynamicMaxHoldSecondaryLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines)
+{
+    for(uint32_t i=0;i<dynamicLinePositions.size();++i)
+    {
+        dynamicMaxHoldSecondaryLines.at(i).draw(dynamicLinePositions.at(i), colorOfDynamicLines);
+    }
+}
+
+void Gpu::drawHorizontalLineStaticTexts(const Lines &horizontalLinePositions, const WindowSize &windowSize, const float xDrawOffsetInPercents, const float xDrawSizeInPercents)
+{
+    const float fullScreenSizeInPercents{100};
+    const float leftCenterOfTheOffset= (xDrawOffsetInPercents / 100)/2;
+    const float offsetRigth = fullScreenSizeInPercents - (xDrawSizeInPercents + xDrawOffsetInPercents);
+    const float rightCenterOfTheOffset = ((fullScreenSizeInPercents - offsetRigth/2)/100);
+
+    const float workaroundForNotPerfectlyAlignedFont = 0.001;
+
     for(uint32_t i=0;i<horizontalLinePositions.size();++i)
     {
-        const auto textPositionInPixels = convertPositionInPercentToPixels(horizontalLinePositions.at(i).front().y, windowSize.y);
-        staticTexts.at(i).draw(HorizontalAligment::LEFT, 0,textPositionInPixels);
-        staticTexts.at(i).draw(HorizontalAligment::RIGHT, windowSize.x, textPositionInPixels);
+        const auto textPositionInPixels = convertYPositionInPercentToPixels(horizontalLinePositions.at(i).front().y, windowSize.y);
+
+        horizontalLineStaticTexts.at(i).draw(HorizontalAligment::CENTER, VerticalAligment::CENTER, (leftCenterOfTheOffset - workaroundForNotPerfectlyAlignedFont) * windowSize.x ,textPositionInPixels);
+        horizontalLineStaticTexts.at(i).draw(HorizontalAligment::CENTER, VerticalAligment::CENTER, (rightCenterOfTheOffset + workaroundForNotPerfectlyAlignedFont) * windowSize.x , textPositionInPixels);
+    }
+}
+
+void Gpu::drawVerticalLineStaticTexts(const Positions &verticalLineTextPositions, const WindowSize &windowSize)
+{
+    const float offsetFromTheTop = 0.025;
+
+    for(uint32_t i=0;i<verticalLineTextPositions.size();++i)
+    {
+        const auto textPositionInPixels = convertXPositionInPercentToPixels(verticalLineTextPositions.at(i), windowSize.x);
+        verticalLineStaticTexts.at(i).draw(HorizontalAligment::CENTER, VerticalAligment::TOP, textPositionInPixels, offsetFromTheTop * windowSize.y);
     }
 }
 
@@ -121,11 +220,11 @@ void Gpu::drawDynamicMaxHoldRectangles(const std::vector<float> &dynamicMaxHoldE
     }
 }
 
-void Gpu::drawDynamicMaxHoldTransparentRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition)
+void Gpu::drawDynamicMaxHoldSecondaryRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition)
 {
     for(uint32_t i=0;i<dynamicMaxHoldRectangles.size();++i)
     {
-        dynamicMaxHoldTransparentRectangles.at(i).move(dynamicMaxHoldElementsPosition.at(i));
+        dynamicMaxHoldSecondaryRectangles.at(i).move(dynamicMaxHoldElementsPosition.at(i));
     }
 }
 
@@ -144,7 +243,7 @@ void Gpu::updateHorizontalRectangleBoundaries(const uint16_t indexOfRectangle, c
 
 void Gpu::drawText(const std::string &str, const HorizontalAligment aligment, const float x, const float y)
 {
-    dynamicText->draw(str, aligment, x, y);
+    dynamicText->draw(str, aligment, VerticalAligment::BOTTOM, x, y);
 }
 
 void Gpu::clear()
@@ -155,13 +254,21 @@ void Gpu::clear()
 Gpu::~Gpu()
 {
     RectangleInsideGpu<RectangleType::BACKGROUND>::finalize();
-    RectangleInsideGpu<RectangleType::TRANSPARENT_BAR>::finalize();
+    RectangleInsideGpu<RectangleType::SECONDARY_BAR>::finalize();
     RectangleInsideGpu<RectangleType::BAR>::finalize();
     LineInsideGpu::finalize();
     TextInsideGpu::finalize();
 }
-float Gpu::convertPositionInPercentToPixels(const float positionInPercents, const float screenSize)
+
+float Gpu::convertXPositionInPercentToPixels(const float positionInPercents, const float xScreenSize)
+{
+    auto position = (positionInPercents)/100;
+    return position * xScreenSize;
+}
+
+float Gpu::convertYPositionInPercentToPixels(const float positionInPercents, const float yScreenSize)
 {
     auto position = (100-positionInPercents)/100;
-    return position * screenSize;
+    return position * yScreenSize;
 }
+

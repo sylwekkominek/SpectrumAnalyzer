@@ -74,3 +74,16 @@ INSTANTIATE_TEST_SUITE_P(
         InputTestData{4096, 44100, {10,11,12,995,996,5000},   {1,1,1,92,93,464}},
         InputTestData{4096, 48000, {10,11,12,1001,1002,5000}, {1,1,1,85,86,427}})
     );
+
+
+class DataSelectorTests2 : public ValuesChecker<-4>, public ::testing::Test
+{
+};
+
+
+TEST_F(DataSelectorTests2, testDataSelector)
+{
+    const std::vector<float> expectedIndexes{0,1,1,2,3,3,4,4};
+    DataSelector dataSelector(44100, 4096, {20,100,360,1000,2000,3000});
+    valueChecker(expectedIndexes, dataSelector.getRectangleIndexesClosestToFrequencies({25,70, 150, 250, 700, 1400, 1600,2200}));
+}

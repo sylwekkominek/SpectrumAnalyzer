@@ -13,7 +13,7 @@
 enum class RectangleType
 {
     BAR,
-    TRANSPARENT_BAR,
+    SECONDARY_BAR,
     BACKGROUND
 };
 

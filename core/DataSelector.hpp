@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
 
 #pragma once
-
-#include "ConfigReader.hpp"
+#include "CommonTypes.hpp"
 #include <set>
 #include <map>
 #include <cstdint>
@@ -19,21 +18,23 @@ public:
     std::vector<float> operator()(const std::vector<float> &data);
     std::vector<float> operator()() const;
     Frequencies getSelectedFrequencies() const;
+    std::vector<uint16_t> getRectangleIndexesClosestToFrequencies(const Frequencies &demandedFrequencies);
 
 private:
 
-    using FreqIndex = uint32_t;
-    using TargetIndex = uint32_t;
-    using FrequencyInfo = std::pair<TargetIndex, Frequency>;
+    using RectangleIndex = uint32_t;
+    using FrequencyIndex = uint32_t;
+    using ClosestFrequency = float;
+    using FrequencyInfo = std::pair<FrequencyIndex, Frequency>;
 
-    FrequencyInfo getFrequencyInfo(FreqIndex frequencyNumber) const;
+    FrequencyInfo getFrequencyInfo(RectangleIndex rectangleNumber) const;
     void updateIndexes(const Frequencies &demandedFrequencies);
-
+    void updateContainer(std::set<Frequency> availableFrequencies, const Frequencies &demandedFrequencies, std::function<void(const RectangleIndex &, const FrequencyInfo &)> function);
 
     uint32_t fftSize;
-    uint32_t numberOfFrequencies;
+    uint32_t numberOfRectangles;
     std::set<Frequency> allFrequencies;
-    std::map<FreqIndex, FrequencyInfo> indexesMap;
+    std::map<RectangleIndex, FrequencyInfo> indexesMap;
     std::vector<float> selectedData;
 };
 

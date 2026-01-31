@@ -8,8 +8,9 @@
 #include <functional>
 
 std::function<void()> initializeFunction;
-std::function<void(const HorizontalAligment, const float, const float)> drawFunction;
-std::function<void(const std::string &, const HorizontalAligment, const float, const float)> draw2Function;
+std::function<void(const HorizontalAligment, const VerticalAligment, const float, const float)> drawFunction;
+std::function<void(const std::string &, const HorizontalAligment, const VerticalAligment, const float, const float)> draw2Function;
+std::function<void(const HorizontalAligment, const VerticalAligment)> draw3Function;
 std::function<void()> finalizeFunction;
 
 
@@ -39,14 +40,19 @@ void TextInsideGpu::initialize()
     initializeFunction();
 }
 
-void TextInsideGpu::draw(const HorizontalAligment horizontalAligment, const float x, const float y)
+void TextInsideGpu::draw(const HorizontalAligment horizontalAligment, const VerticalAligment verticalAligment, const float x, const float y)
 {
-    drawFunction(horizontalAligment, x, y);
+    drawFunction(horizontalAligment, verticalAligment, x, y);
 }
 
-void TextInsideGpu::draw(const std::string &str, const HorizontalAligment horizontalAligment, const float x, const float y)
+void TextInsideGpu::draw(const std::string &str, const HorizontalAligment horizontalAligment, const VerticalAligment verticalAligment, const float x, const float y)
 {
-    draw2Function(str, horizontalAligment, x, y);
+    draw2Function(str, horizontalAligment, verticalAligment, x, y);
+}
+
+void TextInsideGpu::draw(const HorizontalAligment horizontalAligment, const VerticalAligment verticalAligment)
+{
+    draw3Function(horizontalAligment, verticalAligment);
 }
 
 void TextInsideGpu::finalize()
@@ -72,14 +78,19 @@ TextInsideGpuMock::TextInsideGpuMock()
         this->initialize();
     };
 
-    drawFunction = [this](const HorizontalAligment horizontalAligment, const float x, const float y)
+    drawFunction = [this](const HorizontalAligment horizontalAligment, const VerticalAligment verticalAligment, const float x, const float y)
     {
-        this->draw(horizontalAligment, x, y);
+        this->draw(horizontalAligment, verticalAligment, x, y);
     };
 
-    draw2Function = [this](const std::string &str, const HorizontalAligment horizontalAligment, const float x, const float y)
+    draw2Function = [this](const std::string &str, const HorizontalAligment horizontalAligment, const VerticalAligment verticalAligment,const float x, const float y)
     {
-        this->draw(str, horizontalAligment, x, y);
+        this->draw(str, horizontalAligment, verticalAligment, x, y);
+    };
+
+    draw3Function = [this](const HorizontalAligment horizontalAligment, const VerticalAligment verticalAligment)
+    {
+        this->draw(horizontalAligment, verticalAligment);
     };
 
     finalizeFunction = [this]()

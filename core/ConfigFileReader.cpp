@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -85,6 +85,75 @@ std::vector<std::string> ConfigFileReader::getFilteredDataLines(const std::strin
     }
 
     return result;
+}
+
+
+std::optional<std::string> ConfigFileReader::loadStringConfig(const std::string &fileName, const std::string &info, const std::string& defaultValue)
+{
+    try
+    {
+        if(not checkIfFileExists(fileName))
+        {
+            writeStringToFile(fileName, info, defaultValue);
+        }
+
+        return readWholeFile(fileName);
+    }
+    catch(...)
+    {
+        return std::nullopt;
+    }
+}
+
+std::optional<std::map<uint32_t, std::vector<float>>> ConfigFileReader::loadMapConfig(const std::string &fileName, const std::string &info, const std::map<uint32_t, std::vector<float>>& defaultValue, const uint8_t precision)
+{
+    try
+    {
+        if(not checkIfFileExists(fileName))
+        {
+            writeMapToCsv(fileName, info, defaultValue, precision);
+        }
+
+        return readCsvToMap(fileName);
+    }
+    catch(...)
+    {
+        return std::nullopt;
+    }
+}
+
+std::optional<std::vector<float>> ConfigFileReader::loadVectorConfig(const std::string &fileName, const std::string &info, const std::vector<float>& defaultValue, const uint8_t precision)
+{
+    try
+    {
+        if(not checkIfFileExists(fileName))
+        {
+            writeVectorToCsv(fileName, info, defaultValue, precision);
+        }
+
+        return readCSVToVector(fileName);
+    }
+    catch(...)
+    {
+        return std::nullopt;
+    }
+}
+
+std::optional<bool> ConfigFileReader::loadBoolConfig(const std::string &fileName, const std::string &info, const bool defaultValue)
+{
+    try
+    {
+        if(not checkIfFileExists(fileName))
+        {
+            writeBoolToFile(fileName, info, defaultValue);
+        }
+
+        return readBoolFromFile(fileName);
+    }
+    catch(...)
+    {
+        return std::nullopt;
+    }
 }
 
 void ConfigFileReader::createDirIfNotExists()

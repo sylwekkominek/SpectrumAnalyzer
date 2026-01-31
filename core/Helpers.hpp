@@ -5,10 +5,10 @@
  */
 
 #pragma once
-
 #include <vector>
 #include <complex>
 #include <cstdint>
+#include <cmath>
 
 std::vector<float> getAverage(const std::vector<float> &left, const std::vector<float> &right);
 void zoomData(std::vector<float> &data, const float factor, const float offset);
@@ -19,3 +19,9 @@ float calculateOverlapping(const uint32_t samplingRate, const uint32_t numberOfS
 std::string formatFloat(float value, int totalWidth, int precision);
 std::vector<float> scaleDbfsToPercents(const std::vector<float> &signalInDbfs);
 std::vector<float> moveDbFsToPositiveValues(const std::vector<float> &signalInDbfs);
+
+template<typename T>
+bool isEqual(T a, T b, T epsilon = static_cast<T>(1e-6))
+{
+    return std::abs(a - b) < epsilon;
+}

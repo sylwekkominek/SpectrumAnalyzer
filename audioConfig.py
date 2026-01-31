@@ -20,7 +20,6 @@ def getData():
     signalFrequency = 1001.29 #Hz
     samplingPeriod = 1.0 / fs
     fullScaleAmplitude = 32767
-
     result = tuple()
 
     for n in range(numberOfSamples):

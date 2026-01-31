@@ -43,7 +43,7 @@ public:
         EXPECT_EQ(config.get<NormalWindowSize>().second, 512);
         EXPECT_EQ(config.get<NumberOfSamples>(), 4096);
         EXPECT_EQ(config.get<SamplingRate>(), 48000);
-        EXPECT_EQ(config.get<DesiredFrameRate>(), 60);
+        EXPECT_EQ(config.get<DesiredFrameRate>(), 55);
         EXPECT_EQ(config.get<GapWidthInRelationToRectangleWidth>(), 0);
         EXPECT_EQ(config.get<NumberOfSignalsForAveraging>(), 1);
         EXPECT_EQ(config.get<NumberOfSignalsForMaxHold>(), 5);
@@ -53,7 +53,7 @@ public:
         EXPECT_NEAR(config.get<OffsetFactor>(), 0, precision);
         EXPECT_NEAR(config.get<DynamicMaxHoldRectangleHeightInPercentOfScreenSize>(), 0.8, precision);
         EXPECT_NEAR(config.get<DynamicMaxHoldSpeedOfFalling>(), 900, lowPrecision);
-        EXPECT_NEAR(config.get<DynamicMaxHoldTransparentSpeedOfFalling>(), 1000, lowPrecision);
+        EXPECT_NEAR(config.get<DynamicMaxHoldSecondarySpeedOfFalling>(), 1000, lowPrecision);
         EXPECT_EQ(config.get<DynamicMaxHoldAccelerationStateOfFalling>(), true);
         EXPECT_EQ(config.get<DynamicMaxHoldVisibilityState>(), true);
         EXPECT_EQ(config.get<AdvancedColorSettings>().size(), 6739);
@@ -64,8 +64,14 @@ public:
         EXPECT_EQ(config.get<SignalWindow>().size(), 4096);
         positionValuesChecker(colors, config.get<ColorsOfRectangle>());
         positionValuesChecker(colors, config.get<ColorsOfDynamicMaxHoldRectangle>());
-        positionValuesChecker(transparentColors, config.get<ColorsOfDynamicMaxHoldTransparentRectangle>());
-
+        positionValuesChecker(transparentColors, config.get<ColorsOfDynamicMaxHoldSecondaryRectangle>());
+        valueChecker(config.get<ColorOfDynamicMaxHoldLine>(),  Color{0.15, 1.00, 0.15, 1.00});
+        valueChecker(config.get<ColorOfDynamicMaxHoldSecondaryLine>(),  Color{0.15,0.15,1,1});
+        valueChecker(config.get<ColorOfStaticText>(),  Color{0.4, 0.4, 0.4, 1});
+        EXPECT_EQ(config.get<LinesVisibilityState>(),  false);
+        EXPECT_EQ(config.get<RectanglesVisibilityState>(),  true);
+        valueChecker(config.get<VerticalLinePositions>(),  Positions{20,100,360,1000,2000,3000,4000,5000,6000,7000,8000});
+        valueChecker(config.get<FrequencyTextPositions>(),  Positions{20,100,360,1000,2000,3000,4000,5000,6000,7000,8000});
     }
 };
 
@@ -102,19 +108,29 @@ TEST_F(ConfigReaderTests, configReaderTest)
     OffsetFactor offsetFactor{0.6};
     DynamicMaxHoldRectangleHeightInPercentOfScreenSize dynamicMaxHoldRectangleHeightInPercentOfScreenSize{1.2};
     DynamicMaxHoldSpeedOfFalling dynamicMaxHoldSpeedOfFalling{100};
-    DynamicMaxHoldTransparentSpeedOfFalling dynamicMaxHoldTransparentSpeedOfFalling{1001};
+    DynamicMaxHoldSecondarySpeedOfFalling dynamicMaxHoldSecondarySpeedOfFalling{1001};
     ColorOfStaticLines colorOfStaticLines{{0.2,0.3,0.2}};
     HorizontalLinePositions horizontalLinePositions{{-1,-2,-3}};
     Freqs freqs{{100,101,102}};
     SignalWindow signalWindow{{1,2,3}};
     ColorsOfRectangle colorsOfRectangle{{{{0},{1,2,3}},{{1},{4,5,6}}}};
     ColorsOfDynamicMaxHoldRectangle colorsOfDynamicMaxHoldRectangle{{{{0},{2,3,4}},{{1},{5,6,7}}}};
-    ColorsOfDynamicMaxHoldTransparentRectangle colorsOfDynamicMaxHoldTransparentRectangle{{{{0},{5,6,7}},{{1},{8,9,10}}}};
+    ColorsOfDynamicMaxHoldSecondaryRectangle colorsOfDynamicMaxHoldSecondaryRectangle{{{{0},{5,6,7}},{{1},{8,9,10}}}};
+    LinesVisibilityState linesVisibilityState{true};
+    RectanglesVisibilityState rectanglesVisibilityState{false};
+    ColorOfDynamicMaxHoldLine colorOfDynamicMaxHoldLine{{0.1,0.2,0.3,0.4}};
+    ColorOfDynamicMaxHoldSecondaryLine colorOfDynamicMaxHoldSecondaryLine{{0.5,0.6,0.7,0.8}};
+    ColorOfStaticText colorOfStaticText{{0.8, 0.7, 0.6, 5}};
+    VerticalLinePositions verticalLinePositions{{1001,2002,3003,4004,5005}};
+    FrequencyTextPositions frequencyTextPositions{{5005, 4004,3003,2002,1001}};
+
 
     configFileReader.writeBoolToFile("PythonDataSourceEnabled", comment, pythonDataSourceEnabled.value);
     configFileReader.writeBoolToFile("DefaultFullscreenState", comment, defaultFullscreenState.value);
     configFileReader.writeBoolToFile("DynamicMaxHoldAccelerationStateOfFalling", comment, dynamicMaxHoldAccelerationStateOfFalling.value);
     configFileReader.writeBoolToFile("DynamicMaxHoldVisibilityState", comment, dynamicMaxHoldVisibilityState.value);
+    configFileReader.writeBoolToFile("LinesVisibilityState", comment, linesVisibilityState.value);
+    configFileReader.writeBoolToFile("RectanglesVisibilityState", comment, rectanglesVisibilityState.value);
     configFileReader.writeStringToFile("AdvancedColorSettings", comment, advancedColorSettings.value);
     configFileReader.writeStringToFile("BackgroundColorSettings", comment, backgroundColorSettings.value);
     configFileReader.writeVectorToCsv("MaximizedWindowSize", comment, std::vector<float>{(float)maximizedWindowSize.value.first, (float)maximizedWindowSize.value.second});
@@ -130,14 +146,19 @@ TEST_F(ConfigReaderTests, configReaderTest)
     configFileReader.writeVectorToCsv("OffsetFactor", comment, {offsetFactor.value});
     configFileReader.writeVectorToCsv("DynamicMaxHoldRectangleHeightInPercentOfScreenSize", comment, {dynamicMaxHoldRectangleHeightInPercentOfScreenSize.value});
     configFileReader.writeVectorToCsv("DynamicMaxHoldSpeedOfFalling", comment, {dynamicMaxHoldSpeedOfFalling.value});
-    configFileReader.writeVectorToCsv("DynamicMaxHoldTransparentSpeedOfFalling", comment, {dynamicMaxHoldTransparentSpeedOfFalling.value});
+    configFileReader.writeVectorToCsv("DynamicMaxHoldSecondarySpeedOfFalling", comment, {dynamicMaxHoldSecondarySpeedOfFalling.value});
     configFileReader.writeVectorToCsv("ColorOfStaticLines", comment, colorOfStaticLines.value);
     configFileReader.writeVectorToCsv("HorizontalLinePositions", comment, horizontalLinePositions.value);
     configFileReader.writeVectorToCsv("Frequencies", comment, freqs.value);
     configFileReader.writeVectorToCsv("SignalWindow", comment, signalWindow.value);
+    configFileReader.writeVectorToCsv("ColorOfDynamicMaxHoldLine", comment, colorOfDynamicMaxHoldLine.value);
+    configFileReader.writeVectorToCsv("ColorOfDynamicMaxHoldSecondaryLine", comment, colorOfDynamicMaxHoldSecondaryLine.value);
+    configFileReader.writeVectorToCsv("ColorOfStaticText", comment, colorOfStaticText.value);
+    configFileReader.writeVectorToCsv("VerticalLinePositions", comment, verticalLinePositions.value);
+    configFileReader.writeVectorToCsv("FrequencyTextPositions", comment, frequencyTextPositions.value);
     configFileReader.writeMapToCsv("ColorsOfRectangle", comment, colorsOfRectangle.value);
     configFileReader.writeMapToCsv("ColorsOfDynamicMaxHoldRectangle", comment, colorsOfDynamicMaxHoldRectangle.value);
-    configFileReader.writeMapToCsv("ColorsOfDynamicMaxHoldTransparentRectangle", comment, colorsOfDynamicMaxHoldTransparentRectangle.value);
+    configFileReader.writeMapToCsv("ColorsOfDynamicMaxHoldSecondaryRectangle", comment, colorsOfDynamicMaxHoldSecondaryRectangle.value);
 
 
     ConfigReader configReader("modifiedConfigTest");
@@ -147,6 +168,8 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_EQ(config.get<DefaultFullscreenState>(), defaultFullscreenState.value);
     EXPECT_EQ(config.get<DynamicMaxHoldAccelerationStateOfFalling>(), dynamicMaxHoldAccelerationStateOfFalling.value);
     EXPECT_EQ(config.get<DynamicMaxHoldVisibilityState>(), dynamicMaxHoldVisibilityState.value);
+    EXPECT_EQ(config.get<LinesVisibilityState>(), linesVisibilityState.value);
+    EXPECT_EQ(config.get<RectanglesVisibilityState>(), rectanglesVisibilityState.value);
     EXPECT_EQ(config.get<AdvancedColorSettings>(), advancedColorSettings.value);
     EXPECT_EQ(config.get<BackgroundColorSettings>(), backgroundColorSettings.value);
     EXPECT_EQ(config.get<MaximizedWindowSize>().first, maximizedWindowSize.value.first);
@@ -167,8 +190,13 @@ TEST_F(ConfigReaderTests, configReaderTest)
     valueChecker(config.get<ColorOfStaticLines>(), colorOfStaticLines.value);
     valueChecker(config.get<HorizontalLinePositions>(),  horizontalLinePositions.value);
     valueChecker(config.get<Freqs>(), freqs.value);
+    valueChecker(config.get<ColorOfDynamicMaxHoldLine>(), colorOfDynamicMaxHoldLine.value);
+    valueChecker(config.get<ColorOfDynamicMaxHoldSecondaryLine>(), colorOfDynamicMaxHoldSecondaryLine.value);
+    valueChecker(config.get<ColorOfStaticText>(), colorOfStaticText.value);
+    valueChecker(config.get<VerticalLinePositions>(), verticalLinePositions.value);
+    valueChecker(config.get<FrequencyTextPositions>(), frequencyTextPositions.value);
     EXPECT_EQ(config.get<SignalWindow>(), signalWindow.value);
     positionValuesChecker(config.get<ColorsOfRectangle>(), colorsOfRectangle.value);
     positionValuesChecker(config.get<ColorsOfDynamicMaxHoldRectangle>(), colorsOfDynamicMaxHoldRectangle.value);
-    positionValuesChecker(config.get<ColorsOfDynamicMaxHoldTransparentRectangle>(), colorsOfDynamicMaxHoldTransparentRectangle.value);
+    positionValuesChecker(config.get<ColorsOfDynamicMaxHoldSecondaryRectangle>(), colorsOfDynamicMaxHoldSecondaryRectangle.value);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -20,26 +20,31 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
         Frequencies frequencies = {100,200,300,400,500,600,700,800,900,1000};
 
         config.data.add(Freqs{frequencies});
+        config.data.add(VerticalLinePositions{{}});
+        config.data.add(FrequencyTextPositions{{}});
         config.data.add(NumberOfRectangles{(uint16_t)frequencies.size()});
         config.data.add(NumberOfSamples{numberOfSamples});
         config.data.add(DesiredFrameRate{1});
         config.data.add(ColorOfStaticLines{{}});
+        config.data.add(ColorOfStaticText{{}});
         config.data.add(HorizontalLinePositions{{}});
         config.data.add(SamplingRate{44100});
+        config.data.add(RectanglesVisibilityState{true});
+        config.data.add(LinesVisibilityState{false});
         config.data.add(DynamicMaxHoldVisibilityState{true});
         config.data.add(DefaultFullscreenState{false});
         config.data.add(ScalingFactor{1});
         config.data.add(ColorsOfRectangle{});
         config.data.add(ColorsOfDynamicMaxHoldRectangle{});
-        config.data.add(ColorsOfDynamicMaxHoldTransparentRectangle{});
+        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{});
         config.data.add(DynamicMaxHoldSpeedOfFalling{});
-        config.data.add(DynamicMaxHoldTransparentSpeedOfFalling{});
+        config.data.add(DynamicMaxHoldSecondarySpeedOfFalling{});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
         config.data.add(AdvancedColorSettings{});
         config.data.add(BackgroundColorSettings{});
         config.data.add(GapWidthInRelationToRectangleWidth{});
         config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{});
-
+        config.data.add(DynamicMaxHoldSecondaryVisibilityState{true});
 
         return config;
     }
