@@ -74,6 +74,7 @@ public:
         EXPECT_EQ(config.get<RectanglesVisibilityState>(),  true);
         valueChecker(config.get<VerticalLinePositions>(),  Positions{20, 50,125, 250, 500, 1000, 2000, 4000, 8000.00, 16000});
         valueChecker(config.get<FrequencyTextPositions>(),  Positions{20, 50,125, 250, 500, 1000, 2000, 4000, 8000.00, 16000});
+        EXPECT_EQ(config.get<WindowTitle>(), "( FFT: 8192    Fs: 48kHz   Log Scale: 20Hz – 16kHz )");
     }
 };
 
@@ -125,7 +126,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     ColorOfStaticText colorOfStaticText{{0.8, 0.7, 0.6, 5}};
     VerticalLinePositions verticalLinePositions{{1001,2002,3003,4004,5005}};
     FrequencyTextPositions frequencyTextPositions{{5005, 4004,3003,2002,1001}};
-
+    WindowTitle windowTitle("some new string");
 
     configFileReader.writeBoolToFile("PythonDataSourceEnabled", comment, pythonDataSourceEnabled.value);
     configFileReader.writeBoolToFile("DefaultFullscreenState", comment, defaultFullscreenState.value);
@@ -135,6 +136,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     configFileReader.writeBoolToFile("RectanglesVisibilityState", comment, rectanglesVisibilityState.value);
     configFileReader.writeStringToFile("AdvancedColorSettings", comment, advancedColorSettings.value);
     configFileReader.writeStringToFile("BackgroundColorSettings", comment, backgroundColorSettings.value);
+    configFileReader.writeStringToFile("WindowTitle", comment, windowTitle.value);
     configFileReader.writeVectorToCsv("MaximizedWindowSize", comment, std::vector<float>{(float)maximizedWindowSize.value.first, (float)maximizedWindowSize.value.second});
     configFileReader.writeVectorToCsv("NormalWindowSize", comment, std::vector<float>{(float)normalWindowSize.value.first, (float)normalWindowSize.value.second});
     configFileReader.writeVectorToCsv("NumberOfSamples", comment, {(float)numberOfSamples.value});
@@ -174,6 +176,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_EQ(config.get<RectanglesVisibilityState>(), rectanglesVisibilityState.value);
     EXPECT_EQ(config.get<AdvancedColorSettings>(), advancedColorSettings.value);
     EXPECT_EQ(config.get<BackgroundColorSettings>(), backgroundColorSettings.value);
+    EXPECT_EQ(config.get<WindowTitle>(), windowTitle.value);
     EXPECT_EQ(config.get<MaximizedWindowSize>().first, maximizedWindowSize.value.first);
     EXPECT_EQ(config.get<MaximizedWindowSize>().second, maximizedWindowSize.value.second);
     EXPECT_EQ(config.get<NormalWindowSize>().first, normalWindowSize.value.first);

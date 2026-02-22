@@ -46,7 +46,7 @@
 #include "config/ScalingFactor.hpp"
 #include "config/SignalWindow.hpp"
 #include "config/VerticalLinePositions.hpp"
-
+#include "config/WindowTitle.hpp"
 
 #include <vector>
 #include <cstdint>

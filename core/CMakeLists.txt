@@ -100,6 +100,7 @@ add_library(spectrum-analyzer-config STATIC
     config/ScalingFactor.cpp
     config/SignalWindow.cpp
     config/VerticalLinePositions.cpp
+    config/WindowTitle.cpp
 )
 
 target_include_directories(spectrum-analyzer-config

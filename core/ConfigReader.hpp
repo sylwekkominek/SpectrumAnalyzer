@@ -57,7 +57,7 @@ private:
     ColorsOfRectanglePerVertices getColorsOfRectangleHelper();
     AdvancedColorSettings getAdvancedColorSettings();
     BackgroundColorSettings getBackgroundColorSettings();
-
+    WindowTitle getWindowTitle();
 
     Configuration config{};
 

@@ -57,6 +57,7 @@ Configuration ConfigReader::getConfig()
         config.data.add(getColorsOfDynamicMaxHoldSecondaryRectangle());
         config.data.add(getAdvancedColorSettings());
         config.data.add(getBackgroundColorSettings());
+        config.data.add(getWindowTitle());
     }
 
     return config;
@@ -610,6 +611,20 @@ AdvancedColorSettings ConfigReader::getAdvancedColorSettings()
 BackgroundColorSettings ConfigReader::getBackgroundColorSettings()
 {
     BackgroundColorSettings data(themeConfig);
+
+    auto value = loadStringConfig(data.name, data.getInfo(), data.value);
+
+    if(value)
+    {
+        data.value = std::move(*value);
+    }
+
+    return data;
+}
+
+WindowTitle ConfigReader::getWindowTitle()
+{
+    WindowTitle data(themeConfig);
 
     auto value = loadStringConfig(data.name, data.getInfo(), data.value);
 

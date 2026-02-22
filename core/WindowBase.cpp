@@ -49,21 +49,23 @@ void WindowBase::WindowBaseImpl::createWindow()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    const auto name = "Not Yet Another Spectrum Analyzer";
+
+
+    const auto name = std::string("Not Yet Another Spectrum Analyzer    ") + config.get<WindowTitle>();
 
     if (isFullScreenEnabled)
     {
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
         const auto maximizedWindowSize = config.get<MaximizedWindowSize>();
-        window = glfwCreateWindow(maximizedWindowSize.first, maximizedWindowSize.second, name, glfwGetPrimaryMonitor(), nullptr);
+        window = glfwCreateWindow(maximizedWindowSize.first, maximizedWindowSize.second, name.c_str(), glfwGetPrimaryMonitor(), nullptr);
         updateCurrentWindowSize(maximizedWindowSize.first, maximizedWindowSize.second);
     }
     else
     {
         const auto normalWindowSize = config.get<NormalWindowSize>();
         glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-        window = glfwCreateWindow(normalWindowSize.first, normalWindowSize.second, name, nullptr, nullptr);
+        window = glfwCreateWindow(normalWindowSize.first, normalWindowSize.second, name.c_str(), nullptr, nullptr);
         glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
         updateCurrentWindowSize(normalWindowSize.first, normalWindowSize.second);
     }
