@@ -13,7 +13,7 @@
 class ConfigReader : public ConfigFileReader
 {
 public:
-    ConfigReader(const std::string &path="config");
+    ConfigReader(const ThemeConfig theme, const std::string &path="config");
     Configuration getConfig();
 
 private:
@@ -54,9 +54,11 @@ private:
     ColorOfDynamicMaxHoldSecondaryLine getColorOfDynamicMaxHoldSecondaryLine();
     ColorsOfDynamicMaxHoldRectangle getColorsOfDynamicMaxHoldRectangle();
     ColorsOfDynamicMaxHoldSecondaryRectangle getColorsOfDynamicMaxHoldSecondaryRectangle();
-    ColorsOfRectanglePerVertices getColorsOfRectangleHelper(const std::string& functionName);
+    ColorsOfRectanglePerVertices getColorsOfRectangleHelper();
     AdvancedColorSettings getAdvancedColorSettings();
     BackgroundColorSettings getBackgroundColorSettings();
 
+
     Configuration config{};
+
 };

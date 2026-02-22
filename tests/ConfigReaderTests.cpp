@@ -14,6 +14,8 @@ class ConfigReaderTests : public ValuesChecker<-6>, public ::testing::Test
 {
 public:
     const std::string testFolderName = "configReaderTests";
+    const ThemeConfig theme = ThemeConfig::Theme1;
+
     const float precision = 1e-6;
     const float lowPrecision = 1e-2;
 
@@ -41,7 +43,7 @@ public:
         EXPECT_EQ(config.get<MaximizedWindowSize>().second, 1080);
         EXPECT_EQ(config.get<NormalWindowSize>().first, 1280);
         EXPECT_EQ(config.get<NormalWindowSize>().second, 512);
-        EXPECT_EQ(config.get<NumberOfSamples>(), 4096);
+        EXPECT_EQ(config.get<NumberOfSamples>(), 8192);
         EXPECT_EQ(config.get<SamplingRate>(), 48000);
         EXPECT_EQ(config.get<DesiredFrameRate>(), 55);
         EXPECT_EQ(config.get<GapWidthInRelationToRectangleWidth>(), 0);
@@ -49,35 +51,35 @@ public:
         EXPECT_EQ(config.get<NumberOfSignalsForMaxHold>(), 5);
         EXPECT_EQ(config.get<MaxQueueSize>(), 20);
         EXPECT_NEAR(config.get<AlphaFactor>(), 0.25, precision);
-        EXPECT_NEAR(config.get<ScalingFactor>(), 2.000488, precision);
+        EXPECT_NEAR(config.get<ScalingFactor>(), 2.000244, precision);
         EXPECT_NEAR(config.get<OffsetFactor>(), 0, precision);
         EXPECT_NEAR(config.get<DynamicMaxHoldRectangleHeightInPercentOfScreenSize>(), 0.8, precision);
         EXPECT_NEAR(config.get<DynamicMaxHoldSpeedOfFalling>(), 900, lowPrecision);
         EXPECT_NEAR(config.get<DynamicMaxHoldSecondarySpeedOfFalling>(), 1000, lowPrecision);
         EXPECT_EQ(config.get<DynamicMaxHoldAccelerationStateOfFalling>(), true);
         EXPECT_EQ(config.get<DynamicMaxHoldVisibilityState>(), true);
-        EXPECT_EQ(config.get<AdvancedColorSettings>().size(), 6739);
-        EXPECT_EQ(config.get<BackgroundColorSettings>().size(), 4872);
-        valueChecker(config.get<ColorOfStaticLines>(),  Color{0.15,0.15,0.15,1});
+        EXPECT_EQ(config.get<AdvancedColorSettings>().size(), 1397);
+        EXPECT_EQ(config.get<BackgroundColorSettings>().size(), 1018);
+        valueChecker(config.get<ColorOfStaticLines>(),  Color{0.2,0.2,0.2,1});
         valueChecker(config.get<HorizontalLinePositions>(),  Positions{-6.02, -12.04, -18.06, -24.08, -30.10, -36.12, -36.12, -42.14, -48.16, -54.18, -60.20, -66.22, -72.24, -78.26, -84.28, -90.30});
-        valueChecker(config.get<Freqs>(), Frequencies{20,40,60,80,100,120,150,180,220,250,300,330,360,400,440, 480,520,560,600,720,840,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900, 2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800,3900,4000,4100,4200,4300,4400,4500,4600,4700,4800,4900,5000,5100,5200,5300,5400,5500,5600,5700,5800,5900,6000,6100,6200,6300,6400,6500,6600,6700,6800,6900,7000,7100,7200,7300,7400,7500,7600,7700,7800,7900,8000});
-        EXPECT_EQ(config.get<SignalWindow>().size(), 4096);
+        valueChecker(config.get<Freqs>(), Frequencies{20.000, 25.4, 31.000, 36.1, 42, 50, 63, 71.4, 80, 91, 125, 135.7, 146.4, 160, 180, 250, 270, 290, 320, 360, 500, 540, 580, 640, 720, 1000, 1080, 1160, 1280, 1440, 2000, 2160, 2320, 2560, 2880, 4000, 4320, 4640, 5120, 5760, 8000, 8979.7, 10079.4, 11313.7, 12699.2, 14254.4, 16000.000});
+        EXPECT_EQ(config.get<SignalWindow>().size(), 8192);
         positionValuesChecker(colors, config.get<ColorsOfRectangle>());
         positionValuesChecker(colors, config.get<ColorsOfDynamicMaxHoldRectangle>());
         positionValuesChecker(transparentColors, config.get<ColorsOfDynamicMaxHoldSecondaryRectangle>());
         valueChecker(config.get<ColorOfDynamicMaxHoldLine>(),  Color{0.15, 1.00, 0.15, 1.00});
-        valueChecker(config.get<ColorOfDynamicMaxHoldSecondaryLine>(),  Color{0.15,0.15,1,1});
-        valueChecker(config.get<ColorOfStaticText>(),  Color{0.4, 0.4, 0.4, 1});
+        valueChecker(config.get<ColorOfDynamicMaxHoldSecondaryLine>(),  Color{0.70, 0.70, 0.70, 1.00});
+        valueChecker(config.get<ColorOfStaticText>(),  Color{0.50, 0.50, 0.50, 1.00});
         EXPECT_EQ(config.get<LinesVisibilityState>(),  false);
         EXPECT_EQ(config.get<RectanglesVisibilityState>(),  true);
-        valueChecker(config.get<VerticalLinePositions>(),  Positions{20,100,360,1000,2000,3000,4000,5000,6000,7000,8000});
-        valueChecker(config.get<FrequencyTextPositions>(),  Positions{20,100,360,1000,2000,3000,4000,5000,6000,7000,8000});
+        valueChecker(config.get<VerticalLinePositions>(),  Positions{20, 50,125, 250, 500, 1000, 2000, 4000, 8000.00, 16000});
+        valueChecker(config.get<FrequencyTextPositions>(),  Positions{20, 50,125, 250, 500, 1000, 2000, 4000, 8000.00, 16000});
     }
 };
 
 TEST_F(ConfigReaderTests, checkDefaultConfig)
 {
-    ConfigReader configReader(testFolderName);
+    ConfigReader configReader(theme, testFolderName);
 
     const auto &config = configReader.getConfig();
     checkDefaultConfig(config);
@@ -86,7 +88,7 @@ TEST_F(ConfigReaderTests, checkDefaultConfig)
 TEST_F(ConfigReaderTests, configReaderTest)
 {
 
-    ConfigFileReader configFileReader("modifiedConfigTest");
+    ConfigFileReader configFileReader(theme, "modifiedConfigTest");
     configFileReader.createDirIfNotExists();
 
     PythonDataSourceEnabled pythonDataSourceEnabled{true};
@@ -161,7 +163,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     configFileReader.writeMapToCsv("ColorsOfDynamicMaxHoldSecondaryRectangle", comment, colorsOfDynamicMaxHoldSecondaryRectangle.value);
 
 
-    ConfigReader configReader("modifiedConfigTest");
+    ConfigReader configReader(theme, "modifiedConfigTest");
     const auto &config = configReader.getConfig();
 
     EXPECT_EQ(config.get<PythonDataSourceEnabled>(), pythonDataSourceEnabled.value);

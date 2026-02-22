@@ -18,9 +18,16 @@ struct ValuesChecker
     static void valueChecker(const std::vector<T1> &expectedValues, const std::vector<T2> &values)
     {
         EXPECT_EQ(expectedValues.size(), values.size());
-        EXPECT_EQ(true, std::equal(expectedValues.begin(), expectedValues.end(), values.begin(), [&](const auto &first, const auto &second){
-                      return (std::abs(first - second) < marginOfError);
-                  }));
+        if constexpr (std::is_same_v<T1, uint32_t> && std::is_same_v<T2, uint32_t>)
+        {
+            EXPECT_TRUE(std::equal(expectedValues.begin(), expectedValues.end(), values.begin()));
+        }
+        else
+        {
+            EXPECT_EQ(true, std::equal(expectedValues.begin(), expectedValues.end(), values.begin(), [&](const auto &first, const auto &second){
+                return (std::abs(first - second) < marginOfError);}));
+        }
+
     }
 
     static void valueChecker(const float expectedValue, const uint32_t expectedVectorSize, const std::vector<float> &values)
@@ -41,7 +48,8 @@ struct ValuesChecker
         }
     }
 
-    static void positionValuesChecker(const std::map<Position,std::vector<ExpectedValue>> &positionExpecetedValues, const std::map<Position,std::vector<float>> &signals)
+    template<typename T=float>
+    static void positionValuesChecker(const std::map<Position,std::vector<T>> &positionExpecetedValues, const std::map<Position,std::vector<T>> &signals)
     {
         ASSERT_EQ(positionExpecetedValues.size(), signals.size());
 

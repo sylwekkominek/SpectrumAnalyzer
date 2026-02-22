@@ -95,9 +95,12 @@ public:
     {
         Configuration config{};
 
+
         uint32_t numberOfSamples = 2048;
+        uint32_t sampleRate = 8000;
+
         config.data.add(NumberOfSamples{numberOfSamples});
-        config.data.add(SamplingRate{8000});
+        config.data.add(SamplingRate{sampleRate});
         config.data.add(DesiredFrameRate{1});
         config.data.add(NumberOfSignalsForAveraging{1});
         config.data.add(NumberOfSignalsForMaxHold{1});
@@ -106,6 +109,7 @@ public:
         config.data.add(SignalWindow{getSignalWindow(numberOfSamples)});
         config.data.add(ScalingFactor{1});
         config.data.add(OffsetFactor{0});
+        config.data.add(Freqs(getDemandedFrequencies(sampleRate, numberOfSamples, 0, numberOfSamples/2)));
         return config;
     }
 
@@ -121,13 +125,13 @@ private:
         expectedFftValuesPositions.insert(expectedFftValuesPositions.end(),expectedFftPositions1000Hz.begin(),expectedFftPositions1000Hz.end());
         expectedFftValuesPositions.insert(expectedFftValuesPositions.end(),expectedFftPositions2000Hz.begin(),expectedFftPositions2000Hz.end());
 
-        std::vector<float> fftValuesWithFullScale{-27.94,-12.04, -7.54 ,-12.04, -27.94};
+        std::vector<float> fftValuesWithFullScale{-27.9396,-12.0411, -7.5392 ,-12.0407, -27.9384};
 
         std::transform(fftValuesWithFullScale.begin(),fftValuesWithFullScale.end(),fftValuesWithFullScale.begin(),[&](const auto &el){
             return el+fullScaleOffset;
         });
 
-        std::vector<float> fftSignal(2048, defaultValue);
+        std::vector<float> fftSignal(1024, defaultValue);
 
         for(const auto &position: expectedFftValuesPositions)
         {
@@ -146,7 +150,6 @@ TEST_F(AudioSpectrumAnalyzerTests, checkCalculationsAndDataTransfer)
     spectrumAnalyzer->init();
     spectrumAnalyzer->run();
 }
-
 
 class AudioSpectrumAnalyzerTests2 : public WindowTestsBase, public ::testing::Test
 {
@@ -194,10 +197,11 @@ public:
 
         uint32_t numberOfSamples = 2048;
         Frequencies frequencies = {992,996,1000,1004,1008};
+        const ThemeConfig theme = ThemeConfig::Theme1;
 
         config.data.add(Freqs{frequencies});
-        config.data.add(VerticalLinePositions{{}});
-        config.data.add(FrequencyTextPositions{{}});
+        config.data.add(VerticalLinePositions{Frequencies{}});
+        config.data.add(FrequencyTextPositions{Frequencies{}});
         config.data.add(NumberOfRectangles{(uint16_t)frequencies.size()});
         config.data.add(PythonDataSourceEnabled{true});
         config.data.add(NumberOfSamples{numberOfSamples});
@@ -211,22 +215,22 @@ public:
         config.data.add(ScalingFactor{1});
         config.data.add(DynamicMaxHoldVisibilityState{true});
         config.data.add(GapWidthInRelationToRectangleWidth{0});
-        config.data.add(ColorsOfRectangle{});
-        config.data.add(ColorsOfDynamicMaxHoldRectangle{});
-        config.data.add(DefaultFullscreenState{});
-        config.data.add(HorizontalLinePositions{{}});
-        config.data.add(DynamicMaxHoldSpeedOfFalling{});
-        config.data.add(DynamicMaxHoldSecondarySpeedOfFalling{});
+        config.data.add(ColorsOfRectangle{theme});
+        config.data.add(ColorsOfDynamicMaxHoldRectangle{theme});
+        config.data.add(DefaultFullscreenState{false});
+        config.data.add(HorizontalLinePositions{Positions{}});
+        config.data.add(DynamicMaxHoldSpeedOfFalling{900});
+        config.data.add(DynamicMaxHoldSecondarySpeedOfFalling{900});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
-        config.data.add(AdvancedColorSettings{});
-        config.data.add(BackgroundColorSettings{});
-        config.data.add(GapWidthInRelationToRectangleWidth{});
-        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{});
-        config.data.add(ColorOfStaticLines{{}});
-        config.data.add(ColorOfStaticText{{}});
-        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{});
-        config.data.add(OffsetFactor{});
+        config.data.add(AdvancedColorSettings{theme});
+        config.data.add(BackgroundColorSettings{theme});
+        config.data.add(GapWidthInRelationToRectangleWidth{theme});
+        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{theme});
+        config.data.add(ColorOfStaticLines{Color{}});
+        config.data.add(ColorOfStaticText{Color{}});
+        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{theme});
+        config.data.add(OffsetFactor{theme});
         config.data.add(RectanglesVisibilityState{true});
         config.data.add(LinesVisibilityState{false});
         config.data.add(DynamicMaxHoldSecondaryVisibilityState{true});
@@ -241,6 +245,7 @@ public:
         expectDraw({-0.580129, -0.250016, -0.156546,  -0.250016,-0.580129}, true);
         expectCheckIfWindowShouldBeClosed();
         expectCheckIfWindowShouldRecreated();
+        expectCheckIfThemeShouldBeChanged();
         expectDestroyWindow();
     }
 
@@ -257,5 +262,7 @@ TEST_F(AudioSpectrumAnalyzerTests2, checkCalculationsAndDataTransfer)
     std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = std::make_unique<ModifiedAudioSpectrumAnalyzer>(getConfig());
     spectrumAnalyzer->init();
     spectrumAnalyzer->run();
+
+    EXPECT_EQ(ThemeConfig::Invalid, spectrumAnalyzer->getSelectedTheme());
 }
 

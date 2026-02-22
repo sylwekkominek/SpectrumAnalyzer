@@ -20,6 +20,14 @@ using Positions = std::vector<Position>;
 using Color = std::vector<float>;
 using ColorsOfRectanglePerVertices = std::map<uint32_t, Color>;
 
+
+enum class FftType : uint16_t
+{
+    Complex =0,
+    Real = 1,
+};
+
+
 struct CursorPosition
 {
     double x;
@@ -32,6 +40,20 @@ struct WindowSize
     uint16_t y;
 };
 
+enum class ThemeConfig : int16_t
+{
+    Invalid = -1,
+    Theme10 = 0,
+    Theme1 = 1,
+    Theme2,
+    Theme3,
+    Theme4,
+    Theme5,
+    Theme6,
+    Theme7,
+    Theme8,
+    Theme9,
+};
 
 class AnyData
 {

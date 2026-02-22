@@ -60,6 +60,56 @@ target_link_libraries(samples-collector-lib
     device-selection-lib
   )
 
+
+add_library(spectrum-analyzer-config STATIC
+    config/AdvancedColorSettings.cpp
+    config/AlphaFactor.cpp
+    config/BackgroundColorSettings.cpp
+    config/ColorOfDynamicMaxHoldLine.cpp
+    config/ColorOfDynamicMaxHoldSecondaryLine.cpp
+    config/ColorOfLine.cpp
+    config/ColorOfStaticLines.cpp
+    config/ColorOfStaticText.cpp
+    config/ColorsOfDynamicMaxHoldRectangle.cpp
+    config/ColorsOfDynamicMaxHoldSecondaryRectangle.cpp
+    config/ColorsOfRectangle.cpp
+    config/DefaultFullscreenState.cpp
+    config/DesiredFrameRate.cpp
+    config/DynamicMaxHoldAccelerationStateOfFalling.cpp
+    config/DynamicMaxHoldRectangleHeightInPercentOfScreenSize.cpp
+    config/DynamicMaxHoldSecondarySpeedOfFalling.cpp
+    config/DynamicMaxHoldSecondaryVisibilityState.cpp
+    config/DynamicMaxHoldSpeedOfFalling.cpp
+    config/DynamicMaxHoldVisibilityState.cpp
+    config/Frequencies.cpp
+    config/FrequencyTextPositions.cpp
+    config/GapWidthInRelationToRectangleWidth.cpp
+    config/HorizontalLinePositions.cpp
+    config/LinesVisibilityState.cpp
+    config/MaximizedWindowSize.cpp
+    config/MaxQueueSize.cpp
+    config/NormalWindowSize.cpp
+    config/NumberOfRectangles.cpp
+    config/NumberOfSamples.cpp
+    config/NumberOfSignalsForAveraging.cpp
+    config/NumberOfSignalsForMaxHold.cpp
+    config/OffsetFactor.cpp
+    config/PythonDataSourceEnabled.cpp
+    config/RectanglesVisibilityState.cpp
+    config/SamplingRate.cpp
+    config/ScalingFactor.cpp
+    config/SignalWindow.cpp
+    config/VerticalLinePositions.cpp
+)
+
+target_include_directories(spectrum-analyzer-config
+  PUBLIC
+    "${CMAKE_INCLUDE_CURRENT_DIR}"
+    "${CMAKE_INCLUDE_CURRENT_DIR}/config"
+  )
+
+
+
 add_library(spectrum-analyzer-core STATIC
 
     ConfigFileReader.cpp
@@ -68,19 +118,21 @@ add_library(spectrum-analyzer-core STATIC
     FFTCalculator.cpp
     WindowBase.cpp
     Window.cpp
-    DataSelector.cpp
+    FrequenciesInfo.cpp
     DataCalculator.cpp
     Stats.cpp
     AudioSpectrumAnalyzer.cpp
     Helpers.cpp
     RectangleHighligther.cpp
     DynamicMaxHolder.cpp
+    PowerAverager.cpp
     gpu/ElementInsideGpu.cpp
     gpu/LineInsideGpu.cpp
     gpu/RectangleInsideGpu.cpp
     gpu/TextInsideGpu.cpp
     gpu/FigureGeometryCalculator.cpp
     gpu/Gpu.cpp
+
 )
 
 target_include_directories(spectrum-analyzer-core
@@ -97,6 +149,7 @@ target_link_libraries(spectrum-analyzer-core
     glad
     PkgConfig::FFTW
     samples-collector-lib
+    spectrum-analyzer-config
   )
 
 

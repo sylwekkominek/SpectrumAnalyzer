@@ -26,7 +26,6 @@ void LineInsideGpu::draw(const Line &line, const std::vector<float> &color)
     glProgramUniform2f(vs, p0Loc, percentToPositon(line.at(0).x), percentToPositon(line.at(0).y));
     glProgramUniform2f(vs, p1Loc, percentToPositon(line.at(1).x), percentToPositon(line.at(1).y));
     glProgramUniform4f(fs, colorLoc, color.at(indexOfRed), color.at(indexOfGreen), color.at(indexOfBlue), color.at(indexOfTransparency));
-
     glDrawArrays(GL_LINES, 0, 2);
 }
 

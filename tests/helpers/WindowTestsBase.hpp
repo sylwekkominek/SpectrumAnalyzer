@@ -41,6 +41,7 @@ struct WindowTestsBase
     const uint32_t linesCall{1};
     const uint32_t dynamicMaxholdLinesCall{1};
     const uint32_t dynamicMaxholdSecondaryLinesCall{1};
+    const uint32_t highlightedVerticalLineCall{1};
 
     void expectCreateWindow()
     {
@@ -51,7 +52,7 @@ struct WindowTestsBase
     {
         const uint32_t differentTypesCall{backgroundCall + rectanglesCall + dynamicMaxholdSecondaryRectanglesCall + linesCall};
         const uint32_t numberOfExpectCalls = (additionalRectanglesEnabled ? (rectanglesCall + dynamicMaxholdSecondaryRectanglesCall + smallRectanglesCall)*numberOfRectangles : (rectanglesCall*numberOfRectangles));
-        const uint32_t numberOfLinesCalls = (linesCall + dynamicMaxholdLinesCall + dynamicMaxholdSecondaryLinesCall)* (numberOfRectangles-1);
+        const uint32_t numberOfLinesCalls = (linesCall + dynamicMaxholdLinesCall + dynamicMaxholdSecondaryLinesCall)* (numberOfRectangles-1) + highlightedVerticalLineCall;
 
         EXPECT_CALL(openGL, gladLoadGL()).Times(1);
         EXPECT_CALL(openGL, glEnable(GL_BLEND)).Times(1);
@@ -132,6 +133,8 @@ struct WindowTestsBase
             }
         }
 
+        EXPECT_CALL(windowBase, getCursorPosition()).WillOnce(Return(CursorPosition{0,0}));
+
         for(auto &el: positions)
         {
             EXPECT_CALL(openGL, glBindProgramPipeline(_)).Times(rectanglesCall);
@@ -151,7 +154,7 @@ struct WindowTestsBase
             }
         }
 
-        EXPECT_CALL(windowBase, getCursorPosition()).WillOnce(Return(CursorPosition{0,0}));
+
         EXPECT_CALL(windowBase, swapBuffers()).Times(1);
 
     }
@@ -164,6 +167,11 @@ struct WindowTestsBase
     void expectCheckIfWindowShouldRecreated()
     {
         EXPECT_CALL(windowBase, checkIfWindowShouldBeRecreated()).WillOnce(Return(false));
+    }
+
+    void expectCheckIfThemeShouldBeChanged()
+    {
+        EXPECT_CALL(windowBase, checkIfThemeShouldBeChanged()).WillOnce(Return(std::nullopt));
     }
 
     void expectDestroyWindow()

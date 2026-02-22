@@ -5,7 +5,7 @@
  */
 
 #include "Window.hpp"
-#include "DataSelector.hpp"
+#include "FrequenciesInfo.hpp"
 #include "Helpers.hpp"
 #include "RectangleHighligther.hpp"
 #include "DynamicMaxHolder.hpp"
@@ -16,12 +16,12 @@ Window::Window(const Configuration &config, const bool isFullScreenEnabled) :
     WindowBase(config, isFullScreenEnabled)
 {
 
-    anyData.add(DataSelector(config.get<SamplingRate>(), config.get<NumberOfSamples>(), config.get<Freqs>()));
+    anyData.add(FrequenciesInfo(config.get<SamplingRate>(), config.get<NumberOfSamples>(), config.get<Freqs>()));
     anyData.add(Averager(config.get<DesiredFrameRate>()));
     anyData.add(time_point<steady_clock>(steady_clock::now()));
     anyData.add(FigureGeometryCalculator::getHorizontalLines(scaleDbfsToPercents(moveDbFsToPositiveValues(config.get<HorizontalLinePositions>()))));
-    anyData.add(FigureGeometryCalculator::getVerticalLines(config.get<NumberOfRectangles>(), anyData.get<DataSelector>().getRectangleIndexesClosestToFrequencies(config.get<VerticalLinePositions>())));
-    anyData.add(FigureGeometryCalculator::getVerticalLineTextPositions(config.get<NumberOfRectangles>(), anyData.get<DataSelector>().getRectangleIndexesClosestToFrequencies(config.get<FrequencyTextPositions>())));
+    anyData.add(FigureGeometryCalculator::getVerticalLines(config.get<NumberOfRectangles>(), anyData.get<FrequenciesInfo>().getRectangleIndexesClosestToFrequencies(config.get<VerticalLinePositions>())));
+    anyData.add(FigureGeometryCalculator::getVerticalLineTextPositions(config.get<NumberOfRectangles>(), anyData.get<FrequenciesInfo>().getRectangleIndexesClosestToFrequencies(config.get<FrequencyTextPositions>())));
     anyData.add(DynamicMaxHolders{{MaxHolderType::Dynamic,DynamicMaxHolder(config.get<NumberOfRectangles>(), config.get<DynamicMaxHoldSpeedOfFalling>(), config.get<DynamicMaxHoldAccelerationStateOfFalling>())},
                                   {MaxHolderType::Transparent,DynamicMaxHolder(config.get<NumberOfRectangles>(), config.get<DynamicMaxHoldSecondarySpeedOfFalling>(), false)}});
 
@@ -49,13 +49,12 @@ void Window::initializeGPU()
     gpu.prepareHorizontalLineStaticTexts(config.get<HorizontalLinePositions>(), config.get<ColorOfStaticText>());
     gpu.prepareVerticalLineStaticTexts(config.get<FrequencyTextPositions>(), config.get<ColorOfStaticText>());
     gpu.prepareDynamicText();
+    gpu.prepareHighlightedVerticalLine();
 
     operations.emplace_back("prepareData", [&](){
 
-        auto dBFsValues = anyData.get<DataSelector>()(anyData.get<std::vector<float>>());
-
-        anyData.get<DynamicMaxHolders>().at(MaxHolderType::Dynamic).calculate(dBFsValues);
-        anyData.get<DynamicMaxHolders>().at(MaxHolderType::Transparent).calculate(dBFsValues);
+        anyData.get<DynamicMaxHolders>().at(MaxHolderType::Dynamic).calculate(anyData.get<std::vector<float>>());
+        anyData.get<DynamicMaxHolders>().at(MaxHolderType::Transparent).calculate(anyData.get<std::vector<float>>());
         anyData.add(getWindowSize());
     });
 
@@ -65,14 +64,7 @@ void Window::initializeGPU()
 
     operations.emplace_back("updateParamsInShaders", [&](){
         auto timeInMs = std::chrono::duration_cast<std::chrono::milliseconds>(steady_clock::now() - anyData.get<time_point<steady_clock>>()).count();
-        auto themeNumber = getUpdatedThemeNumber();
-
         gpu.updateTime(timeInMs);
-
-        if(themeNumber)
-        {
-            gpu.updateThemeNumber(*themeNumber);
-        }
     });
 
     operations.emplace_back("background", [&](){
@@ -104,18 +96,11 @@ void Window::initializeGPU()
         });
     }
 
-    if(config.get<RectanglesVisibilityState>())
-    {
-        operations.emplace_back("rectangles", [&](){
-            auto positions = scaleDbfsToPercents(moveDbFsToPositiveValues(anyData.get<DataSelector>()()));
-            gpu.drawRectangles(positions);
-        });
-    }
 
     if(config.get<LinesVisibilityState>())
     {
         operations.emplace_back("dynamicLines", [&](){
-            auto positions = scaleDbfsToPercents(moveDbFsToPositiveValues(anyData.get<DataSelector>()()));
+            auto positions = scaleDbfsToPercents(moveDbFsToPositiveValues(anyData.get<std::vector<float>>()));
             gpu.drawDynamicLines(FigureGeometryCalculator::getDynamicLines(positions), config.get<ColorOfLine>());
         });
     }
@@ -136,16 +121,6 @@ void Window::initializeGPU()
         });
     }
 
-    if(config.get<RectanglesVisibilityState>() && config.get<DynamicMaxHoldVisibilityState>())
-    {
-        operations.emplace_back("dynamicMaxHold", [&](){
-            const auto dynamicMaxHoldElementsPosition = scaleDbfsToPercents(moveDbFsToPositiveValues(anyData.get<DynamicMaxHolders>().at(MaxHolderType::Dynamic).get()));
-            gpu.drawDynamicMaxHoldRectangles(dynamicMaxHoldElementsPosition);
-
-        });
-    }
-
-
     operations.emplace_back("highlight", [&](){
 
         CursorPosition cursorPosition = getCursorPosition();
@@ -155,7 +130,7 @@ void Window::initializeGPU()
 
         if(hightlightData.current.state)
         {
-            const auto averagedDBfs = anyData.get<Averager>()(anyData.get<DataSelector>()().at(hightlightData.current.index));
+            const auto averagedDBfs = anyData.get<Averager>()(anyData.get<std::vector<float>>().at(hightlightData.current.index));
 
             if(averagedDBfs)
             {
@@ -164,6 +139,9 @@ void Window::initializeGPU()
                                                                                              anyData.get<DynamicMaxHolders>().at(MaxHolderType::Transparent).get().at(hightlightData.current.index),
                                                                                              anyData.get<DynamicMaxHolders>().at(MaxHolderType::Dynamic).get().at(hightlightData.current.index));
                 gpu.drawText(dBFsHighlightedValues, (cursorPosition.x > windowSize.x -128) ? HorizontalAligment::RIGHT : HorizontalAligment::LEFT , cursorPosition.x, cursorPosition.y);
+
+
+                gpu.drawHighlightedVerticalLine(FigureGeometryCalculator::getHighlightedLine(config.get<NumberOfRectangles>(), hightlightData.current.index), Color{1,0,0,0.5});
             }
 
             gpu.updateHorizontalRectangleBoundaries(hightlightData.current.index, hightlightData.current.boundaries.first, hightlightData.current.boundaries.second);
@@ -174,6 +152,23 @@ void Window::initializeGPU()
         }
 
     });
+
+    if(config.get<RectanglesVisibilityState>())
+    {
+        operations.emplace_back("rectangles", [&](){
+            auto positions = scaleDbfsToPercents(moveDbFsToPositiveValues(anyData.get<std::vector<float>>()));
+            gpu.drawRectangles(positions);
+        });
+    }
+
+    if(config.get<RectanglesVisibilityState>() && config.get<DynamicMaxHoldVisibilityState>())
+    {
+        operations.emplace_back("dynamicMaxHold", [&](){
+            const auto dynamicMaxHoldElementsPosition = scaleDbfsToPercents(moveDbFsToPositiveValues(anyData.get<DynamicMaxHolders>().at(MaxHolderType::Dynamic).get()));
+            gpu.drawDynamicMaxHoldRectangles(dynamicMaxHoldElementsPosition);
+
+        });
+    }
 
 }
 

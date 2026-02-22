@@ -35,20 +35,26 @@ PRESS 0–9 TO CHANGE THE COLOR THEME
 }
 
 
-
 int main()
 {
-
     printLicense();
 
-    ConfigReader configReader;
-    const Configuration &config = configReader.getConfig();
-    std::cout<<config<<std::endl;
+    ThemeConfig currentTheme = ThemeConfig::Theme1;
 
-    std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = std::make_unique<AudioSpectrumAnalyzer>(config);
+    while (currentTheme != ThemeConfig::Invalid)
+    {
+        ConfigReader configReader(currentTheme);
+        const Configuration &config = configReader.getConfig();
+        std::cout << config << std::endl;
 
-    spectrumAnalyzer->init();
-    spectrumAnalyzer->run();
+        std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = std::make_unique<AudioSpectrumAnalyzer>(config);
+
+        spectrumAnalyzer->init();
+        spectrumAnalyzer->run();
+
+        currentTheme =  spectrumAnalyzer->getSelectedTheme();
+    }
+
 
     return 0;
 }

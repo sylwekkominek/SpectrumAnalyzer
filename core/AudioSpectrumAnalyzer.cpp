@@ -11,11 +11,13 @@
 #include "Helpers.hpp"
 #include "CommonData.hpp"
 #include "DataCalculator.hpp"
+#include "FrequenciesInfo.hpp"
+#include "PowerAverager.hpp"
 #include <iostream>
 #include <optional>
 
-AudioSpectrumAnalyzer::AudioSpectrumAnalyzer(const Configuration &configuration):
-    SpectrumAnalyzerBase(configuration)
+AudioSpectrumAnalyzer::AudioSpectrumAnalyzer(const Configuration &configuration, std::promise<ThemeConfig> &&promise):
+    SpectrumAnalyzerBase(configuration, std::move(promise))
 {
 }
 
@@ -79,7 +81,7 @@ void AudioSpectrumAnalyzer::fftCalculator()
 
     float overlapping = calculateOverlapping(config.get<SamplingRate>(), config.get<NumberOfSamples>(), config.get<DesiredFrameRate>());
 
-    WelchCalculator fft(config.get<NumberOfSamples>(), overlapping,  config.get<SignalWindow>());
+    WelchCalculator fft(FftType::Real, config.get<NumberOfSamples>(), overlapping,  config.get<SignalWindow>());
 
     using namespace std::chrono;
 
@@ -108,6 +110,7 @@ void AudioSpectrumAnalyzer::fftCalculator()
     fftDataExchanger.stop();
 }
 
+
 void AudioSpectrumAnalyzer::processing()
 {
     const std::string processName{"processing"};
@@ -115,9 +118,12 @@ void AudioSpectrumAnalyzer::processing()
     std::deque<Data> fftDataQueue;
     std::deque<Data> averagedDataQueue;
 
-    DataMaxHolder dataMaxHolder(config.get<NumberOfSamples>(), config.get<NumberOfSignalsForMaxHold>(), getFloorDbFs16bit());
-    DataAverager dataAverager(config.get<NumberOfSamples>(), config.get<NumberOfSignalsForAveraging>());
-    DataSmoother dataSmoother(config.get<NumberOfSamples>(), config.get<AlphaFactor>());
+    FrequenciesInfo frequenciesInfo(config.get<SamplingRate>(), config.get<NumberOfSamples>(), config.get<Freqs>());
+    DataMaxHolder dataMaxHolder(frequenciesInfo.numberOfFrequencies(), config.get<NumberOfSignalsForMaxHold>(), getFloorDbFs16bit());
+    DataAverager dataAverager(frequenciesInfo.numberOfFrequencies(), config.get<NumberOfSignalsForAveraging>());
+    DataSmoother dataSmoother(frequenciesInfo.numberOfFrequencies(), config.get<AlphaFactor>());
+
+    PowerAverager powerAverager(config.get<ScalingFactor>(), config.get<OffsetFactor>(), frequenciesInfo.getAllFrequencyIndexes());
 
 
     while(shouldProceed)
@@ -131,9 +137,8 @@ void AudioSpectrumAnalyzer::processing()
 
         statsManager.update();
 
-        auto power = calculatePower(*fftResult, config.get<ScalingFactor>(), config.get<OffsetFactor>());
+        dataMaxHolder.push_back(powerAverager.calculate(*fftResult));
 
-        dataMaxHolder.push_back(power);
         auto dataWithMaxValue = dataMaxHolder.calculate();
 
         if(not dataWithMaxValue.empty())
@@ -161,7 +166,6 @@ void AudioSpectrumAnalyzer::drafter()
     StatsManager statsManager(processName);
 
     bool isFullScreenEnabled = config.get<DefaultFullscreenState>();
-
     std::unique_ptr<Window> window = std::make_unique<Window>(config, isFullScreenEnabled);
     window->initializeGPU();
 
@@ -175,10 +179,12 @@ void AudioSpectrumAnalyzer::drafter()
         }
 
         statsManager.update();
+
         window->draw(*data);
 
         if(window->checkIfWindowShouldBeClosed())
         {
+            themeConfigSelectionPromise.set_value(ThemeConfig::Invalid);
             shouldProceed.store(false);
         }
 
@@ -187,6 +193,12 @@ void AudioSpectrumAnalyzer::drafter()
             isFullScreenEnabled = !isFullScreenEnabled;
             window = std::make_unique<Window>(config, isFullScreenEnabled);
             window->initializeGPU();
+        }
+
+        if (auto themeConfigOpt = window->checkIfThemeShouldBeChanged(); themeConfigOpt)
+        {
+            themeConfigSelectionPromise.set_value(*themeConfigOpt);
+            shouldProceed.store(false);
         }
     }
 }

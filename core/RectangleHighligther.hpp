@@ -20,6 +20,7 @@ public:
     using Index = uint16_t;
     using State = bool;
     using Boundaries = std::pair<float, float>;
+    using Center = float;
 
     struct Data
     {

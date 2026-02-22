@@ -6,8 +6,9 @@
 
 #include "ConfigReader.hpp"
 #include <iostream>
+#include <unordered_set>
 
-ConfigReader::ConfigReader(const std::string &path) : ConfigFileReader(path)
+ConfigReader::ConfigReader(const ThemeConfig theme, const std::string &path) : ConfigFileReader(theme, path)
 {
 }
 
@@ -48,7 +49,6 @@ Configuration ConfigReader::getConfig()
         config.data.add(getFrequencyTextPositions());
         config.data.add(getColorOfLine());
         config.data.add(getColorOfStaticLines());
-        config.data.add(getColorOfDynamicMaxHoldLine());
         config.data.add(getColorOfDynamicMaxHoldSecondaryLine());
         config.data.add(getColorsOfRectangle());
         config.data.add(getColorOfDynamicMaxHoldLine());
@@ -65,12 +65,22 @@ Configuration ConfigReader::getConfig()
 
 Freqs ConfigReader::getFrequencies()
 {
-    Freqs data;
+    std::unordered_set<Frequency> seen;
+
+    Freqs data(themeConfig, getSamplingRate().value, getNumberOfSamples().value);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 1);
 
     if(value)
     {
+        for (auto &freq : *value)
+        {
+            if (!seen.insert(freq).second)
+            {
+                std::cout<<"WARNING: DUPLICATE FREQUENCY: "<<freq<<std::endl;
+            }
+        }
+
         data.value = std::move(*value);
     }
 
@@ -79,7 +89,7 @@ Freqs ConfigReader::getFrequencies()
 
 NumberOfRectangles ConfigReader::getNumberOfRectangles()
 {
-    NumberOfRectangles data;
+    NumberOfRectangles data(0);
 
     try
     {
@@ -126,7 +136,7 @@ SignalWindow ConfigReader::getSignalWindow()
 
 PythonDataSourceEnabled ConfigReader::getPythonDataSourceEnabled()
 {
-    PythonDataSourceEnabled data;
+    PythonDataSourceEnabled data(themeConfig);
 
     auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
@@ -140,7 +150,7 @@ PythonDataSourceEnabled ConfigReader::getPythonDataSourceEnabled()
 
 DefaultFullscreenState ConfigReader::getDefaultFullscreenState()
 {
-    DefaultFullscreenState data;
+    DefaultFullscreenState data(themeConfig);
 
     auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
@@ -154,7 +164,7 @@ DefaultFullscreenState ConfigReader::getDefaultFullscreenState()
 
 MaximizedWindowSize ConfigReader::getMaximizedWindowSize()
 {
-    MaximizedWindowSize data;
+    MaximizedWindowSize data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value.first, (float)data.value.second},0);
 
@@ -169,7 +179,7 @@ MaximizedWindowSize ConfigReader::getMaximizedWindowSize()
 
 NormalWindowSize ConfigReader::getNormalWindowSize()
 {
-    NormalWindowSize data;
+    NormalWindowSize data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value.first, (float)data.value.second},0);
 
@@ -184,7 +194,7 @@ NormalWindowSize ConfigReader::getNormalWindowSize()
 
 GapWidthInRelationToRectangleWidth ConfigReader::getGapWidthInRelationToRectangleWidth()
 {
-    GapWidthInRelationToRectangleWidth data;
+    GapWidthInRelationToRectangleWidth data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {data.value}, 8);
 
@@ -198,7 +208,7 @@ GapWidthInRelationToRectangleWidth ConfigReader::getGapWidthInRelationToRectangl
 
 NumberOfSamples ConfigReader::getNumberOfSamples()
 {
-    NumberOfSamples data;
+    NumberOfSamples data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
 
@@ -212,7 +222,7 @@ NumberOfSamples ConfigReader::getNumberOfSamples()
 
 SamplingRate ConfigReader::getSamplingRate()
 {
-    SamplingRate data;
+    SamplingRate data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
 
@@ -226,7 +236,7 @@ SamplingRate ConfigReader::getSamplingRate()
 
 DesiredFrameRate ConfigReader::getDesiredFrameRate()
 {
-    DesiredFrameRate data;
+    DesiredFrameRate data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
 
@@ -240,7 +250,7 @@ DesiredFrameRate ConfigReader::getDesiredFrameRate()
 
 NumberOfSignalsForAveraging ConfigReader::getNumberOfSignalsForAveraging()
 {
-    NumberOfSignalsForAveraging data;
+    NumberOfSignalsForAveraging data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
 
@@ -254,7 +264,7 @@ NumberOfSignalsForAveraging ConfigReader::getNumberOfSignalsForAveraging()
 
 NumberOfSignalsForMaxHold ConfigReader::getNumberOfSignalsForMaxHold()
 {
-    NumberOfSignalsForMaxHold data;
+    NumberOfSignalsForMaxHold data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value}, 0);
 
@@ -268,7 +278,7 @@ NumberOfSignalsForMaxHold ConfigReader::getNumberOfSignalsForMaxHold()
 
 AlphaFactor ConfigReader::getAlphaFactorForSmoothing()
 {
-    AlphaFactor data;
+    AlphaFactor data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value},8);
 
@@ -282,7 +292,7 @@ AlphaFactor ConfigReader::getAlphaFactorForSmoothing()
 
 MaxQueueSize ConfigReader::getMaxQueueSize()
 {
-    MaxQueueSize data;
+    MaxQueueSize data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value},0);
 
@@ -305,7 +315,7 @@ ScalingFactor ConfigReader::getScalingFactor()
 
 OffsetFactor ConfigReader::getOffsetFactor()
 {
-    OffsetFactor data;
+    OffsetFactor data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value},8);
 
@@ -319,7 +329,7 @@ OffsetFactor ConfigReader::getOffsetFactor()
 
 RectanglesVisibilityState ConfigReader::getRectanglesVisibilityState()
 {
-    RectanglesVisibilityState data;
+    RectanglesVisibilityState data(themeConfig);
 
     auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
@@ -333,7 +343,7 @@ RectanglesVisibilityState ConfigReader::getRectanglesVisibilityState()
 
 LinesVisibilityState ConfigReader::getLinesVisibilityState()
 {
-    LinesVisibilityState data;
+    LinesVisibilityState data(themeConfig);
 
     auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
@@ -347,7 +357,7 @@ LinesVisibilityState ConfigReader::getLinesVisibilityState()
 
 DynamicMaxHoldVisibilityState ConfigReader::getDynamicMaxHoldVisibilityState()
 {
-    DynamicMaxHoldVisibilityState data;
+    DynamicMaxHoldVisibilityState data(themeConfig);
 
     auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
@@ -361,7 +371,7 @@ DynamicMaxHoldVisibilityState ConfigReader::getDynamicMaxHoldVisibilityState()
 
 DynamicMaxHoldSecondaryVisibilityState ConfigReader::getDynamicMaxHoldSecondaryVisibilityState()
 {
-    DynamicMaxHoldSecondaryVisibilityState data;
+    DynamicMaxHoldSecondaryVisibilityState data(themeConfig);
 
     auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
@@ -375,7 +385,7 @@ DynamicMaxHoldSecondaryVisibilityState ConfigReader::getDynamicMaxHoldSecondaryV
 
 DynamicMaxHoldRectangleHeightInPercentOfScreenSize ConfigReader::getDynamicMaxHoldRectangleHeightInPercentOfScreenSize()
 {
-    DynamicMaxHoldRectangleHeightInPercentOfScreenSize data;
+    DynamicMaxHoldRectangleHeightInPercentOfScreenSize data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {data.value},8);
 
@@ -389,7 +399,7 @@ DynamicMaxHoldRectangleHeightInPercentOfScreenSize ConfigReader::getDynamicMaxHo
 
 DynamicMaxHoldSpeedOfFalling ConfigReader::getDynamicMaxHoldSpeedOfFalling()
 {
-    DynamicMaxHoldSpeedOfFalling data;
+    DynamicMaxHoldSpeedOfFalling data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {data.value},8);
 
@@ -403,7 +413,7 @@ DynamicMaxHoldSpeedOfFalling ConfigReader::getDynamicMaxHoldSpeedOfFalling()
 
 DynamicMaxHoldSecondarySpeedOfFalling ConfigReader::getDynamicMaxHoldSecondarySpeedOfFalling()
 {
-    DynamicMaxHoldSecondarySpeedOfFalling data;
+    DynamicMaxHoldSecondarySpeedOfFalling data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), {data.value},8);
 
@@ -417,7 +427,7 @@ DynamicMaxHoldSecondarySpeedOfFalling ConfigReader::getDynamicMaxHoldSecondarySp
 
 DynamicMaxHoldAccelerationStateOfFalling ConfigReader::getDynamicMaxHoldAccelerationStateOfFalling()
 {
-    DynamicMaxHoldAccelerationStateOfFalling data;
+    DynamicMaxHoldAccelerationStateOfFalling data(themeConfig);
 
     auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
@@ -431,7 +441,7 @@ DynamicMaxHoldAccelerationStateOfFalling ConfigReader::getDynamicMaxHoldAccelera
 
 HorizontalLinePositions ConfigReader::getHorizontalLinePositions()
 {
-    HorizontalLinePositions data;
+    HorizontalLinePositions data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -445,7 +455,7 @@ HorizontalLinePositions ConfigReader::getHorizontalLinePositions()
 
 VerticalLinePositions ConfigReader::getVerticalLinePositions()
 {
-    VerticalLinePositions data;
+    VerticalLinePositions data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -459,7 +469,7 @@ VerticalLinePositions ConfigReader::getVerticalLinePositions()
 
 FrequencyTextPositions ConfigReader::getFrequencyTextPositions()
 {
-    FrequencyTextPositions data;
+    FrequencyTextPositions data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -473,7 +483,7 @@ FrequencyTextPositions ConfigReader::getFrequencyTextPositions()
 
 ColorOfLine ConfigReader::getColorOfLine()
 {
-    ColorOfLine data;
+    ColorOfLine data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -487,7 +497,7 @@ ColorOfLine ConfigReader::getColorOfLine()
 
 ColorOfStaticLines ConfigReader::getColorOfStaticLines()
 {
-    ColorOfStaticLines data;
+    ColorOfStaticLines data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -501,7 +511,7 @@ ColorOfStaticLines ConfigReader::getColorOfStaticLines()
 
 ColorOfStaticText ConfigReader::getColorOfStaticText()
 {
-    ColorOfStaticText data;
+    ColorOfStaticText data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -515,7 +525,7 @@ ColorOfStaticText ConfigReader::getColorOfStaticText()
 
 ColorsOfRectangle ConfigReader::getColorsOfRectangle()
 {
-    ColorsOfRectangle data;
+    ColorsOfRectangle data(themeConfig);
 
     auto value = loadMapConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -529,7 +539,7 @@ ColorsOfRectangle ConfigReader::getColorsOfRectangle()
 
 ColorOfDynamicMaxHoldLine ConfigReader::getColorOfDynamicMaxHoldLine()
 {
-    ColorOfDynamicMaxHoldLine data;
+    ColorOfDynamicMaxHoldLine data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -543,7 +553,7 @@ ColorOfDynamicMaxHoldLine ConfigReader::getColorOfDynamicMaxHoldLine()
 
 ColorOfDynamicMaxHoldSecondaryLine ConfigReader::getColorOfDynamicMaxHoldSecondaryLine()
 {
-    ColorOfDynamicMaxHoldSecondaryLine data;
+    ColorOfDynamicMaxHoldSecondaryLine data(themeConfig);
 
     auto value = loadVectorConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -557,7 +567,7 @@ ColorOfDynamicMaxHoldSecondaryLine ConfigReader::getColorOfDynamicMaxHoldSeconda
 
 ColorsOfDynamicMaxHoldSecondaryRectangle ConfigReader::getColorsOfDynamicMaxHoldSecondaryRectangle()
 {
-    ColorsOfDynamicMaxHoldSecondaryRectangle data;
+    ColorsOfDynamicMaxHoldSecondaryRectangle data(themeConfig);
 
     auto value = loadMapConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -571,7 +581,7 @@ ColorsOfDynamicMaxHoldSecondaryRectangle ConfigReader::getColorsOfDynamicMaxHold
 
 ColorsOfDynamicMaxHoldRectangle ConfigReader::getColorsOfDynamicMaxHoldRectangle()
 {
-    ColorsOfDynamicMaxHoldRectangle data;
+    ColorsOfDynamicMaxHoldRectangle data(themeConfig);
 
     auto value = loadMapConfig(data.name, data.getInfo(), data.value, 2);
 
@@ -585,7 +595,7 @@ ColorsOfDynamicMaxHoldRectangle ConfigReader::getColorsOfDynamicMaxHoldRectangle
 
 AdvancedColorSettings ConfigReader::getAdvancedColorSettings()
 {
-    AdvancedColorSettings data;
+    AdvancedColorSettings data(themeConfig);
 
     auto value = loadStringConfig(data.name, data.getInfo(), data.value);
 
@@ -599,7 +609,7 @@ AdvancedColorSettings ConfigReader::getAdvancedColorSettings()
 
 BackgroundColorSettings ConfigReader::getBackgroundColorSettings()
 {
-    BackgroundColorSettings data;
+    BackgroundColorSettings data(themeConfig);
 
     auto value = loadStringConfig(data.name, data.getInfo(), data.value);
 

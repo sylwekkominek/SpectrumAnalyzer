@@ -11,7 +11,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-ConfigFileReader::ConfigFileReader(const std::string &path) : path(path)
+ConfigFileReader::ConfigFileReader(const ThemeConfig theme, const std::string &path) : path(path + std::to_string(static_cast<uint16_t>(themeConfig))), themeConfig(theme)
 {
 }
 

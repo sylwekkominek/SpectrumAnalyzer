@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <sstream>
+#include <numeric>
 
 std::vector<float> getAverage(const std::vector<float> &left, const std::vector<float> &right)
 {
@@ -38,34 +39,6 @@ void zoomData(std::vector<float> &data, const float factor, const float offset)
     {
         el = factor*(el-offset);
     }
-}
-
-std::vector<float> normalize(const std::vector<float> &fftData)
-{
-    const uint32_t numberOfSamples = fftData.size();
-    std::vector<float> outputData(numberOfSamples);
-
-    std::transform(fftData.begin(), fftData.end(), outputData.begin(), [&numberOfSamples](const auto &el){ return (el/(numberOfSamples/2)); });
-    return outputData;
-}
-
-std::vector<float> calculatePower(const std::vector<std::complex<float>> &fftData, const float scalingFactor, const float offsetFactor)
-{
-    const uint32_t numberOfSamples = fftData.size();
-    static constexpr float fullScale16bit = 32767;
-
-    std::vector<float> outputData(numberOfSamples);
-
-    for (uint32_t i = 0; i < numberOfSamples; i++)
-    {
-        const auto magnitude = std::sqrt(fftData[i].real() * fftData[i].real() + fftData[i].imag() * fftData[i].imag())/(numberOfSamples/2);
-        const auto correctedMagnitude = scalingFactor * magnitude + offsetFactor;
-        const auto powerInDbfs = 20*log10(correctedMagnitude/fullScale16bit);
-
-        outputData[i]  = (powerInDbfs < getFloorDbFs16bit()) ? getFloorDbFs16bit() : powerInDbfs;
-    }
-
-    return outputData;
 }
 
 float calculateOverlappingDiff(const uint32_t desiredNumberOfFramesPerSecond, const uint32_t currentFramesPerSecond)
@@ -112,5 +85,6 @@ std::vector<float> moveDbFsToPositiveValues(const std::vector<float> &signalInDb
     std::transform(signalInDbfs.begin(), signalInDbfs.end(), outputData.begin(), [](const auto &el){ return el+getDynamicRangeOf16bitSignal(); });
     return outputData;
 }
+
 
 

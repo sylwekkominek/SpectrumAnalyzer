@@ -120,6 +120,11 @@ void Gpu::prepareVerticalLineStaticTexts(const Frequencies &frequencies, const C
     }
 }
 
+void Gpu::prepareHighlightedVerticalLine()
+{
+    highlightedVerticalLine = std::make_unique<LineInsideGpu>();
+}
+
 void Gpu::prepareDynamicText()
 {
     dynamicText = std::make_unique<TextInsideGpu>("", std::vector<float>{1.0,0,0,1});
@@ -145,23 +150,29 @@ void Gpu::drawBackground()
 
 void Gpu::drawHorizontalLines(const Lines &horizontalLinePositions, const Color &colorOfStaticLines)
 {
-    for(uint32_t i=0;i<horizontalLinePositions.size();++i)
+    const uint32_t numberOfElements = std::min(horizontalLines.size(), horizontalLinePositions.size());
+
+    for(uint32_t i=0;i<numberOfElements;++i)
     {
-        horizontalLines.at(i).draw(horizontalLinePositions.at(i), colorOfStaticLines);
+        horizontalLines[i].draw(horizontalLinePositions[i], colorOfStaticLines);
     }
 }
 
 void Gpu::drawVerticalLines(const Lines &verticalLinePositions, const Color &colorOfStaticLines)
 {
-    for(uint32_t i=0;i<verticalLinePositions.size();++i)
+    const uint32_t numberOfElements = std::min(verticalLines.size(), verticalLinePositions.size());
+
+    for(uint32_t i = 0; i < numberOfElements; ++i)
     {
-        verticalLines.at(i).draw(verticalLinePositions.at(i), colorOfStaticLines);
+        verticalLines[i].draw(verticalLinePositions[i], colorOfStaticLines);
     }
 }
 
 void Gpu::drawDynamicLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines)
 {
-    for(uint32_t i=0;i<dynamicLinePositions.size();++i)
+    const uint32_t numberOfElements = std::min(dynamicLines.size(), dynamicLinePositions.size());
+
+    for(uint32_t i=0;i<numberOfElements;++i)
     {
         dynamicLines.at(i).draw(dynamicLinePositions.at(i), colorOfDynamicLines);
     }
@@ -169,17 +180,21 @@ void Gpu::drawDynamicLines(const Lines &dynamicLinePositions, const Color &color
 
 void Gpu::drawDynamicMaxHoldLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines)
 {
-    for(uint32_t i=0;i<dynamicLinePositions.size();++i)
+    const uint32_t numberOfElements = std::min(dynamicMaxHoldLines.size(), dynamicLinePositions.size());
+
+    for(uint32_t i=0;i<numberOfElements;++i)
     {
-        dynamicMaxHoldLines.at(i).draw(dynamicLinePositions.at(i), colorOfDynamicLines);
+        dynamicMaxHoldLines[i].draw(dynamicLinePositions[i], colorOfDynamicLines);
     }
 }
 
 void Gpu::drawDynamicMaxHoldSecondaryLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines)
 {
-    for(uint32_t i=0;i<dynamicLinePositions.size();++i)
+    const uint32_t numberOfElements = std::min(dynamicMaxHoldSecondaryLines.size(), dynamicLinePositions.size());
+
+    for(uint32_t i=0;i<numberOfElements;++i)
     {
-        dynamicMaxHoldSecondaryLines.at(i).draw(dynamicLinePositions.at(i), colorOfDynamicLines);
+        dynamicMaxHoldSecondaryLines[i].draw(dynamicLinePositions[i], colorOfDynamicLines);
     }
 }
 
@@ -189,15 +204,16 @@ void Gpu::drawHorizontalLineStaticTexts(const Lines &horizontalLinePositions, co
     const float leftCenterOfTheOffset= (xDrawOffsetInPercents / 100)/2;
     const float offsetRigth = fullScreenSizeInPercents - (xDrawSizeInPercents + xDrawOffsetInPercents);
     const float rightCenterOfTheOffset = ((fullScreenSizeInPercents - offsetRigth/2)/100);
-
     const float workaroundForNotPerfectlyAlignedFont = 0.001;
 
-    for(uint32_t i=0;i<horizontalLinePositions.size();++i)
-    {
-        const auto textPositionInPixels = convertYPositionInPercentToPixels(horizontalLinePositions.at(i).front().y, windowSize.y);
+    const uint32_t numberOfElements = std::min(horizontalLineStaticTexts.size(), horizontalLinePositions.size());
 
-        horizontalLineStaticTexts.at(i).draw(HorizontalAligment::CENTER, VerticalAligment::CENTER, (leftCenterOfTheOffset - workaroundForNotPerfectlyAlignedFont) * windowSize.x ,textPositionInPixels);
-        horizontalLineStaticTexts.at(i).draw(HorizontalAligment::CENTER, VerticalAligment::CENTER, (rightCenterOfTheOffset + workaroundForNotPerfectlyAlignedFont) * windowSize.x , textPositionInPixels);
+    for(uint32_t i=0;i<numberOfElements;++i)
+    {
+        const auto textPositionInPixels = convertYPositionInPercentToPixels(horizontalLinePositions[i].front().y, windowSize.y);
+
+        horizontalLineStaticTexts[i].draw(HorizontalAligment::CENTER, VerticalAligment::CENTER, (leftCenterOfTheOffset - workaroundForNotPerfectlyAlignedFont) * windowSize.x ,textPositionInPixels);
+        horizontalLineStaticTexts[i].draw(HorizontalAligment::CENTER, VerticalAligment::CENTER, (rightCenterOfTheOffset + workaroundForNotPerfectlyAlignedFont) * windowSize.x , textPositionInPixels);
     }
 }
 
@@ -205,40 +221,53 @@ void Gpu::drawVerticalLineStaticTexts(const Positions &verticalLineTextPositions
 {
     const float offsetFromTheTop = 0.025;
 
-    for(uint32_t i=0;i<verticalLineTextPositions.size();++i)
+    const uint32_t numberOfElements = std::min(verticalLineStaticTexts.size(), verticalLineTextPositions.size());
+
+    for(uint32_t i=0 ; i< numberOfElements; ++i)
     {
-        const auto textPositionInPixels = convertXPositionInPercentToPixels(verticalLineTextPositions.at(i), windowSize.x);
-        verticalLineStaticTexts.at(i).draw(HorizontalAligment::CENTER, VerticalAligment::TOP, textPositionInPixels, offsetFromTheTop * windowSize.y);
+        const auto textPositionInPixels = convertXPositionInPercentToPixels(verticalLineTextPositions[i], windowSize.x);
+        verticalLineStaticTexts[i].draw(HorizontalAligment::CENTER, VerticalAligment::TOP, textPositionInPixels, offsetFromTheTop * windowSize.y);
     }
 }
 
 void Gpu::drawDynamicMaxHoldRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition)
 {
-    for(uint32_t i=0;i<dynamicMaxHoldRectangles.size();++i)
+    const uint32_t numberOfElements = std::min(dynamicMaxHoldRectangles.size(), dynamicMaxHoldElementsPosition.size());
+
+    for(uint32_t i=0;i<numberOfElements;++i)
     {
-        dynamicMaxHoldRectangles.at(i).move(dynamicMaxHoldElementsPosition.at(i));
+        dynamicMaxHoldRectangles[i].move(dynamicMaxHoldElementsPosition[i]);
     }
 }
 
 void Gpu::drawDynamicMaxHoldSecondaryRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition)
 {
-    for(uint32_t i=0;i<dynamicMaxHoldRectangles.size();++i)
+    const uint32_t numberOfElements = std::min(dynamicMaxHoldSecondaryRectangles.size(), dynamicMaxHoldElementsPosition.size());
+
+    for(uint32_t i=0;i<numberOfElements;++i)
     {
-        dynamicMaxHoldSecondaryRectangles.at(i).move(dynamicMaxHoldElementsPosition.at(i));
+        dynamicMaxHoldSecondaryRectangles[i].move(dynamicMaxHoldElementsPosition[i]);
     }
 }
 
 void Gpu::drawRectangles(const std::vector<float> &rectaglesPositions)
 {
-    for(uint32_t i=0;i<rectaglesPositions.size();++i)
+    const uint32_t numberOfElements = std::min(rectangles.size(), rectaglesPositions.size());
+
+    for(uint32_t i=0;i<numberOfElements;++i)
     {
-        rectangles.at(i).move(rectaglesPositions.at(i));
+        rectangles[i].move(rectaglesPositions[i]);
     }
 }
 
 void Gpu::updateHorizontalRectangleBoundaries(const uint16_t indexOfRectangle, const float start, const float stop)
 {
     rectangles.at(indexOfRectangle).updateBoundary(start, stop);
+}
+
+void Gpu::drawHighlightedVerticalLine(const Line &line, const Color &colorOfStaticLines)
+{
+    highlightedVerticalLine->draw(line, colorOfStaticLines);
 }
 
 void Gpu::drawText(const std::string &str, const HorizontalAligment aligment, const float x, const float y)

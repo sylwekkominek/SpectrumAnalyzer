@@ -18,6 +18,7 @@ public:
     void createWindow();
     bool checkIfWindowShouldBeClosed();
     bool checkIfWindowShouldBeRecreated();
+    std::optional<ThemeConfig> checkIfThemeShouldBeChanged();
     ~WindowBase();
 
 protected:

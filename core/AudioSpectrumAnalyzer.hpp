@@ -12,7 +12,7 @@ class AudioSpectrumAnalyzer : public SpectrumAnalyzerBase
 {
 public:
 
-    AudioSpectrumAnalyzer(const Configuration &configuration);
+    AudioSpectrumAnalyzer(const Configuration &configuration, std::promise<ThemeConfig> &&promise = std::promise<ThemeConfig>());
     virtual void init() override;
     virtual void samplesUpdater() override;
     virtual void fftCalculator() override;

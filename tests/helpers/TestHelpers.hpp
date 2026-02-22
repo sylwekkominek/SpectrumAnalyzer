@@ -17,6 +17,7 @@ std::vector<float> generateSignal(uint32_t numberOfSamples, float samplingFreque
 std::vector<float> addSignals(const std::vector<float> &signal1, const std::vector<float> &signal2);
 std::vector<float> calculatePhase(const std::vector<std::complex<float>> &signal);
 std::vector<float> getSignalWindow(uint32_t numberOfSamples);
+std::vector<float> getDemandedFrequencies(uint32_t samplingRate, uint32_t fftSize, uint32_t start, uint32_t stop);
 
 template <typename T>
 std::vector<float> calculateAbs(const std::vector<T> &signal)
@@ -26,3 +27,6 @@ std::vector<float> calculateAbs(const std::vector<T> &signal)
 
     return result;
 }
+
+
+

@@ -9,7 +9,8 @@ add_executable(spectrum-analyzer-tests
         helpers/PortAudioMock.cpp
         FFTCalculatorTests.cpp
         DataCalculatorTests.cpp
-        DataSelectorTests.cpp
+        FrequenciesInfoTests.cpp
+        PowerAveragerTests.cpp
         StatsTests.cpp
         ConfigFileReaderTests.cpp
         ConfigReaderTests.cpp

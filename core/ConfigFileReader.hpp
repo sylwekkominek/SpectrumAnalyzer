@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "CommonTypes.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -15,7 +16,7 @@
 class ConfigFileReader
 {
 public:
-    ConfigFileReader(const std::string &path="config");
+    ConfigFileReader(const ThemeConfig theme, const std::string &path="config");
 
     std::optional<std::string> loadStringConfig(const std::string &fileName, const std::string &info, const std::string& defaultValue);
     std::optional<std::map<uint32_t, std::vector<float>>> loadMapConfig(const std::string &fileName, const std::string &info, const std::map<uint32_t, std::vector<float>>& defaultValue, const uint8_t precision);
@@ -41,5 +42,6 @@ protected:
     std::ofstream createOutputFileStreamWithComment(const std::string& fileName, const std::string& comment = "");
     std::string getPathWithFileName(const std::string &fileName);
 
+    const ThemeConfig themeConfig;
     const std::string path;
 };

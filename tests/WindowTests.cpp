@@ -11,6 +11,7 @@
 struct WindowTests  : public WindowTestsBase, public ::testing::Test
 {
     static constexpr bool defaultFullscreenState = false;
+    const ThemeConfig theme = ThemeConfig::Theme1;
 
     Configuration getConfig()
     {
@@ -20,30 +21,30 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
         Frequencies frequencies = {100,200,300,400,500,600,700,800,900,1000};
 
         config.data.add(Freqs{frequencies});
-        config.data.add(VerticalLinePositions{{}});
-        config.data.add(FrequencyTextPositions{{}});
+        config.data.add(VerticalLinePositions{Frequencies{}});
+        config.data.add(FrequencyTextPositions{Frequencies{}});
         config.data.add(NumberOfRectangles{(uint16_t)frequencies.size()});
         config.data.add(NumberOfSamples{numberOfSamples});
         config.data.add(DesiredFrameRate{1});
-        config.data.add(ColorOfStaticLines{{}});
-        config.data.add(ColorOfStaticText{{}});
-        config.data.add(HorizontalLinePositions{{}});
+        config.data.add(ColorOfStaticLines{Color{}});
+        config.data.add(ColorOfStaticText{Color{}});
+        config.data.add(HorizontalLinePositions{Positions{}});
         config.data.add(SamplingRate{44100});
         config.data.add(RectanglesVisibilityState{true});
         config.data.add(LinesVisibilityState{false});
         config.data.add(DynamicMaxHoldVisibilityState{true});
         config.data.add(DefaultFullscreenState{false});
         config.data.add(ScalingFactor{1});
-        config.data.add(ColorsOfRectangle{});
-        config.data.add(ColorsOfDynamicMaxHoldRectangle{});
-        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{});
-        config.data.add(DynamicMaxHoldSpeedOfFalling{});
-        config.data.add(DynamicMaxHoldSecondarySpeedOfFalling{});
+        config.data.add(ColorsOfRectangle{theme});
+        config.data.add(ColorsOfDynamicMaxHoldRectangle{theme});
+        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{theme});
+        config.data.add(DynamicMaxHoldSpeedOfFalling{theme});
+        config.data.add(DynamicMaxHoldSecondarySpeedOfFalling{theme});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
-        config.data.add(AdvancedColorSettings{});
-        config.data.add(BackgroundColorSettings{});
-        config.data.add(GapWidthInRelationToRectangleWidth{});
-        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{});
+        config.data.add(AdvancedColorSettings{theme});
+        config.data.add(BackgroundColorSettings{theme});
+        config.data.add(GapWidthInRelationToRectangleWidth{theme});
+        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{theme});
         config.data.add(DynamicMaxHoldSecondaryVisibilityState{true});
 
         return config;
@@ -53,7 +54,6 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
 TEST_F(WindowTests, checkIfOpenGlFunctionsAreBeingCalled)
 {
     const auto config = getConfig();
-    const std::vector<float> signalToBeDrawn = std::vector<float>(config.data.get<NumberOfSamples>().value, 100);
 
     expectCreateWindow();
     expectInitializeGPU(config.data.get<NumberOfRectangles>().value, true);
@@ -62,7 +62,7 @@ TEST_F(WindowTests, checkIfOpenGlFunctionsAreBeingCalled)
     expectCheckIfWindowShouldRecreated();
     expectDestroyWindow();
 
-    Window window(getConfig(),defaultFullscreenState);
+    Window window(config,defaultFullscreenState);
     window.initializeGPU();
     window.draw(std::vector<float>(config.data.get<NumberOfSamples>().value, 0));
 

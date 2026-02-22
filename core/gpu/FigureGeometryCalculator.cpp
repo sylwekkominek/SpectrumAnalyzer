@@ -53,6 +53,21 @@ std::vector<std::pair<float, float>> FigureGeometryCalculator::horizontalRectang
     return rectangles;
 }
 
+
+Line FigureGeometryCalculator::getHighlightedLine(const uint16_t numberOfRectangles, const uint16_t rectangleNumber)
+{
+    const double xBeginOfZeroElement = xDrawOffsetInPercents;
+    const double xWidth =  xDrawSizeInPercents/numberOfRectangles;
+
+
+    double xBegin =  xBeginOfZeroElement + rectangleNumber * xWidth;
+    double xEnd = xBegin + xWidth;
+    float midpoint = (xBegin + xEnd) / 2;
+
+    return Line({Point{midpoint, 0}, Point{midpoint, 100}});
+}
+
+
 Rectangles FigureGeometryCalculator::rectanglesFactory(const float heightInPercentOfScreenSize, const uint16_t numberOfRectangles, const float offsetInPercentOffScreenSize, const float gap, const float xStart, const float fullScreenSize)
 {
     const auto xBoundaries = horizontalRectanglesBoundariesFactory(numberOfRectangles, gap,xStart, fullScreenSize);
@@ -119,7 +134,7 @@ FigureGeometryCalculator::HorizontalLines FigureGeometryCalculator::getHorizonta
     return HorizontalLines{std::move(lines)};
 }
 
-FigureGeometryCalculator::VerticalLines FigureGeometryCalculator::getVerticalLines(const uint16_t numberOfRectangles, const std::vector<uint16_t> &indexes)
+FigureGeometryCalculator::VerticalLines FigureGeometryCalculator::getVerticalLines(const uint16_t numberOfRectangles, const std::vector<uint32_t> &indexes)
 {
     const double fullScreenSize = xDrawSizeInPercents;
     const double xWidth =  (fullScreenSize/numberOfRectangles);
@@ -143,7 +158,7 @@ FigureGeometryCalculator::VerticalLines FigureGeometryCalculator::getVerticalLin
     return VerticalLines{std::move(lines)};
 }
 
-FigureGeometryCalculator::VerticalLineTextPositions FigureGeometryCalculator::getVerticalLineTextPositions(const uint16_t numberOfRectangles, const std::vector<uint16_t> &indexes)
+FigureGeometryCalculator::VerticalLineTextPositions FigureGeometryCalculator::getVerticalLineTextPositions(const uint16_t numberOfRectangles, const std::vector<uint32_t> &indexes)
 {
     const double fullScreenSize = xDrawSizeInPercents;
     const double xWidth =  (fullScreenSize/numberOfRectangles);

@@ -30,6 +30,7 @@ struct Gpu
     void prepareDynamicMaxHoldSecondaryLines(const uint16_t size);
     void prepareHorizontalLineStaticTexts(const std::vector<float> &dbfsValues, const Color &colorOfStaticLines);
     void prepareVerticalLineStaticTexts(const Frequencies &frequencies, const Color &colorOfStaticLines);
+    void prepareHighlightedVerticalLine();
     void prepareDynamicText();
     void updateTime(const float timeInMilliSeconds);
     void updateThemeNumber(const uint16_t themeNumber);
@@ -45,6 +46,7 @@ struct Gpu
     void drawDynamicMaxHoldSecondaryLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines);
     void drawRectangles(const std::vector<float> &rectaglesPositions);
     void updateHorizontalRectangleBoundaries(const uint16_t indexOfRectangle, const float start, const float stop);
+    void drawHighlightedVerticalLine(const Line &line, const Color &colorOfStaticLines);
     void drawText(const std::string &str, const HorizontalAligment aligment, const float x, const float y);
 
     void clear();
@@ -66,5 +68,6 @@ private:
     std::vector<TextInsideGpu> horizontalLineStaticTexts;
     std::vector<TextInsideGpu> verticalLineStaticTexts;
     std::unique_ptr<TextInsideGpu> dynamicText;
+    std::unique_ptr<LineInsideGpu> highlightedVerticalLine;
 };
 

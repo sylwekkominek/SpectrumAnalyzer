@@ -77,6 +77,7 @@ void WindowBase::WindowBaseImpl::createWindow()
 bool WindowBase::WindowBaseImpl::checkIfWindowShouldBeClosed()
 {
     glfwPollEvents();
+
     return glfwWindowShouldClose(window);
 }
 
@@ -165,6 +166,18 @@ void WindowBase::createWindow()
 bool WindowBase::checkIfWindowShouldBeClosed()
 {
     return windowBaseImpl->checkIfWindowShouldBeClosed();
+}
+
+std::optional<ThemeConfig> WindowBase::checkIfThemeShouldBeChanged()
+{
+    auto res = windowBaseImpl->getUpdatedThemeNumber();
+
+    if(res)
+    {
+        return static_cast<ThemeConfig>(*res);
+    }
+
+    return std::nullopt;
 }
 
 bool WindowBase::checkIfWindowShouldBeRecreated()

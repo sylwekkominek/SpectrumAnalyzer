@@ -92,3 +92,21 @@ std::vector<float> getSignalWindow(uint32_t numberOfSamples)
 
     return signalWindow;
 }
+
+std::vector<float> getDemandedFrequencies(uint32_t samplingRate, uint32_t fftSize, uint32_t start, uint32_t stop)
+{
+    uint32_t numberOfRealBins{stop};
+
+    const float binWidth = static_cast<float>(samplingRate) / fftSize;
+
+    std::vector<float> frequencies;
+    frequencies.reserve(numberOfRealBins);
+
+    for (uint32_t i = start; i < numberOfRealBins; ++i)
+    {
+        frequencies.push_back(i * binWidth);
+    }
+
+    return frequencies;
+}
+

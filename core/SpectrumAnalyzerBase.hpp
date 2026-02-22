@@ -12,15 +12,18 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+#include <future>
 
 
 class SpectrumAnalyzerBase
 {
 public:
 
-    SpectrumAnalyzerBase(const Configuration &configuration):
+    SpectrumAnalyzerBase(const Configuration &configuration, std::promise<ThemeConfig> &&promise):
         config(configuration),
         shouldProceed(true),
+        themeConfigSelectionFuture(promise.get_future()),
+        themeConfigSelectionPromise(std::move(promise)),
         dataExchanger(configuration.get<MaxQueueSize>()),
         fftDataExchanger(configuration.get<MaxQueueSize>()),
         processedDataExchanger(configuration.get<MaxQueueSize>()),
@@ -46,6 +49,11 @@ public:
     virtual void drafter() =0;
     virtual void flowController() =0;
 
+    ThemeConfig getSelectedTheme()
+    {
+        return themeConfigSelectionFuture.get();
+    }
+
     virtual ~SpectrumAnalyzerBase()
     {
     }
@@ -56,6 +64,9 @@ protected:
     const Configuration config;
 
     std::atomic<bool> shouldProceed;
+    std::future<ThemeConfig> themeConfigSelectionFuture;
+    std::promise<ThemeConfig> themeConfigSelectionPromise;
+
     DataExchanger<std::unique_ptr<Data>> dataExchanger;
     DataExchanger<std::unique_ptr<FFTResult>> fftDataExchanger;
     DataExchanger<std::unique_ptr<Data>> processedDataExchanger;
