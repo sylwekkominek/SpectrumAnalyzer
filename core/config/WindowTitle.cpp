@@ -34,7 +34,7 @@ std::string WindowTitle::getWindowTitle(const ThemeConfig themeConfig)
         case ThemeConfig::Theme6:
             return  "( FFT: 8192    Fs: 48kHz   Linear Scale: 20Hz – 2kHz )";
         case ThemeConfig::Theme7:
-            return  "( FFT: 16384    Fs: 48kHz   Linear Scale: 20Hz – 500kHz )";
+            return  "( FFT: 16384    Fs: 48kHz   Linear Scale: 20Hz – 500Hz )";
         default:
             return  "";
     }
