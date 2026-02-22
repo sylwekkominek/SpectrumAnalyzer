@@ -41,7 +41,15 @@ It also uses the following third-party libraries:
 **Video on YouTube:** 
 [sylwekkominek/SpectrumAnalyzer – Fully Configurable Open Source Spectrum Analyzer](https://www.youtube.com/watch?v=Sjx05eXpgq4)
 
-<img width="1308" height="578" alt="NotYetAnotherSpectrumAnalyzer" src="https://github.com/user-attachments/assets/e3b2dd66-0d53-48dc-94ae-668e5b90c279" />
+<img width="1308" height="578" alt="Screenshot from 2026-02-22 15-48-11" src="https://github.com/user-attachments/assets/8cd85afe-9097-49ff-badf-b50a3f4afcfa" />
+<img width="1308" height="578" alt="Screenshot from 2026-02-22 15-49-38" src="https://github.com/user-attachments/assets/75e24b74-38a9-48e8-823d-94c5addb50f0" />
+<img width="1308" height="578" alt="Screenshot from 2026-02-22 15-51-12" src="https://github.com/user-attachments/assets/a4807e57-f707-413a-afb9-820872229edc" />
+<img width="1308" height="578" alt="Screenshot from 2026-02-22 15-51-35" src="https://github.com/user-attachments/assets/2d7574ff-a860-42a7-96f7-3ada8bc3d9be" />
+<img width="1308" height="578" alt="Screenshot from 2026-02-22 15-52-50" src="https://github.com/user-attachments/assets/0ecc22ea-ce0d-4695-9669-af548b2229e9" />
+<img width="1308" height="578" alt="Screenshot from 2026-02-22 15-53-17" src="https://github.com/user-attachments/assets/44635e40-92f1-46e4-827a-c7a2a8329fd6" />
+<img width="1308" height="578" alt="Screenshot from 2026-02-22 16-00-45" src="https://github.com/user-attachments/assets/beabc067-7627-4fa9-bf95-6affd2f24b11" />
+
+
 
 ---
 
