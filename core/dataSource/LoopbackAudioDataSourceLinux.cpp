@@ -7,7 +7,7 @@
 #include "AudioDataSourceDevice.hpp"
 #include <iostream>
 
-PaDeviceIndex getAudioSourceDevice()
+PaDeviceIndex getAudioLoopbackDevice()
 {
     std::cout<<"Using loopback as the data source device"<<std::endl;
 

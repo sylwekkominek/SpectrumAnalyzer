@@ -13,17 +13,19 @@
 #include <thread>
 #include <atomic>
 #include <future>
+#include <variant>
 
+using AppEvent = std::variant<ThemeConfig, ApplicationState>;
 
 class SpectrumAnalyzerBase
 {
 public:
 
-    SpectrumAnalyzerBase(const Configuration &configuration, std::promise<ThemeConfig> &&promise):
+    SpectrumAnalyzerBase(const Configuration &configuration, std::promise<AppEvent> &&appEvent):
         config(configuration),
         shouldProceed(true),
-        themeConfigSelectionFuture(promise.get_future()),
-        themeConfigSelectionPromise(std::move(promise)),
+        appEventFuture(appEvent.get_future()),
+        appEventPromise(std::promise<AppEvent>(std::move(appEvent))),
         dataExchanger(configuration.get<MaxQueueSize>()),
         fftDataExchanger(configuration.get<MaxQueueSize>()),
         processedDataExchanger(configuration.get<MaxQueueSize>()),
@@ -42,6 +44,11 @@ public:
         }
     }
 
+    AppEvent getEvent()
+    {
+        return appEventFuture.get();
+    }
+
     virtual void init() =0;
     virtual void samplesUpdater() =0;
     virtual void fftCalculator() =0;
@@ -49,10 +56,6 @@ public:
     virtual void drafter() =0;
     virtual void flowController() =0;
 
-    ThemeConfig getSelectedTheme()
-    {
-        return themeConfigSelectionFuture.get();
-    }
 
     virtual ~SpectrumAnalyzerBase()
     {
@@ -60,12 +63,15 @@ public:
 
 protected:
 
+
     using Data = std::vector<float>;
     const Configuration config;
 
     std::atomic<bool> shouldProceed;
-    std::future<ThemeConfig> themeConfigSelectionFuture;
-    std::promise<ThemeConfig> themeConfigSelectionPromise;
+    std::future<AppEvent> appEventFuture;
+    std::promise<AppEvent> appEventPromise;
+
+
 
     DataExchanger<std::unique_ptr<Data>> dataExchanger;
     DataExchanger<std::unique_ptr<FFTResult>> fftDataExchanger;

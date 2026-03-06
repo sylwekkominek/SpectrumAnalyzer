@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -15,6 +15,7 @@ class ConfigReaderTests : public ValuesChecker<-6>, public ::testing::Test
 public:
     const std::string testFolderName = "configReaderTests";
     const ThemeConfig theme = ThemeConfig::Theme1;
+    const Mode mode = Mode::Analyzer;
 
     const float precision = 1e-6;
     const float lowPrecision = 1e-2;
@@ -74,13 +75,14 @@ public:
         EXPECT_EQ(config.get<RectanglesVisibilityState>(),  true);
         valueChecker(config.get<VerticalLinePositions>(),  Positions{20, 50,125, 250, 500, 1000, 2000, 4000, 8000.00, 16000});
         valueChecker(config.get<FrequencyTextPositions>(),  Positions{20, 50,125, 250, 500, 1000, 2000, 4000, 8000.00, 16000});
-        EXPECT_EQ(config.get<WindowTitle>(), "( FFT: 8192    Fs: 48kHz   Log Scale: 20Hz – 16kHz )");
+        EXPECT_EQ(config.get<WindowTitle>(), "( Mode: Loopback    FFT: 8192    Fs: 48kHz    Log Scale: 20Hz – 16kHz )");
+        EXPECT_TRUE(config.get<LoopbackEnabled>());
     }
 };
 
 TEST_F(ConfigReaderTests, checkDefaultConfig)
 {
-    ConfigReader configReader(theme, testFolderName);
+    ConfigReader configReader(theme, mode, testFolderName);
 
     const auto &config = configReader.getConfig();
     checkDefaultConfig(config);
@@ -89,7 +91,7 @@ TEST_F(ConfigReaderTests, checkDefaultConfig)
 TEST_F(ConfigReaderTests, configReaderTest)
 {
 
-    ConfigFileReader configFileReader(theme, "modifiedConfigTest");
+    ConfigFileReader configFileReader(theme, mode, "modifiedConfigTest");
     configFileReader.createDirIfNotExists();
 
     PythonDataSourceEnabled pythonDataSourceEnabled{true};
@@ -127,6 +129,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     VerticalLinePositions verticalLinePositions{{1001,2002,3003,4004,5005}};
     FrequencyTextPositions frequencyTextPositions{{5005, 4004,3003,2002,1001}};
     WindowTitle windowTitle("some new string");
+    LoopbackEnabled loopbackEnabled(false);
 
     configFileReader.writeBoolToFile("PythonDataSourceEnabled", comment, pythonDataSourceEnabled.value);
     configFileReader.writeBoolToFile("DefaultFullscreenState", comment, defaultFullscreenState.value);
@@ -134,6 +137,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     configFileReader.writeBoolToFile("DynamicMaxHoldVisibilityState", comment, dynamicMaxHoldVisibilityState.value);
     configFileReader.writeBoolToFile("LinesVisibilityState", comment, linesVisibilityState.value);
     configFileReader.writeBoolToFile("RectanglesVisibilityState", comment, rectanglesVisibilityState.value);
+    configFileReader.writeBoolToFile("LoopbackEnabled", comment, loopbackEnabled.value);
     configFileReader.writeStringToFile("AdvancedColorSettings", comment, advancedColorSettings.value);
     configFileReader.writeStringToFile("BackgroundColorSettings", comment, backgroundColorSettings.value);
     configFileReader.writeStringToFile("WindowTitle", comment, windowTitle.value);
@@ -165,7 +169,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     configFileReader.writeMapToCsv("ColorsOfDynamicMaxHoldSecondaryRectangle", comment, colorsOfDynamicMaxHoldSecondaryRectangle.value);
 
 
-    ConfigReader configReader(theme, "modifiedConfigTest");
+    ConfigReader configReader(theme, mode, "modifiedConfigTest");
     const auto &config = configReader.getConfig();
 
     EXPECT_EQ(config.get<PythonDataSourceEnabled>(), pythonDataSourceEnabled.value);
@@ -174,6 +178,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_EQ(config.get<DynamicMaxHoldVisibilityState>(), dynamicMaxHoldVisibilityState.value);
     EXPECT_EQ(config.get<LinesVisibilityState>(), linesVisibilityState.value);
     EXPECT_EQ(config.get<RectanglesVisibilityState>(), rectanglesVisibilityState.value);
+    EXPECT_EQ(config.get<LoopbackEnabled>(), loopbackEnabled.value);
     EXPECT_EQ(config.get<AdvancedColorSettings>(), advancedColorSettings.value);
     EXPECT_EQ(config.get<BackgroundColorSettings>(), backgroundColorSettings.value);
     EXPECT_EQ(config.get<WindowTitle>(), windowTitle.value);

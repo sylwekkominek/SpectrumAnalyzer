@@ -13,11 +13,12 @@
 struct Freqs
 {
     Freqs(const Frequencies &value);
-    Freqs(const ThemeConfig themeConfig, uint16_t sampleRate, uint16_t fftSize);
+    Freqs(const ThemeConfig themeConfig, const Mode mode, uint16_t sampleRate, uint16_t fftSize);
     std::string getInfo();
     Frequencies value;
     const std::string name{"Frequencies"};
 private:
+    template <Mode>
     Frequencies getFreqs(const ThemeConfig themeConfig);
     uint16_t sampleRate;
     uint16_t fftSize;

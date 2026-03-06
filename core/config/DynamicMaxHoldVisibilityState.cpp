@@ -5,10 +5,6 @@ DynamicMaxHoldVisibilityState::DynamicMaxHoldVisibilityState(bool value) : value
 {
 }
 
-DynamicMaxHoldVisibilityState::DynamicMaxHoldVisibilityState(const ThemeConfig themeConfig) : value(getDynamicMaxHoldVisibilityState(themeConfig))
-{
-}
-
 std::string DynamicMaxHoldVisibilityState::getInfo()
 {
     return std::string(
@@ -23,7 +19,8 @@ std::ostream& operator<<(std::ostream& os, const DynamicMaxHoldVisibilityState &
     return os;
 }
 
-bool DynamicMaxHoldVisibilityState::getDynamicMaxHoldVisibilityState(const ThemeConfig themeConfig)
+template<>
+bool DynamicMaxHoldVisibilityState::getDynamicMaxHoldVisibilityState<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -39,7 +36,30 @@ bool DynamicMaxHoldVisibilityState::getDynamicMaxHoldVisibilityState(const Theme
             return false;
         case ThemeConfig::Theme7:
             return false;
+        case ThemeConfig::Theme9:
+            return false;
+        case ThemeConfig::Theme10:
+            return false;
         default:
             return true;
+    }
+}
+
+template<>
+bool DynamicMaxHoldVisibilityState::getDynamicMaxHoldVisibilityState<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    return true;
+}
+
+DynamicMaxHoldVisibilityState::DynamicMaxHoldVisibilityState(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getDynamicMaxHoldVisibilityState<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getDynamicMaxHoldVisibilityState<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

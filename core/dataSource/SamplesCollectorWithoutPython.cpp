@@ -8,9 +8,9 @@
 #include "AudioDataSource.hpp"
 #include <iostream>
 
-SamplesCollector::SamplesCollector(const bool pythonDataSourceEnabled, const std::string &/*audioConfigFile*/)
+SamplesCollector::SamplesCollector(const bool pythonDataSourceEnabled, bool loopbackEnabled, const std::string &/*audioConfigFile*/)
 {
-    dataSourceImpl = std::make_unique<AudioDataSource>();
+    dataSourceImpl = std::make_unique<AudioDataSource>(loopbackEnabled);
     if(pythonDataSourceEnabled)
     {
         std::cout<<"This software build does not include Python."<<std::endl;

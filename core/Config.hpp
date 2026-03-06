@@ -47,6 +47,7 @@
 #include "config/SignalWindow.hpp"
 #include "config/VerticalLinePositions.hpp"
 #include "config/WindowTitle.hpp"
+#include "config/LoopbackEnabled.hpp"
 
 #include <vector>
 #include <cstdint>

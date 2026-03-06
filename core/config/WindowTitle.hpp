@@ -12,12 +12,13 @@
 struct WindowTitle
 {
     WindowTitle(const std::string &value);
-    WindowTitle(const ThemeConfig themeConfig);
+    WindowTitle(const ThemeConfig themeConfig, const Mode mode);
     std::string getAdvancedColorSettings();
     std::string getInfo();
     std::string value;
     const std::string name{"WindowTitle"};
 private:
+    template <Mode>
     std::string getWindowTitle(const ThemeConfig themeConfig);
 };
 

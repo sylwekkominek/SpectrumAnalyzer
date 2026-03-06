@@ -12,11 +12,12 @@
 struct GapWidthInRelationToRectangleWidth
 {
     GapWidthInRelationToRectangleWidth(float value);
-    GapWidthInRelationToRectangleWidth(const ThemeConfig themeConfig);
+    GapWidthInRelationToRectangleWidth(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     float value;
     const std::string name{"GapWidthInRelationToRectangleWidth"};
 private:
+    template <Mode>
     float getGapWidthInRelationToRectangleWidth(const ThemeConfig themeConfig);
 };
 

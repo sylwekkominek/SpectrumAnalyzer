@@ -11,7 +11,7 @@
 #include <chrono>
 #include <thread>
 
-AudioDataSource::AudioDataSource()
+AudioDataSource::AudioDataSource(bool loopbackEnabled) : loopbackEnabled(loopbackEnabled)
 {
     initFunctions.emplace_back("initialize", [](){
         return Pa_Initialize();
@@ -19,7 +19,7 @@ AudioDataSource::AudioDataSource()
 
     initFunctions.emplace_back("updateAudioInputDevice", [&](){
 
-        device = getAudioSourceDevice();
+        device = this->loopbackEnabled ? getAudioLoopbackDevice() : getAudioInputDevice();
 
         if(device == paNoDevice)
         {

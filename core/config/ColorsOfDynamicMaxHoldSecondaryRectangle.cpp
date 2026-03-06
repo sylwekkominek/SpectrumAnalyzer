@@ -5,11 +5,6 @@ ColorsOfDynamicMaxHoldSecondaryRectangle::ColorsOfDynamicMaxHoldSecondaryRectang
 {
 }
 
-ColorsOfDynamicMaxHoldSecondaryRectangle::ColorsOfDynamicMaxHoldSecondaryRectangle(const ThemeConfig themeConfig) : value(getColorsOfDynamicMaxHoldSecondaryRectangle(themeConfig))
-{
-}
-
-
 std::string ColorsOfDynamicMaxHoldSecondaryRectangle::getInfo()
 {
     return std::string(
@@ -17,7 +12,8 @@ std::string ColorsOfDynamicMaxHoldSecondaryRectangle::getInfo()
 //Default value: RGBA color (Red, Green, Blue, Transparency) for each vertex)");
 }
 
-ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldSecondaryRectangle::getColorsOfDynamicMaxHoldSecondaryRectangle(const ThemeConfig themeConfig)
+template<>
+ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldSecondaryRectangle::getColorsOfDynamicMaxHoldSecondaryRectangle<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     const ColorsOfRectanglePerVertices value{
         {0,{0.20, 0.20, 0.20, 0.25}},
@@ -38,7 +34,36 @@ ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldSecondaryRectangle::getColors
     {
         case ThemeConfig::Theme1:
             return value;
+        case ThemeConfig::Theme8:
+            return value;
         default:
             return defaultValue;
     }
 }
+
+template<>
+ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldSecondaryRectangle::getColorsOfDynamicMaxHoldSecondaryRectangle<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    const ColorsOfRectanglePerVertices value{
+        {0,{0.20, 0.20, 0.20, 0.25}},
+        {1,{0.00, 0.00, 0.00, 0.25}},
+        {2,{0.00, 0.00, 0.00, 0.25}},
+        {3,{0.20, 0.20, 0.20, 0.25}}
+    };
+
+    return value;
+}
+
+ColorsOfDynamicMaxHoldSecondaryRectangle::ColorsOfDynamicMaxHoldSecondaryRectangle(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getColorsOfDynamicMaxHoldSecondaryRectangle<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getColorsOfDynamicMaxHoldSecondaryRectangle<Mode::Visualizer>(themeConfig);
+        break;
+    }
+}
+

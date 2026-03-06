@@ -4,10 +4,6 @@ PythonDataSourceEnabled::PythonDataSourceEnabled(bool value) : value(value)
 {
 }
 
-PythonDataSourceEnabled::PythonDataSourceEnabled(const ThemeConfig themeConfig) : value(getPythonDataSourceEnabled(themeConfig))
-{
-}
-
 std::string PythonDataSourceEnabled::getInfo()
 {
     return std::string(
@@ -20,11 +16,35 @@ std::ostream& operator<<(std::ostream& os, const PythonDataSourceEnabled &python
     return os;
 }
 
-bool PythonDataSourceEnabled::getPythonDataSourceEnabled(const ThemeConfig themeConfig)
+template<>
+bool PythonDataSourceEnabled::getPythonDataSourceEnabled<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return false;
+    }
+}
+
+template<>
+bool PythonDataSourceEnabled::getPythonDataSourceEnabled<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return false;
+    }
+}
+
+PythonDataSourceEnabled::PythonDataSourceEnabled(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getPythonDataSourceEnabled<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getPythonDataSourceEnabled<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

@@ -5,10 +5,6 @@ ColorsOfRectangle::ColorsOfRectangle(const ColorsOfRectanglePerVertices &value) 
 {
 }
 
-ColorsOfRectangle::ColorsOfRectangle(const ThemeConfig themeConfig) : value(getColorsOfRectangle(themeConfig))
-{
-}
-
 std::string ColorsOfRectangle::getInfo()
 {
     return std::string(
@@ -33,7 +29,8 @@ std::ostream& operator<<(std::ostream& os, const ColorsOfRectangle &colorsOfRect
     return os;
 }
 
-ColorsOfRectanglePerVertices ColorsOfRectangle::getColorsOfRectangle(const ThemeConfig themeConfig)
+template<>
+ColorsOfRectanglePerVertices ColorsOfRectangle::getColorsOfRectangle<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     const ColorsOfRectanglePerVertices defaultValue{
         {0,{0.2, 0.2, 0.2,0.1}},
@@ -48,3 +45,34 @@ ColorsOfRectanglePerVertices ColorsOfRectangle::getColorsOfRectangle(const Theme
             return defaultValue;
     }
 }
+
+template<>
+ColorsOfRectanglePerVertices ColorsOfRectangle::getColorsOfRectangle<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    const ColorsOfRectanglePerVertices defaultValue{
+        {0,{0.2, 0.2, 0.2,0.1}},
+        {1,{0,0,0,0.1}},
+        {2,{0,0,0,0.1}},
+        {3,{0.2, 0.2, 0.2,0.1}}
+    };
+
+    switch(themeConfig)
+    {
+        default:
+            return defaultValue;
+    }
+}
+
+ColorsOfRectangle::ColorsOfRectangle(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getColorsOfRectangle<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getColorsOfRectangle<Mode::Visualizer>(themeConfig);
+        break;
+    }
+}
+

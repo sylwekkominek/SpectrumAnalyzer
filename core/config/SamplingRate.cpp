@@ -4,10 +4,6 @@ SamplingRate::SamplingRate(uint32_t value) : value(value)
 {
 }
 
-SamplingRate::SamplingRate(const ThemeConfig themeConfig) : value(getSamplingRate(themeConfig))
-{
-}
-
 std::string SamplingRate::getInfo()
 {
     return std::string(
@@ -22,11 +18,35 @@ std::ostream& operator<<(std::ostream& os, const SamplingRate &samplingRate)
     return os;
 }
 
-uint32_t SamplingRate::getSamplingRate(const ThemeConfig themeConfig)
+template<>
+uint32_t SamplingRate::getSamplingRate<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return 48000;
+    }
+}
+
+template<>
+uint32_t SamplingRate::getSamplingRate<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return 48000;
+    }
+}
+
+SamplingRate::SamplingRate(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getSamplingRate<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getSamplingRate<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

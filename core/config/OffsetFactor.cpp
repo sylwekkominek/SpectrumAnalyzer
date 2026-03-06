@@ -4,10 +4,6 @@ OffsetFactor::OffsetFactor(float value) : value(value)
 {
 }
 
-OffsetFactor::OffsetFactor(const ThemeConfig themeConfig) : value(getOffsetFactor(themeConfig))
-{
-}
-
 std::string OffsetFactor::getInfo()
 {
     return std::string(
@@ -22,11 +18,35 @@ std::ostream& operator<<(std::ostream& os, const OffsetFactor &offsetFactor)
     return os;
 }
 
-float OffsetFactor::getOffsetFactor(const ThemeConfig themeConfig)
+template<>
+float OffsetFactor::getOffsetFactor<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return 0;
+    }
+}
+
+template<>
+float OffsetFactor::getOffsetFactor<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return 0;
+    }
+}
+
+OffsetFactor::OffsetFactor(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getOffsetFactor<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getOffsetFactor<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

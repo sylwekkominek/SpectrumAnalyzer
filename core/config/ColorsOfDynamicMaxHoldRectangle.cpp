@@ -4,10 +4,6 @@ ColorsOfDynamicMaxHoldRectangle::ColorsOfDynamicMaxHoldRectangle(const ColorsOfR
 {
 }
 
-ColorsOfDynamicMaxHoldRectangle::ColorsOfDynamicMaxHoldRectangle(const ThemeConfig themeConfig) : value(getColorsOfDynamicMaxHoldRectangle(themeConfig))
-{
-}
-
 std::string ColorsOfDynamicMaxHoldRectangle::getInfo()
 {
     return std::string(
@@ -32,7 +28,8 @@ std::ostream& operator<<(std::ostream& os, const ColorsOfDynamicMaxHoldRectangle
     return os;
 }
 
-ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldRectangle::getColorsOfDynamicMaxHoldRectangle(const ThemeConfig themeConfig)
+template<>
+ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldRectangle::getColorsOfDynamicMaxHoldRectangle<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     const ColorsOfRectanglePerVertices defaultValue{
         {0,{0.2, 0.2, 0.2,0.1}},
@@ -47,3 +44,35 @@ ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldRectangle::getColorsOfDynamic
             return defaultValue;
     }
 }
+
+template<>
+ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldRectangle::getColorsOfDynamicMaxHoldRectangle<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    const ColorsOfRectanglePerVertices defaultValue{
+        {0,{0.2, 0.2, 0.2,0.1}},
+        {1,{0,0,0,0.1}},
+        {2,{0,0,0,0.1}},
+        {3,{0.2, 0.2, 0.2,0.1}}
+    };
+
+    switch(themeConfig)
+    {
+        default:
+            return defaultValue;
+    }
+}
+
+ColorsOfDynamicMaxHoldRectangle::ColorsOfDynamicMaxHoldRectangle(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+        case Mode::Analyzer:
+            value = getColorsOfDynamicMaxHoldRectangle<Mode::Analyzer>(themeConfig);
+            break;
+        case Mode::Visualizer:
+            value = getColorsOfDynamicMaxHoldRectangle<Mode::Visualizer>(themeConfig);
+            break;
+    }
+}
+
+

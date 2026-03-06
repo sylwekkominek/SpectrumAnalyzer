@@ -13,11 +13,12 @@
 struct DynamicMaxHoldVisibilityState
 {
     DynamicMaxHoldVisibilityState(bool value);
-    DynamicMaxHoldVisibilityState(const ThemeConfig themeConfig);
+    DynamicMaxHoldVisibilityState(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     bool value;
     const std::string name{"DynamicMaxHoldVisibilityState"};
 private:
+    template <Mode>
     bool getDynamicMaxHoldVisibilityState(const ThemeConfig themeConfig);
 };
 

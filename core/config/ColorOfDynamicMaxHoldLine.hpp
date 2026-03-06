@@ -13,11 +13,12 @@
 struct ColorOfDynamicMaxHoldLine
 {
     ColorOfDynamicMaxHoldLine(const Color &value);
-    ColorOfDynamicMaxHoldLine(const ThemeConfig themeConfig);
+    ColorOfDynamicMaxHoldLine(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     Color value;
     const std::string name{"ColorOfDynamicMaxHoldLine"};
 private:
+    template <Mode>
     Color getColorOfDynamicMaxHoldLine(const ThemeConfig themeConfig);
 };
 

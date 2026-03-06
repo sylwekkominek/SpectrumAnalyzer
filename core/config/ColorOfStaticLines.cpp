@@ -4,10 +4,6 @@ ColorOfStaticLines::ColorOfStaticLines(const Color &value) : value(value)
 {
 }
 
-ColorOfStaticLines::ColorOfStaticLines(const ThemeConfig themeConfig) : value(getColorOfStaticLines(themeConfig))
-{
-}
-
 std::string ColorOfStaticLines::getInfo()
 {
     return std::string(
@@ -28,11 +24,35 @@ std::ostream& operator<<(std::ostream& os, const ColorOfStaticLines &colorOfStat
     return os;
 }
 
-Color ColorOfStaticLines::getColorOfStaticLines(const ThemeConfig themeConfig)
+template<>
+Color ColorOfStaticLines::getColorOfStaticLines<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return {0.2, 0.2, 0.2, 1.00};
+    }
+}
+
+template<>
+Color ColorOfStaticLines::getColorOfStaticLines<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {0.2, 0.2, 0.2, 1.00};
+    }
+}
+
+ColorOfStaticLines::ColorOfStaticLines(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getColorOfStaticLines<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getColorOfStaticLines<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

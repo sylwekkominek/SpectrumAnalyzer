@@ -5,10 +5,6 @@ MaxQueueSize::MaxQueueSize(uint32_t value) : value(value)
 {
 }
 
-MaxQueueSize::MaxQueueSize(const ThemeConfig themeConfig) : value(getMaxQueueSize(themeConfig))
-{
-}
-
 std::string MaxQueueSize::getInfo()
 {
     return std::string(
@@ -21,11 +17,35 @@ std::ostream& operator<<(std::ostream& os, const MaxQueueSize &maxQueueSize)
     return os;
 }
 
-uint32_t MaxQueueSize::getMaxQueueSize(const ThemeConfig themeConfig)
+template<>
+uint32_t MaxQueueSize::getMaxQueueSize<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return 20;
+    }
+}
+
+template<>
+uint32_t MaxQueueSize::getMaxQueueSize<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return 20;
+    }
+}
+
+MaxQueueSize::MaxQueueSize(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getMaxQueueSize<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getMaxQueueSize<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

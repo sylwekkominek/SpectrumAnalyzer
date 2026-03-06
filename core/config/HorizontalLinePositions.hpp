@@ -13,11 +13,12 @@
 struct HorizontalLinePositions
 {
     HorizontalLinePositions(const Positions &value);
-    HorizontalLinePositions(const ThemeConfig themeConfig);
+    HorizontalLinePositions(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     Positions value;
     const std::string name{"HorizontalLinePositions"};
 private:
+    template <Mode>
     Positions getHorizontalLinePositions(const ThemeConfig themeConfig);
 };
 

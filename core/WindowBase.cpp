@@ -49,8 +49,6 @@ void WindowBase::WindowBaseImpl::createWindow()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-
-
     const auto name = std::string("Not Yet Another Spectrum Analyzer    ") + config.get<WindowTitle>();
 
     if (isFullScreenEnabled)

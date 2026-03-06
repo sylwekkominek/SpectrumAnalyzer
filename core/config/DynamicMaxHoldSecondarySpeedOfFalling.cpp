@@ -4,10 +4,6 @@ DynamicMaxHoldSecondarySpeedOfFalling::DynamicMaxHoldSecondarySpeedOfFalling(flo
 {
 }
 
-DynamicMaxHoldSecondarySpeedOfFalling::DynamicMaxHoldSecondarySpeedOfFalling(const ThemeConfig themeConfig) : value(getDynamicMaxHoldSecondarySpeedOfFalling(themeConfig))
-{
-}
-
 std::string DynamicMaxHoldSecondarySpeedOfFalling::getInfo()
 {
     return std::string(
@@ -16,7 +12,8 @@ std::string DynamicMaxHoldSecondarySpeedOfFalling::getInfo()
 )");
 }
 
-float DynamicMaxHoldSecondarySpeedOfFalling::getDynamicMaxHoldSecondarySpeedOfFalling(const ThemeConfig themeConfig)
+template<>
+float DynamicMaxHoldSecondarySpeedOfFalling::getDynamicMaxHoldSecondarySpeedOfFalling<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -30,8 +27,31 @@ float DynamicMaxHoldSecondarySpeedOfFalling::getDynamicMaxHoldSecondarySpeedOfFa
             return 2000;
         case ThemeConfig::Theme6:
             return 2000;
+        case ThemeConfig::Theme9:
+            return 2000;
+        case ThemeConfig::Theme10:
+            return 2000;
 
         default:
             return 1000;
+    }
+}
+
+template<>
+float DynamicMaxHoldSecondarySpeedOfFalling::getDynamicMaxHoldSecondarySpeedOfFalling<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    return 1000;
+}
+
+DynamicMaxHoldSecondarySpeedOfFalling::DynamicMaxHoldSecondarySpeedOfFalling(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getDynamicMaxHoldSecondarySpeedOfFalling<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getDynamicMaxHoldSecondarySpeedOfFalling<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

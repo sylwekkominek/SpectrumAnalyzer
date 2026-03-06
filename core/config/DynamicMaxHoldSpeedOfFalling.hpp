@@ -12,11 +12,12 @@
 struct DynamicMaxHoldSpeedOfFalling
 {
     DynamicMaxHoldSpeedOfFalling(float value);
-    DynamicMaxHoldSpeedOfFalling(const ThemeConfig themeConfig);
+    DynamicMaxHoldSpeedOfFalling(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     float value;
     const std::string name{"DynamicMaxHoldSpeedOfFalling"};
 private:
+    template <Mode>
     float getDynamicMaxHoldSpeedOfFalling(const ThemeConfig themeConfig);
 };
 

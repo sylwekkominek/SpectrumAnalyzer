@@ -12,12 +12,13 @@
 struct ColorsOfDynamicMaxHoldSecondaryRectangle
 {
     ColorsOfDynamicMaxHoldSecondaryRectangle(const ColorsOfRectanglePerVertices &value);
-    ColorsOfDynamicMaxHoldSecondaryRectangle(const ThemeConfig themeConfig);
+    ColorsOfDynamicMaxHoldSecondaryRectangle(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     ColorsOfRectanglePerVertices value;
     const std::string name{"ColorsOfDynamicMaxHoldSecondaryRectangle"};
 
 private:
+    template <Mode>
     ColorsOfRectanglePerVertices getColorsOfDynamicMaxHoldSecondaryRectangle(const ThemeConfig themeConfig);
 };
 

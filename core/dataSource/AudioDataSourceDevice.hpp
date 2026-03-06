@@ -8,4 +8,5 @@
 #include <portaudio.h>
 
 
-PaDeviceIndex getAudioSourceDevice();
+PaDeviceIndex getAudioInputDevice();
+PaDeviceIndex getAudioLoopbackDevice();

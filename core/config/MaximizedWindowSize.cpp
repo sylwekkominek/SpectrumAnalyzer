@@ -4,10 +4,6 @@ MaximizedWindowSize::MaximizedWindowSize(std::pair<uint16_t, uint16_t> value) : 
 {
 }
 
-MaximizedWindowSize::MaximizedWindowSize(const ThemeConfig themeConfig) : value(getMaximizedWindowSize(themeConfig))
-{
-}
-
 std::string MaximizedWindowSize::getInfo()
 {
     return std::string(
@@ -22,11 +18,35 @@ std::ostream& operator<<(std::ostream& os, const MaximizedWindowSize &maximizedW
     return os;
 }
 
-std::pair<uint16_t, uint16_t> MaximizedWindowSize::getMaximizedWindowSize(const ThemeConfig themeConfig)
+template<>
+std::pair<uint16_t, uint16_t> MaximizedWindowSize::getMaximizedWindowSize<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return {1920, 1080};
+    }
+}
+
+template<>
+std::pair<uint16_t, uint16_t> MaximizedWindowSize::getMaximizedWindowSize<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {1920, 1080};
+    }
+}
+
+MaximizedWindowSize::MaximizedWindowSize(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getMaximizedWindowSize<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getMaximizedWindowSize<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

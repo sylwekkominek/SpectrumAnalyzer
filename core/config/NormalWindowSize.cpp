@@ -4,10 +4,6 @@ NormalWindowSize::NormalWindowSize(std::pair<uint16_t, uint16_t> value) : value(
 {
 }
 
-NormalWindowSize::NormalWindowSize(const ThemeConfig themeConfig) : value(getNormalWindowSize(themeConfig))
-{
-}
-
 std::string NormalWindowSize::getInfo()
 {
     return std::string(
@@ -22,11 +18,35 @@ std::ostream& operator<<(std::ostream& os, const NormalWindowSize &normalWindowS
     return os;
 }
 
-std::pair<uint16_t, uint16_t> NormalWindowSize::getNormalWindowSize(const ThemeConfig themeConfig)
+template<>
+std::pair<uint16_t, uint16_t> NormalWindowSize::getNormalWindowSize<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return {1280, 512};
+    }
+}
+
+template<>
+std::pair<uint16_t, uint16_t> NormalWindowSize::getNormalWindowSize<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {1280, 512};
+    }
+}
+
+NormalWindowSize::NormalWindowSize(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getNormalWindowSize<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getNormalWindowSize<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

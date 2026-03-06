@@ -16,7 +16,7 @@
 class AudioDataSource : public DataSourceBase
 {
 public:
-    AudioDataSource();
+    AudioDataSource(bool loopbackEnabled);
     ~AudioDataSource();
     bool initialize(uint32_t numberOfSamples, uint32_t sampleRate) override;
     bool checkIfErrorOccured() override;
@@ -37,6 +37,7 @@ private:
     PaStreamParameters inputParams{};
     PaStream* stream{};
     PaDeviceIndex device{paNoDevice};
+    bool loopbackEnabled;
     uint32_t samplingRate{};
     std::optional<std::vector<int16_t>> buffer;
     bool errorOccured{};

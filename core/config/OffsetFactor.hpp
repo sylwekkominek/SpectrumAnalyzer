@@ -12,11 +12,12 @@
 struct OffsetFactor
 {
     OffsetFactor(float value);
-    OffsetFactor(const ThemeConfig themeConfig);
+    OffsetFactor(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     float value;
     const std::string name{"OffsetFactor"};
 private:
+    template <Mode>
     float getOffsetFactor(const ThemeConfig themeConfig);
 };
 

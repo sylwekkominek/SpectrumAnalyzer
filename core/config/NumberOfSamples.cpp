@@ -4,10 +4,6 @@ NumberOfSamples::NumberOfSamples(uint32_t value) : value(value)
 {
 }
 
-NumberOfSamples::NumberOfSamples(const ThemeConfig themeConfig) : value(getNumberOfSamples(themeConfig))
-{
-}
-
 std::string NumberOfSamples::getInfo()
 {
     return std::string(
@@ -22,7 +18,8 @@ std::ostream& operator<<(std::ostream& os, const NumberOfSamples &numberOfSample
     return os;
 }
 
-uint32_t NumberOfSamples::getNumberOfSamples(const ThemeConfig themeConfig)
+template<>
+uint32_t NumberOfSamples::getNumberOfSamples<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -40,7 +37,33 @@ uint32_t NumberOfSamples::getNumberOfSamples(const ThemeConfig themeConfig)
             return 8192;
         case ThemeConfig::Theme7:
             return 16384;
+        case ThemeConfig::Theme8:
+            return 8192;
+        case ThemeConfig::Theme9:
+            return 2048;
+        case ThemeConfig::Theme10:
+            return 2048;
         default:
             return 4096;
     }
 }
+
+template<>
+uint32_t NumberOfSamples::getNumberOfSamples<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    return 8192;
+}
+
+NumberOfSamples::NumberOfSamples(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getNumberOfSamples<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getNumberOfSamples<Mode::Visualizer>(themeConfig);
+        break;
+    }
+}
+

@@ -6,19 +6,18 @@ pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 add_library(device-selection-lib STATIC)
 add_library(samples-collector-lib STATIC)
 
-if(ENABLE_LOOPBACK AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Linux loopback enabled")
     target_sources(device-selection-lib PRIVATE
-            dataSource/LoopbackAudioDataSourceLinux.cpp)
+            dataSource/LoopbackAudioDataSourceLinux.cpp
+            dataSource/InputAudioDataSource.cpp)
 
-elseif(ENABLE_LOOPBACK AND WIN32)
+
+elseif(WIN32)
     message(STATUS "Windows loopback enabled")
     target_sources(device-selection-lib PRIVATE
-            dataSource/LoopbackAudioDataSourceWindows.cpp)
-else()
-    message(STATUS "Microphone as audio data source selected - loopback disabled")
-    target_sources(device-selection-lib PRIVATE
-            dataSource/MicrophoneAudioDataSource.cpp)
+            dataSource/LoopbackAudioDataSourceWindows.cpp
+            dataSource/InputAudioDataSource.cpp)
 endif()
 
 target_link_libraries(device-selection-lib
@@ -86,6 +85,7 @@ add_library(spectrum-analyzer-config STATIC
     config/GapWidthInRelationToRectangleWidth.cpp
     config/HorizontalLinePositions.cpp
     config/LinesVisibilityState.cpp
+    config/LoopbackEnabled.cpp
     config/MaximizedWindowSize.cpp
     config/MaxQueueSize.cpp
     config/NormalWindowSize.cpp
@@ -101,6 +101,7 @@ add_library(spectrum-analyzer-config STATIC
     config/SignalWindow.cpp
     config/VerticalLinePositions.cpp
     config/WindowTitle.cpp
+
 )
 
 target_include_directories(spectrum-analyzer-config

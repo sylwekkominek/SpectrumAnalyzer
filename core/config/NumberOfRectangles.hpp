@@ -15,8 +15,6 @@ struct NumberOfRectangles
     NumberOfRectangles(uint16_t value);
     std::string getInfo();
     uint16_t value;
-private:
-    uint16_t getNumberOfRectangles(const ThemeConfig themeConfig);
 };
 
 std::ostream& operator<<(std::ostream& os, const NumberOfRectangles &numberOfRectangles);

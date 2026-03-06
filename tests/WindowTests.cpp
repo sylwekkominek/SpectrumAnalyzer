@@ -12,6 +12,7 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
 {
     static constexpr bool defaultFullscreenState = false;
     const ThemeConfig theme = ThemeConfig::Theme1;
+    const Mode mode = Mode::Analyzer;
 
     Configuration getConfig()
     {
@@ -35,16 +36,16 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
         config.data.add(DynamicMaxHoldVisibilityState{true});
         config.data.add(DefaultFullscreenState{false});
         config.data.add(ScalingFactor{1});
-        config.data.add(ColorsOfRectangle{theme});
-        config.data.add(ColorsOfDynamicMaxHoldRectangle{theme});
-        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{theme});
-        config.data.add(DynamicMaxHoldSpeedOfFalling{theme});
-        config.data.add(DynamicMaxHoldSecondarySpeedOfFalling{theme});
+        config.data.add(ColorsOfRectangle{theme, mode});
+        config.data.add(ColorsOfDynamicMaxHoldRectangle{theme, mode});
+        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{theme, mode});
+        config.data.add(DynamicMaxHoldSpeedOfFalling{theme, mode});
+        config.data.add(DynamicMaxHoldSecondarySpeedOfFalling{theme, mode});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
-        config.data.add(AdvancedColorSettings{theme});
-        config.data.add(BackgroundColorSettings{theme});
-        config.data.add(GapWidthInRelationToRectangleWidth{theme});
-        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{theme});
+        config.data.add(AdvancedColorSettings{theme, mode});
+        config.data.add(BackgroundColorSettings{theme, mode});
+        config.data.add(GapWidthInRelationToRectangleWidth{theme, mode});
+        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{theme, mode});
         config.data.add(DynamicMaxHoldSecondaryVisibilityState{true});
 
         return config;

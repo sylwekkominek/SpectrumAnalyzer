@@ -13,11 +13,12 @@
 struct SamplingRate
 {
     SamplingRate(uint32_t value);
-    SamplingRate(const ThemeConfig themeConfig);
+    SamplingRate(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     uint32_t value;
     const std::string name{"SamplingRate"};
 private:
+    template <Mode>
     uint32_t getSamplingRate(const ThemeConfig themeConfig);
 };
 

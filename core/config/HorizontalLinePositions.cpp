@@ -5,10 +5,6 @@ HorizontalLinePositions::HorizontalLinePositions(const Positions &value) : value
 {
 }
 
-HorizontalLinePositions::HorizontalLinePositions(const ThemeConfig themeConfig) : value(getHorizontalLinePositions(themeConfig))
-{
-}
-
 std::string HorizontalLinePositions::getInfo()
 {
     return std::string(
@@ -30,7 +26,8 @@ std::ostream& operator<<(std::ostream& os, const HorizontalLinePositions &horizo
     return os;
 }
 
-Positions HorizontalLinePositions::getHorizontalLinePositions(const ThemeConfig themeConfig)
+template<>
+Positions HorizontalLinePositions::getHorizontalLinePositions<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     const Positions defaultValue{-6.02, -12.04, -18.06, -24.08, -30.10, -36.12, -36.12, -42.14, -48.16, -54.18, -60.20, -66.22, -72.24, -78.26, -84.28, -90.30};
 
@@ -38,5 +35,31 @@ Positions HorizontalLinePositions::getHorizontalLinePositions(const ThemeConfig 
     {
         default:
             return defaultValue;
+    }
+}
+
+template<>
+Positions HorizontalLinePositions::getHorizontalLinePositions<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    const Positions defaultValue{-6.02, -12.04, -18.06, -24.08, -30.10, -36.12, -36.12, -42.14, -48.16, -54.18, -60.20, -66.22, -72.24, -78.26, -84.28, -90.30};
+
+    switch(themeConfig)
+    {
+        default:
+            return defaultValue;
+    }
+}
+
+
+HorizontalLinePositions::HorizontalLinePositions(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getHorizontalLinePositions<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getHorizontalLinePositions<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

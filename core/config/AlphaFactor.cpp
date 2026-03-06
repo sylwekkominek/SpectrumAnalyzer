@@ -4,10 +4,6 @@ AlphaFactor::AlphaFactor(float value) : value(value)
 {
 }
 
-AlphaFactor::AlphaFactor(const ThemeConfig themeConfig) : value(getAlphaFactor(themeConfig))
-{
-}
-
 std::string AlphaFactor::getInfo()
 {
     return std::string(
@@ -22,8 +18,8 @@ std::ostream& operator<<(std::ostream& os, const AlphaFactor &alphaFactor)
     return os;
 }
 
-
-float AlphaFactor::getAlphaFactor(const ThemeConfig themeConfig)
+template <>
+float AlphaFactor::getAlphaFactor<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -32,5 +28,24 @@ float AlphaFactor::getAlphaFactor(const ThemeConfig themeConfig)
 
         default:
             return 0.25f;
+    }
+}
+
+template <>
+float AlphaFactor::getAlphaFactor<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    return 0.25f;
+}
+
+AlphaFactor::AlphaFactor(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+        case Mode::Analyzer:
+            value = getAlphaFactor<Mode::Analyzer>(themeConfig);
+            break;
+        case Mode::Visualizer:
+            value = getAlphaFactor<Mode::Visualizer>(themeConfig);
+            break;
     }
 }

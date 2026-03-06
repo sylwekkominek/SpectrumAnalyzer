@@ -15,11 +15,12 @@ class ConfigFileReaderTests : public ValuesChecker<-6>, public ::testing::Test
 public:
     const std::string testFolderName = "configFileReaderTests";
     const ThemeConfig theme = ThemeConfig::Theme1;
+    const Mode mode = Mode::Analyzer;
 };
 
 TEST_F(ConfigFileReaderTests, wholeFileTest)
 {
-    ConfigFileReader configFileReader(theme, testFolderName);
+    ConfigFileReader configFileReader(theme, mode, testFolderName);
 
     const std::string fileName("wholeFileTest");
     const std::string comment(R"(//This is comment)");
@@ -33,7 +34,7 @@ TEST_F(ConfigFileReaderTests, wholeFileTest)
 
 TEST_F(ConfigFileReaderTests, vectorToCsvTest)
 {
-    ConfigFileReader configFileReader(theme, testFolderName);
+    ConfigFileReader configFileReader(theme, mode, testFolderName);
 
     const std::string fileName("vectorToCsvTest");
     const std::string comment(R"(//This is comment)");
@@ -47,7 +48,7 @@ TEST_F(ConfigFileReaderTests, vectorToCsvTest)
 
 TEST_F(ConfigFileReaderTests, mapToCsvTest)
 {
-    ConfigFileReader configFileReader(theme, testFolderName);
+    ConfigFileReader configFileReader(theme, mode, testFolderName);
 
     const std::string fileName("mapToCsvTest");
     const std::string comment(R"(//This is comment)");
@@ -68,7 +69,7 @@ TEST_F(ConfigFileReaderTests, mapToCsvTest)
 
 TEST_F(ConfigFileReaderTests, boolToFileTest)
 {
-    ConfigFileReader configFileReader(theme, testFolderName);
+    ConfigFileReader configFileReader(theme, mode, testFolderName);
 
     const std::string fileName("boolToFileTest");
     const std::string comment(R"(//This is comment)");

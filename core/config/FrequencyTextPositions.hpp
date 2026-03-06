@@ -13,11 +13,12 @@
 struct FrequencyTextPositions
 {
     FrequencyTextPositions(const Frequencies &value);
-    FrequencyTextPositions(const ThemeConfig themeConfig);
+    FrequencyTextPositions(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     Frequencies value;
     const std::string name{"FrequencyTextPositions"};
 private:
+    template <Mode>
     Frequencies getFrequencyTextPositions(const ThemeConfig themeConfig);
 };
 

@@ -13,11 +13,12 @@
 struct NumberOfSignalsForAveraging
 {
     NumberOfSignalsForAveraging(uint32_t value);
-    NumberOfSignalsForAveraging(const ThemeConfig themeConfig);
+    NumberOfSignalsForAveraging(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     uint32_t value;
     const std::string name{"NumberOfSignalsForAveraging"};
 private:
+    template <Mode>
     uint32_t getNumberOfSignalsForAveraging(const ThemeConfig themeConfig);
 };
 

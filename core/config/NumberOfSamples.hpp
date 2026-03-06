@@ -13,11 +13,12 @@
 struct NumberOfSamples
 {
     NumberOfSamples(uint32_t value);
-    NumberOfSamples(const ThemeConfig themeConfig);
+    NumberOfSamples(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     uint32_t value;
     const std::string name{"NumberOfSamples"};
 private:
+    template <Mode>
     uint32_t getNumberOfSamples(const ThemeConfig themeConfig);
 };
 

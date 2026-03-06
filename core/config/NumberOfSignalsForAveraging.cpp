@@ -4,10 +4,6 @@ NumberOfSignalsForAveraging::NumberOfSignalsForAveraging(uint32_t value) : value
 {
 }
 
-NumberOfSignalsForAveraging::NumberOfSignalsForAveraging(const ThemeConfig themeConfig) : value(getNumberOfSignalsForAveraging(themeConfig))
-{
-}
-
 std::string NumberOfSignalsForAveraging::getInfo()
 {
     return std::string(
@@ -22,7 +18,8 @@ std::ostream& operator<<(std::ostream& os, const NumberOfSignalsForAveraging &nu
     return os;
 }
 
-uint32_t NumberOfSignalsForAveraging::getNumberOfSignalsForAveraging(const ThemeConfig themeConfig)
+template<>
+uint32_t NumberOfSignalsForAveraging::getNumberOfSignalsForAveraging<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -30,5 +27,24 @@ uint32_t NumberOfSignalsForAveraging::getNumberOfSignalsForAveraging(const Theme
             return 2;
         default:
             return 1;
+    }
+}
+
+template<>
+uint32_t NumberOfSignalsForAveraging::getNumberOfSignalsForAveraging<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    return 1;
+}
+
+NumberOfSignalsForAveraging::NumberOfSignalsForAveraging(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getNumberOfSignalsForAveraging<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getNumberOfSignalsForAveraging<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

@@ -4,10 +4,6 @@ NumberOfSignalsForMaxHold::NumberOfSignalsForMaxHold(uint32_t value) : value(val
 {
 }
 
-NumberOfSignalsForMaxHold::NumberOfSignalsForMaxHold(const ThemeConfig themeConfig) : value(getNumberOfSignalsForMaxHold(themeConfig))
-{
-}
-
 std::string NumberOfSignalsForMaxHold::getInfo()
 {
     return std::string(
@@ -22,7 +18,8 @@ std::ostream& operator<<(std::ostream& os, const NumberOfSignalsForMaxHold &numb
     return os;
 }
 
-uint32_t NumberOfSignalsForMaxHold::getNumberOfSignalsForMaxHold(const ThemeConfig themeConfig)
+template<>
+uint32_t NumberOfSignalsForMaxHold::getNumberOfSignalsForMaxHold<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -30,5 +27,24 @@ uint32_t NumberOfSignalsForMaxHold::getNumberOfSignalsForMaxHold(const ThemeConf
             return 2;
         default:
             return 5;
+    }
+}
+
+template<>
+uint32_t NumberOfSignalsForMaxHold::getNumberOfSignalsForMaxHold<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    return 5;
+}
+
+NumberOfSignalsForMaxHold::NumberOfSignalsForMaxHold(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getNumberOfSignalsForMaxHold<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getNumberOfSignalsForMaxHold<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

@@ -13,11 +13,12 @@
 struct NormalWindowSize
 {
     NormalWindowSize(std::pair<uint16_t, uint16_t> value);
-    NormalWindowSize(const ThemeConfig themeConfig);
+    NormalWindowSize(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     std::pair<uint16_t, uint16_t> value;
     const std::string name{"NormalWindowSize"};
 private:
+    template <Mode>
     std::pair<uint16_t, uint16_t> getNormalWindowSize(const ThemeConfig themeConfig);
 };
 

@@ -15,7 +15,7 @@
 class SamplesCollector
 {
 public:
-    SamplesCollector(const bool pythonDataSourceEnabled, const std::string &audioConfigFile="audioConfig");
+    SamplesCollector(const bool pythonDataSourceEnabled, bool loopbackEnabled, const std::string &audioConfigFile="audioConfig");
 
     bool initialize(uint32_t numberOfSamples, uint32_t sampleRate);
     bool checkIfErrorOccured();

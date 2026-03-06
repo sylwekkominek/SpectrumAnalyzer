@@ -13,11 +13,12 @@
 struct MaxQueueSize
 {
     MaxQueueSize(uint32_t value);
-    MaxQueueSize(const ThemeConfig themeConfig);
+    MaxQueueSize(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     uint32_t value;
     const std::string name{"MaxQueueSize"};
 private:
+    template <Mode>
     uint32_t getMaxQueueSize(const ThemeConfig themeConfig);
 };
 

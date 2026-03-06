@@ -12,12 +12,13 @@
 struct AdvancedColorSettings
 {
     AdvancedColorSettings(const std::string &value);
-    AdvancedColorSettings(const ThemeConfig themeConfig);
+    AdvancedColorSettings(const ThemeConfig themeConfig, const Mode mode);
     std::string getAdvancedColorSettings();
     std::string getInfo();
     std::string value;
     const std::string name{"AdvancedColorSettings"};
 private:
+    template <Mode>
     std::string getAdvancedColorSettings(const ThemeConfig themeConfig);
 };
 

@@ -12,11 +12,12 @@
 struct PythonDataSourceEnabled
 {
     PythonDataSourceEnabled(bool value);
-    PythonDataSourceEnabled(const ThemeConfig themeConfig);
+    PythonDataSourceEnabled(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     bool value;
     const std::string name{"PythonDataSourceEnabled"};
 private:
+    template <Mode>
     bool getPythonDataSourceEnabled(const ThemeConfig themeConfig);
 };
 

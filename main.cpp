@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -7,6 +7,7 @@
 #include "core/AudioSpectrumAnalyzer.hpp"
 #include "core/ConfigReader.hpp"
 #include <iostream>
+
 void printLicense()
 {
     const std::string license = R"(Copyright (C) 2024-2026, Sylwester Kominek
@@ -34,16 +35,35 @@ PRESS 0–9 TO CHANGE THE COLOR THEME
     std::cout<<license<<std::endl;
 }
 
+void updateStates(ThemeConfig &theme, ApplicationState &state, const AppEvent &event)
+{
+    std::visit([&](auto&& v)
+    {
+        using T = std::decay_t<decltype(v)>;
+
+        if constexpr (std::is_same_v<T, ThemeConfig>)
+        {
+            theme = v;
+        }
+        else if constexpr (std::is_same_v<T, ApplicationState>)
+        {
+            state = v;
+        }
+    }, event);
+}
 
 int main()
 {
     printLicense();
 
+    const Mode mode = Mode::Analyzer;
     ThemeConfig currentTheme = ThemeConfig::Theme1;
+    ApplicationState currentAppState = ApplicationState::Running;
 
-    while (currentTheme != ThemeConfig::Invalid)
+
+    while (currentAppState != ApplicationState::Shutdown)
     {
-        ConfigReader configReader(currentTheme);
+        ConfigReader configReader(currentTheme, mode);
         const Configuration &config = configReader.getConfig();
         std::cout << config << std::endl;
 
@@ -52,7 +72,8 @@ int main()
         spectrumAnalyzer->init();
         spectrumAnalyzer->run();
 
-        currentTheme =  spectrumAnalyzer->getSelectedTheme();
+        AppEvent event = spectrumAnalyzer->getEvent();
+        updateStates(currentTheme, currentAppState, event);
     }
 
 

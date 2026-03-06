@@ -11,7 +11,7 @@
 struct BackgroundColorSettings
 {
     BackgroundColorSettings(const std::string &value);
-    BackgroundColorSettings(const ThemeConfig themeConfig);
+    BackgroundColorSettings(const ThemeConfig themeConfig, const Mode mode);
 
     std::string getBackgroundColorSettings();
     std::string getInfo();
@@ -19,5 +19,6 @@ struct BackgroundColorSettings
     const std::string name{"BackgroundColorSettings"};
 
 private:
+    template <Mode>
     std::string getBackgroundColorSettings(const ThemeConfig themeConfig);
 };

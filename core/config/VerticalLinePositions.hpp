@@ -13,11 +13,12 @@
 struct VerticalLinePositions
 {
     VerticalLinePositions(const Frequencies &value);
-    VerticalLinePositions(const ThemeConfig themeConfig);
+    VerticalLinePositions(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     Frequencies value;
     const std::string name{"VerticalLinePositions"};
 private:
+    template <Mode>
     Frequencies getVerticalLinePositions(const ThemeConfig themeConfig);
 };
 

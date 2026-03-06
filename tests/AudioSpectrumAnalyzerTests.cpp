@@ -198,6 +198,7 @@ public:
         uint32_t numberOfSamples = 2048;
         Frequencies frequencies = {992,996,1000,1004,1008};
         const ThemeConfig theme = ThemeConfig::Theme1;
+        const Mode mode = Mode::Analyzer;
 
         config.data.add(Freqs{frequencies});
         config.data.add(VerticalLinePositions{Frequencies{}});
@@ -215,25 +216,26 @@ public:
         config.data.add(ScalingFactor{1});
         config.data.add(DynamicMaxHoldVisibilityState{true});
         config.data.add(GapWidthInRelationToRectangleWidth{0});
-        config.data.add(ColorsOfRectangle{theme});
-        config.data.add(ColorsOfDynamicMaxHoldRectangle{theme});
+        config.data.add(ColorsOfRectangle{theme, mode});
+        config.data.add(ColorsOfDynamicMaxHoldRectangle{theme, mode});
         config.data.add(DefaultFullscreenState{false});
         config.data.add(HorizontalLinePositions{Positions{}});
         config.data.add(DynamicMaxHoldSpeedOfFalling{900});
         config.data.add(DynamicMaxHoldSecondarySpeedOfFalling{900});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
         config.data.add(DynamicMaxHoldAccelerationStateOfFalling{false});
-        config.data.add(AdvancedColorSettings{theme});
-        config.data.add(BackgroundColorSettings{theme});
-        config.data.add(GapWidthInRelationToRectangleWidth{theme});
-        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{theme});
+        config.data.add(AdvancedColorSettings{theme, mode});
+        config.data.add(BackgroundColorSettings{theme, mode});
+        config.data.add(GapWidthInRelationToRectangleWidth{theme, mode});
+        config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{theme, mode});
         config.data.add(ColorOfStaticLines{Color{}});
         config.data.add(ColorOfStaticText{Color{}});
-        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{theme});
-        config.data.add(OffsetFactor{theme});
+        config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{theme, mode});
+        config.data.add(OffsetFactor{theme, mode});
         config.data.add(RectanglesVisibilityState{true});
         config.data.add(LinesVisibilityState{false});
         config.data.add(DynamicMaxHoldSecondaryVisibilityState{true});
+        config.data.add(LoopbackEnabled{false});
 
         return config;
     }
@@ -263,6 +265,6 @@ TEST_F(AudioSpectrumAnalyzerTests2, checkCalculationsAndDataTransfer)
     spectrumAnalyzer->init();
     spectrumAnalyzer->run();
 
-    EXPECT_EQ(ThemeConfig::Invalid, spectrumAnalyzer->getSelectedTheme());
+    EXPECT_EQ(std::get<ApplicationState>(spectrumAnalyzer->getEvent()), ApplicationState::Shutdown);
 }
 

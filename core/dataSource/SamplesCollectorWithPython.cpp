@@ -8,11 +8,11 @@
 #include "AudioDataSource.hpp"
 #include "PythonDataSource.hpp"
 
-SamplesCollector::SamplesCollector(const bool pythonDataSourceEnabled, const std::string &audioConfigFile)
+SamplesCollector::SamplesCollector(const bool pythonDataSourceEnabled, bool loopbackEnabled,  const std::string &audioConfigFile)
 {
     dataSourceImpl = pythonDataSourceEnabled ?
     std::unique_ptr<DataSourceBase>(std::make_unique<PythonDataSource>(audioConfigFile.c_str())) :
-    std::unique_ptr<DataSourceBase>(std::make_unique<AudioDataSource>());
+    std::unique_ptr<DataSourceBase>(std::make_unique<AudioDataSource>(loopbackEnabled));
 }
 
 bool SamplesCollector::initialize(uint32_t numberOfSamples, uint32_t sampleRate)

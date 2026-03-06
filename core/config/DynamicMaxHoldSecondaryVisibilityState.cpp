@@ -5,10 +5,6 @@ DynamicMaxHoldSecondaryVisibilityState::DynamicMaxHoldSecondaryVisibilityState(b
 {
 }
 
-DynamicMaxHoldSecondaryVisibilityState::DynamicMaxHoldSecondaryVisibilityState(const ThemeConfig themeConfig) : value(getDynamicMaxHoldSecondaryVisibilityState(themeConfig))
-{
-}
-
 std::string DynamicMaxHoldSecondaryVisibilityState::getInfo()
 {
     return std::string(
@@ -23,11 +19,35 @@ std::ostream& operator<<(std::ostream& os, const DynamicMaxHoldSecondaryVisibili
     return os;
 }
 
-bool DynamicMaxHoldSecondaryVisibilityState::getDynamicMaxHoldSecondaryVisibilityState(const ThemeConfig themeConfig)
+template<>
+bool DynamicMaxHoldSecondaryVisibilityState::getDynamicMaxHoldSecondaryVisibilityState<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return true;
+    }
+}
+
+template<>
+bool DynamicMaxHoldSecondaryVisibilityState::getDynamicMaxHoldSecondaryVisibilityState<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return true;
+    }
+}
+
+DynamicMaxHoldSecondaryVisibilityState::DynamicMaxHoldSecondaryVisibilityState(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getDynamicMaxHoldSecondaryVisibilityState<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getDynamicMaxHoldSecondaryVisibilityState<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

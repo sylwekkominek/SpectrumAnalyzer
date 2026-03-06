@@ -4,10 +4,6 @@ RectanglesVisibilityState::RectanglesVisibilityState(bool value) : value(value)
 {
 }
 
-RectanglesVisibilityState::RectanglesVisibilityState(const ThemeConfig themeConfig) : value(getRectanglesVisibilityState(themeConfig))
-{
-}
-
 std::string RectanglesVisibilityState::getInfo()
 {
     return std::string(
@@ -22,7 +18,8 @@ std::ostream& operator<<(std::ostream& os, const RectanglesVisibilityState &rect
     return os;
 }
 
-bool RectanglesVisibilityState::getRectanglesVisibilityState(const ThemeConfig themeConfig)
+template<>
+bool RectanglesVisibilityState::getRectanglesVisibilityState<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -34,3 +31,23 @@ bool RectanglesVisibilityState::getRectanglesVisibilityState(const ThemeConfig t
             return true;
     }
 }
+
+template<>
+bool RectanglesVisibilityState::getRectanglesVisibilityState<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    return true;
+}
+
+RectanglesVisibilityState::RectanglesVisibilityState(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getRectanglesVisibilityState<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getRectanglesVisibilityState<Mode::Visualizer>(themeConfig);
+        break;
+    }
+}
+

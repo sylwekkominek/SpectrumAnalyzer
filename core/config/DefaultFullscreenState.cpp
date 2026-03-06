@@ -4,10 +4,6 @@ DefaultFullscreenState::DefaultFullscreenState(bool value) : value(value)
 {
 }
 
-DefaultFullscreenState::DefaultFullscreenState(const ThemeConfig themeConfig) : value(getDefaultFullscreenState(themeConfig))
-{
-}
-
 std::string DefaultFullscreenState::getInfo()
 {
     return std::string(
@@ -22,11 +18,35 @@ std::ostream& operator<<(std::ostream& os, const DefaultFullscreenState& default
     return os;
 }
 
-bool DefaultFullscreenState::getDefaultFullscreenState(const ThemeConfig themeConfig)
+template<>
+bool DefaultFullscreenState::getDefaultFullscreenState<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return false;
+    }
+}
+
+template<>
+bool DefaultFullscreenState::getDefaultFullscreenState<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return false;
+    }
+}
+
+DefaultFullscreenState::DefaultFullscreenState(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getDefaultFullscreenState<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getDefaultFullscreenState<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -12,7 +12,7 @@ class AudioSpectrumAnalyzer : public SpectrumAnalyzerBase
 {
 public:
 
-    AudioSpectrumAnalyzer(const Configuration &configuration, std::promise<ThemeConfig> &&promise = std::promise<ThemeConfig>());
+    AudioSpectrumAnalyzer(const Configuration &configuration, std::promise<AppEvent> &&promise = std::promise<AppEvent>());
     virtual void init() override;
     virtual void samplesUpdater() override;
     virtual void fftCalculator() override;

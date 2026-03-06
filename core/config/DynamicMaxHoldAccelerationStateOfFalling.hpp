@@ -12,11 +12,12 @@
 struct DynamicMaxHoldAccelerationStateOfFalling
 {
     DynamicMaxHoldAccelerationStateOfFalling(float value);
-    DynamicMaxHoldAccelerationStateOfFalling(const ThemeConfig themeConfig);
+    DynamicMaxHoldAccelerationStateOfFalling(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     bool value;
     const std::string name{"DynamicMaxHoldAccelerationStateOfFalling"};
 private:
+    template <Mode>
     bool getDynamicMaxHoldAccelerationStateOfFalling(const ThemeConfig themeConfig);
 };
 

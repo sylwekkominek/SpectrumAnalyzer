@@ -12,11 +12,12 @@
 struct DynamicMaxHoldSecondaryVisibilityState
 {
     DynamicMaxHoldSecondaryVisibilityState(bool value);
-    DynamicMaxHoldSecondaryVisibilityState(const ThemeConfig themeConfig);
+    DynamicMaxHoldSecondaryVisibilityState(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     bool value;
     const std::string name{"DynamicMaxHoldSecondaryVisibilityState"};
 private:
+    template <Mode>
     bool getDynamicMaxHoldSecondaryVisibilityState(const ThemeConfig themeConfig);
 };
 

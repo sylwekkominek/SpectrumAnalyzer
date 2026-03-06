@@ -4,10 +4,6 @@ ColorOfStaticText::ColorOfStaticText(const Color &value) : value(value)
 {
 }
 
-ColorOfStaticText::ColorOfStaticText(const ThemeConfig themeConfig) : value(getColorOfStaticText(themeConfig))
-{
-}
-
 std::string ColorOfStaticText::getInfo()
 {
     return std::string(
@@ -28,7 +24,8 @@ std::ostream& operator<<(std::ostream& os, const ColorOfStaticText &colorOfStati
     return os;
 }
 
-Color ColorOfStaticText::getColorOfStaticText(const ThemeConfig themeConfig)
+template<>
+Color ColorOfStaticText::getColorOfStaticText<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -36,3 +33,27 @@ Color ColorOfStaticText::getColorOfStaticText(const ThemeConfig themeConfig)
             return {0.50, 0.50, 0.50, 1.00};
     }
 }
+
+template<>
+Color ColorOfStaticText::getColorOfStaticText<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {0.50, 0.50, 0.50, 1.00};
+    }
+}
+
+ColorOfStaticText::ColorOfStaticText(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getColorOfStaticText<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getColorOfStaticText<Mode::Visualizer>(themeConfig);
+        break;
+    }
+}
+

@@ -13,11 +13,12 @@
 struct NumberOfSignalsForMaxHold
 {
     NumberOfSignalsForMaxHold(uint32_t value);
-    NumberOfSignalsForMaxHold(const ThemeConfig themeConfig);
+    NumberOfSignalsForMaxHold(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     uint32_t value;
     const std::string name{"NumberOfSignalsForMaxHold"};
 private:
+    template <Mode>
     uint32_t getNumberOfSignalsForMaxHold(const ThemeConfig themeConfig);
 };
 

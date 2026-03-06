@@ -12,10 +12,11 @@
 struct DynamicMaxHoldRectangleHeightInPercentOfScreenSize
 {
     DynamicMaxHoldRectangleHeightInPercentOfScreenSize(float value);
-    DynamicMaxHoldRectangleHeightInPercentOfScreenSize(const ThemeConfig themeConfig);
+    DynamicMaxHoldRectangleHeightInPercentOfScreenSize(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     float value;
     const std::string name{"DynamicMaxHoldRectangleHeightInPercentOfScreenSize"};
+    template <Mode>
     float getDynamicMaxHoldRectangleHeightInPercentOfScreenSize(const ThemeConfig themeConfig);
 };
 

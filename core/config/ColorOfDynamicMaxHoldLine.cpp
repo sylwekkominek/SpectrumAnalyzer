@@ -4,10 +4,6 @@ ColorOfDynamicMaxHoldLine::ColorOfDynamicMaxHoldLine(const Color &value) : value
 {
 }
 
-ColorOfDynamicMaxHoldLine::ColorOfDynamicMaxHoldLine(const ThemeConfig themeConfig) : value(getColorOfDynamicMaxHoldLine(themeConfig))
-{
-}
-
 std::string ColorOfDynamicMaxHoldLine::getInfo()
 {
     return std::string(
@@ -28,11 +24,36 @@ std::ostream& operator<<(std::ostream& os, const ColorOfDynamicMaxHoldLine &colo
     return os;
 }
 
-Color ColorOfDynamicMaxHoldLine::getColorOfDynamicMaxHoldLine(const ThemeConfig themeConfig)
+template<>
+Color ColorOfDynamicMaxHoldLine::getColorOfDynamicMaxHoldLine<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return {0.15,1,0.15,1};
-        }
+    }
 }
+
+template<>
+Color ColorOfDynamicMaxHoldLine::getColorOfDynamicMaxHoldLine<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {0.15,1,0.15,1};
+    }
+}
+
+ColorOfDynamicMaxHoldLine::ColorOfDynamicMaxHoldLine(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+        case Mode::Analyzer:
+            value = getColorOfDynamicMaxHoldLine<Mode::Analyzer>(themeConfig);
+            break;
+        case Mode::Visualizer:
+            value = getColorOfDynamicMaxHoldLine<Mode::Visualizer>(themeConfig);
+            break;
+    }
+}
+

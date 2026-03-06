@@ -4,10 +4,6 @@ DynamicMaxHoldAccelerationStateOfFalling::DynamicMaxHoldAccelerationStateOfFalli
 {
 }
 
-DynamicMaxHoldAccelerationStateOfFalling::DynamicMaxHoldAccelerationStateOfFalling(const ThemeConfig themeConfig) : value(getDynamicMaxHoldAccelerationStateOfFalling(themeConfig))
-{
-}
-
 std::string DynamicMaxHoldAccelerationStateOfFalling::getInfo()
 {
     return std::string(
@@ -22,11 +18,35 @@ std::ostream& operator<<(std::ostream& os, const DynamicMaxHoldAccelerationState
     return os;
 }
 
-bool DynamicMaxHoldAccelerationStateOfFalling::getDynamicMaxHoldAccelerationStateOfFalling(const ThemeConfig themeConfig)
+template<>
+bool DynamicMaxHoldAccelerationStateOfFalling::getDynamicMaxHoldAccelerationStateOfFalling<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return true;
+    }
+}
+
+template<>
+bool DynamicMaxHoldAccelerationStateOfFalling::getDynamicMaxHoldAccelerationStateOfFalling<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return true;
+    }
+}
+
+DynamicMaxHoldAccelerationStateOfFalling::DynamicMaxHoldAccelerationStateOfFalling(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getDynamicMaxHoldAccelerationStateOfFalling<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getDynamicMaxHoldAccelerationStateOfFalling<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

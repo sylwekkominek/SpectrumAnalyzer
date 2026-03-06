@@ -42,7 +42,6 @@ struct WindowSize
 
 enum class ThemeConfig : int16_t
 {
-    Invalid = -1,
     Theme10 = 0,
     Theme1 = 1,
     Theme2,
@@ -53,6 +52,18 @@ enum class ThemeConfig : int16_t
     Theme7,
     Theme8,
     Theme9,
+};
+
+enum class Mode : uint16_t
+{
+    Analyzer =0,
+    Visualizer = 1
+};
+
+enum class ApplicationState : uint16_t
+{
+    Running =0,
+    Shutdown = 1
 };
 
 class AnyData

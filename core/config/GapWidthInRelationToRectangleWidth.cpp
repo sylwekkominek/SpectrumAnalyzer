@@ -4,10 +4,6 @@ GapWidthInRelationToRectangleWidth::GapWidthInRelationToRectangleWidth(float val
 {
 }
 
-GapWidthInRelationToRectangleWidth::GapWidthInRelationToRectangleWidth(const ThemeConfig themeConfig) : value(getGapWidthInRelationToRectangleWidth(themeConfig))
-{
-}
-
 std::string GapWidthInRelationToRectangleWidth::getInfo()
 {
     return std::string();
@@ -19,11 +15,37 @@ std::ostream& operator<<(std::ostream& os, const GapWidthInRelationToRectangleWi
     return os;
 }
 
-float GapWidthInRelationToRectangleWidth::getGapWidthInRelationToRectangleWidth(const ThemeConfig themeConfig)
+template<>
+float GapWidthInRelationToRectangleWidth::getGapWidthInRelationToRectangleWidth<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return 0;
+    }
+}
+
+template<>
+float GapWidthInRelationToRectangleWidth::getGapWidthInRelationToRectangleWidth<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        case ThemeConfig::Theme2:
+        return 1.0;
+        default:
+            return 0;
+    }
+}
+
+GapWidthInRelationToRectangleWidth::GapWidthInRelationToRectangleWidth(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getGapWidthInRelationToRectangleWidth<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getGapWidthInRelationToRectangleWidth<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

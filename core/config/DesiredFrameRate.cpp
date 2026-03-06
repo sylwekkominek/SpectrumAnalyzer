@@ -4,10 +4,6 @@ DesiredFrameRate::DesiredFrameRate(uint32_t value) : value(value)
 {
 }
 
-DesiredFrameRate::DesiredFrameRate(const ThemeConfig themeConfig) : value(getDesiredFrameRate(themeConfig))
-{
-}
-
 std::string DesiredFrameRate::getInfo()
 {
     return std::string(
@@ -22,7 +18,8 @@ std::ostream& operator<<(std::ostream& os, const DesiredFrameRate &desiredFrameR
     return os;
 }
 
-uint32_t DesiredFrameRate::getDesiredFrameRate(const ThemeConfig themeConfig)
+template<>
+uint32_t DesiredFrameRate::getDesiredFrameRate<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -31,5 +28,28 @@ uint32_t DesiredFrameRate::getDesiredFrameRate(const ThemeConfig themeConfig)
 
         default:
             return 55;
+    }
+}
+
+template<>
+uint32_t DesiredFrameRate::getDesiredFrameRate<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return 55;
+    }
+}
+
+DesiredFrameRate::DesiredFrameRate(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getDesiredFrameRate<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getDesiredFrameRate<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

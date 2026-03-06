@@ -12,13 +12,14 @@
 struct AlphaFactor
 {
     AlphaFactor(float value);
-    AlphaFactor(const ThemeConfig themeConfig);
+    AlphaFactor(const ThemeConfig themeConfig, const Mode mode);
 
     std::string getInfo();
     float value;
     const std::string name{"AlphaFactor"};
 
 private:
+    template <Mode>
     float getAlphaFactor(const ThemeConfig themeConfig);
 };
 

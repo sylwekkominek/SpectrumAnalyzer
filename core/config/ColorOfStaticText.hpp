@@ -13,11 +13,12 @@
 struct ColorOfStaticText
 {
     ColorOfStaticText(const Color &value);
-    ColorOfStaticText(const ThemeConfig themeConfig);
+    ColorOfStaticText(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     Color value;
     const std::string name{"ColorOfStaticText"};
 private:
+    template <Mode>
     Color getColorOfStaticText(const ThemeConfig themeConfig);
 };
 

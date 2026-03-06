@@ -13,11 +13,12 @@
 struct LinesVisibilityState
 {
     LinesVisibilityState(bool value);
-    LinesVisibilityState(const ThemeConfig themeConfig);
+    LinesVisibilityState(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     bool value;
     const std::string name{"LinesVisibilityState"};
 private:
+    template <Mode>
     bool getLinesVisibilityState(const ThemeConfig themeConfig);
 };
 

@@ -13,11 +13,12 @@
 struct MaximizedWindowSize
 {
     MaximizedWindowSize(std::pair<uint16_t, uint16_t> value);
-    MaximizedWindowSize(const ThemeConfig themeConfig);
+    MaximizedWindowSize(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     std::pair<uint16_t, uint16_t> value;
     const std::string name{"MaximizedWindowSize"};
 private:
+    template <Mode>
     std::pair<uint16_t, uint16_t> getMaximizedWindowSize(const ThemeConfig themeConfig);
 };
 

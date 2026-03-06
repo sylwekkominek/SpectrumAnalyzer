@@ -13,11 +13,12 @@
 struct DesiredFrameRate
 {
     DesiredFrameRate(uint32_t value);
-    DesiredFrameRate(const ThemeConfig themeConfig);
+    DesiredFrameRate(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     uint32_t value;
     const std::string name{"DesiredFrameRate"};
 private:
+    template <Mode>
     uint32_t getDesiredFrameRate(const ThemeConfig themeConfig);
 };
 

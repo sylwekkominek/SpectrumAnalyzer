@@ -13,7 +13,7 @@
 class ConfigReader : public ConfigFileReader
 {
 public:
-    ConfigReader(const ThemeConfig theme, const std::string &path="config");
+    ConfigReader(const ThemeConfig theme, const Mode mode, const std::string &path="config");
     Configuration getConfig();
 
 private:
@@ -58,6 +58,7 @@ private:
     AdvancedColorSettings getAdvancedColorSettings();
     BackgroundColorSettings getBackgroundColorSettings();
     WindowTitle getWindowTitle();
+    LoopbackEnabled getLoopbackEnabled();
 
     Configuration config{};
 

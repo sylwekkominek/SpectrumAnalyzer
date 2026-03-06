@@ -5,10 +5,6 @@ ColorOfDynamicMaxHoldSecondaryLine::ColorOfDynamicMaxHoldSecondaryLine(const Col
 {
 }
 
-ColorOfDynamicMaxHoldSecondaryLine::ColorOfDynamicMaxHoldSecondaryLine(const ThemeConfig themeConfig) : value(getColorOfDynamicMaxHoldSecondaryLine(themeConfig))
-{
-}
-
 std::string ColorOfDynamicMaxHoldSecondaryLine::getInfo()
 {
     return std::string(
@@ -29,11 +25,36 @@ std::ostream& operator<<(std::ostream& os, const ColorOfDynamicMaxHoldSecondaryL
     return os;
 }
 
-Color ColorOfDynamicMaxHoldSecondaryLine::getColorOfDynamicMaxHoldSecondaryLine(const ThemeConfig themeConfig)
+template<>
+Color ColorOfDynamicMaxHoldSecondaryLine::getColorOfDynamicMaxHoldSecondaryLine<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return {0.7, 0.7, 0.7, 1.00};
-        }
+    }
 }
+
+template<>
+Color ColorOfDynamicMaxHoldSecondaryLine::getColorOfDynamicMaxHoldSecondaryLine<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {0.7, 0.7, 0.7, 1.00};
+    }
+}
+
+ColorOfDynamicMaxHoldSecondaryLine::ColorOfDynamicMaxHoldSecondaryLine(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+        case Mode::Analyzer:
+            value = getColorOfDynamicMaxHoldSecondaryLine<Mode::Analyzer>(themeConfig);
+            break;
+        case Mode::Visualizer:
+            value = getColorOfDynamicMaxHoldSecondaryLine<Mode::Visualizer>(themeConfig);
+            break;
+    }
+}
+

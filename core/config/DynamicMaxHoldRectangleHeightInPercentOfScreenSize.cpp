@@ -4,10 +4,6 @@ DynamicMaxHoldRectangleHeightInPercentOfScreenSize::DynamicMaxHoldRectangleHeigh
 {
 }
 
-DynamicMaxHoldRectangleHeightInPercentOfScreenSize::DynamicMaxHoldRectangleHeightInPercentOfScreenSize(const ThemeConfig themeConfig) : value(getDynamicMaxHoldRectangleHeightInPercentOfScreenSize(themeConfig))
-{
-}
-
 std::string DynamicMaxHoldRectangleHeightInPercentOfScreenSize::getInfo()
 {
     return std::string(
@@ -22,11 +18,35 @@ std::ostream& operator<<(std::ostream& os, const DynamicMaxHoldRectangleHeightIn
     return os;
 }
 
-float DynamicMaxHoldRectangleHeightInPercentOfScreenSize::getDynamicMaxHoldRectangleHeightInPercentOfScreenSize(const ThemeConfig themeConfig)
+template<>
+float DynamicMaxHoldRectangleHeightInPercentOfScreenSize::getDynamicMaxHoldRectangleHeightInPercentOfScreenSize<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
         default:
             return 0.8;
+    }
+}
+
+template<>
+float DynamicMaxHoldRectangleHeightInPercentOfScreenSize::getDynamicMaxHoldRectangleHeightInPercentOfScreenSize<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return 0.8;
+    }
+}
+
+DynamicMaxHoldRectangleHeightInPercentOfScreenSize::DynamicMaxHoldRectangleHeightInPercentOfScreenSize(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+        case Mode::Analyzer:
+            value = getDynamicMaxHoldRectangleHeightInPercentOfScreenSize<Mode::Analyzer>(themeConfig);
+            break;
+        case Mode::Visualizer:
+            value = getDynamicMaxHoldRectangleHeightInPercentOfScreenSize<Mode::Visualizer>(themeConfig);
+            break;
     }
 }

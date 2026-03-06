@@ -4,10 +4,6 @@ FrequencyTextPositions::FrequencyTextPositions(const Frequencies &value) : value
 {
 }
 
-FrequencyTextPositions::FrequencyTextPositions(const ThemeConfig themeConfig) : value(getFrequencyTextPositions(themeConfig))
-{
-}
-
 std::string FrequencyTextPositions::getInfo()
 {
     return std::string(
@@ -30,7 +26,8 @@ std::ostream& operator<<(std::ostream& os, const FrequencyTextPositions &frequen
     return os;
 }
 
-Frequencies FrequencyTextPositions::getFrequencyTextPositions(const ThemeConfig themeConfig)
+template<>
+Frequencies FrequencyTextPositions::getFrequencyTextPositions<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     const Frequencies defaultValue{20, 2000.00,  4000.00, 6000.00,  8000.00, 10000.00, 12000.00,  14000.00,  16000.00,  18000.00,  20000.00};
 
@@ -50,7 +47,36 @@ Frequencies FrequencyTextPositions::getFrequencyTextPositions(const ThemeConfig 
             return {20, 500.00, 1000.00,1500, 2000.00};
         case ThemeConfig::Theme7:
             return {20,100,200,300,400, 500};
+        case ThemeConfig::Theme8:
+            return {20, 50,125, 250, 500, 1000, 2000.00, 4000, 8000, 16000};
+        case ThemeConfig::Theme9:
+            return defaultValue;
+        case ThemeConfig::Theme10:
+            return {20, 2000.00,  4000.00, 6000.00,  8000.00, 10000.00, 12000.00,  14000.00,  16000.00};
         default:
             return defaultValue;
+    }
+}
+
+template<>
+Frequencies FrequencyTextPositions::getFrequencyTextPositions<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {20, 50,125, 250, 500, 1000, 2000.00, 4000, 8000, 16000};
+    }
+}
+
+FrequencyTextPositions::FrequencyTextPositions(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getFrequencyTextPositions<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getFrequencyTextPositions<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

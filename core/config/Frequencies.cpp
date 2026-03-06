@@ -6,11 +6,6 @@ Freqs::Freqs(const Frequencies &value) : value(value)
 {
 }
 
-Freqs::Freqs(const ThemeConfig themeConfig, uint16_t sampleRate, uint16_t fftSize) : sampleRate(sampleRate), fftSize(fftSize)
-{
-    value=getFreqs(themeConfig);
-}
-
 std::string Freqs::getInfo()
 {
     return std::string(
@@ -57,7 +52,8 @@ Frequencies getLogFrequencies()
     return Frequencies{20.000, 25.383, 31.000, 36.147, 42.000, 50, 63.000, 71.429, 80.000, 91.000, 125.000, 135.714, 146.429, 160.000, 180.000, 250.000, 270.000, 290.000, 320.000, 360.000, 500.000, 540.000, 580.000, 640.000, 720.000, 1000.000, 1080.000, 1160.000, 1280.000, 1440.000, 2000.000, 2160.000, 2320.000, 2560.000, 2880.000, 4000.000, 4320.000, 4640.000, 5120.000, 5760.000, 8000.000, 8979.696, 10079.368, 11313.708, 12699.208, 14254.379, 16000.000};
 }
 
-Frequencies Freqs::getFreqs(const ThemeConfig themeConfig)
+template<>
+Frequencies Freqs::getFreqs<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -75,7 +71,32 @@ Frequencies Freqs::getFreqs(const ThemeConfig themeConfig)
         return generateFrequencies(sampleRate,fftSize, 6, 2004);
     case ThemeConfig::Theme7:
         return generateFrequencies(sampleRate,fftSize, 3, 501);
+    case ThemeConfig::Theme8:
+        return getLogFrequencies();
+    case ThemeConfig::Theme9:
+        return generateFrequencies(sampleRate,fftSize, 20, 20020);
+    case ThemeConfig::Theme10:
+        return generateFrequencies(sampleRate,fftSize, 20, 16020);
     default:
         return generateFrequencies(sampleRate,fftSize, 20, 20020);
+    }
+}
+
+template<>
+Frequencies Freqs::getFreqs<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    return getLogFrequencies();
+}
+
+Freqs::Freqs(const ThemeConfig themeConfig, const Mode mode, uint16_t sampleRate, uint16_t fftSize) : sampleRate(sampleRate), fftSize(fftSize)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getFreqs<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getFreqs<Mode::Visualizer>(themeConfig);
+        break;
     }
 }

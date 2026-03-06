@@ -12,11 +12,12 @@
 struct DefaultFullscreenState
 {
     DefaultFullscreenState(bool value);
-    DefaultFullscreenState(const ThemeConfig themeConfig);
+    DefaultFullscreenState(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     bool value;
     const std::string name{"DefaultFullscreenState"};
 private:
+    template <Mode>
     bool getDefaultFullscreenState(const ThemeConfig themeConfig);
 };
 

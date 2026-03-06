@@ -8,8 +8,8 @@
 #include <iostream>
 
 
-PaDeviceIndex getAudioSourceDevice()
+PaDeviceIndex getAudioInputDevice()
 {
-    std::cout<<"Using microphone as the data source device"<<std::endl;
+    std::cout<<"Using microphone or other input device as the audio source"<<std::endl;
     return Pa_GetDefaultInputDevice();
 }

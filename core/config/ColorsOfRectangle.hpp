@@ -14,12 +14,13 @@ struct ColorsOfRectangle
 {
 
     ColorsOfRectangle(const ColorsOfRectanglePerVertices &value);
-    ColorsOfRectangle(const ThemeConfig themeConfig);
+    ColorsOfRectangle(const ThemeConfig themeConfig, const Mode mode);
     std::string getInfo();
     ColorsOfRectanglePerVertices value;
     const std::string name{"ColorsOfRectangle"};
 
 private:
+    template <Mode>
     ColorsOfRectanglePerVertices getColorsOfRectangle(const ThemeConfig themeConfig);
 };
 

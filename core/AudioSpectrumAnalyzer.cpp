@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -16,8 +16,8 @@
 #include <iostream>
 #include <optional>
 
-AudioSpectrumAnalyzer::AudioSpectrumAnalyzer(const Configuration &configuration, std::promise<ThemeConfig> &&promise):
-    SpectrumAnalyzerBase(configuration, std::move(promise))
+AudioSpectrumAnalyzer::AudioSpectrumAnalyzer(const Configuration &configuration, std::promise<AppEvent> &&appEvent):
+    SpectrumAnalyzerBase(configuration, std::move(appEvent))
 {
 }
 
@@ -36,7 +36,7 @@ void AudioSpectrumAnalyzer::samplesUpdater()
     const std::string processName{"samplesUpdater"};
     StatsManager statsManager(processName);
 
-    SamplesCollector samplesCollector(config.get<PythonDataSourceEnabled>(), audioConfigFile);
+    SamplesCollector samplesCollector(config.get<PythonDataSourceEnabled>(), config.get<LoopbackEnabled>(), audioConfigFile);
 
     samplesCollector.initialize(noOfSamplesToBeCollectedFromHwEachTime, config.get<SamplingRate>());
 
@@ -83,8 +83,6 @@ void AudioSpectrumAnalyzer::fftCalculator()
 
     WelchCalculator fft(FftType::Real, config.get<NumberOfSamples>(), overlapping,  config.get<SignalWindow>());
 
-    using namespace std::chrono;
-
     while(shouldProceed)
     {
         const auto &dataInTimeDomain  = dataExchanger.get();
@@ -115,8 +113,6 @@ void AudioSpectrumAnalyzer::processing()
 {
     const std::string processName{"processing"};
     StatsManager statsManager(processName);
-    std::deque<Data> fftDataQueue;
-    std::deque<Data> averagedDataQueue;
 
     FrequenciesInfo frequenciesInfo(config.get<SamplingRate>(), config.get<NumberOfSamples>(), config.get<Freqs>());
     DataMaxHolder dataMaxHolder(frequenciesInfo.numberOfFrequencies(), config.get<NumberOfSignalsForMaxHold>(), getFloorDbFs16bit());
@@ -182,11 +178,6 @@ void AudioSpectrumAnalyzer::drafter()
 
         window->draw(*data);
 
-        if(window->checkIfWindowShouldBeClosed())
-        {
-            themeConfigSelectionPromise.set_value(ThemeConfig::Invalid);
-            shouldProceed.store(false);
-        }
 
         if(window->checkIfWindowShouldBeRecreated())
         {
@@ -195,9 +186,15 @@ void AudioSpectrumAnalyzer::drafter()
             window->initializeGPU();
         }
 
-        if (auto themeConfigOpt = window->checkIfThemeShouldBeChanged(); themeConfigOpt)
+        if(window->checkIfWindowShouldBeClosed())
         {
-            themeConfigSelectionPromise.set_value(*themeConfigOpt);
+            appEventPromise.set_value(ApplicationState::Shutdown);
+            shouldProceed.store(false);
+        }
+
+        if (auto themeConfig = window->checkIfThemeShouldBeChanged())
+        {
+            appEventPromise.set_value(*themeConfig);
             shouldProceed.store(false);
         }
     }
@@ -207,6 +204,15 @@ void AudioSpectrumAnalyzer::flowController()
     float coeffUsedInCaseWhenScreenFallsBehindIncomingData = -0.01;
 
     auto previousTime = steady_clock::now();
+
+    // wait for 2 seconds to prevent overlapping updates
+    while (shouldProceed)
+    {
+        if (std::chrono::steady_clock::now() - previousTime >= 2s)
+            break;
+
+        std::this_thread::sleep_for(100ms);
+    }
 
     while(shouldProceed)
     {

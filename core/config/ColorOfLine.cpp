@@ -4,10 +4,6 @@ ColorOfLine::ColorOfLine(const Color &value) : value(value)
 {
 }
 
-ColorOfLine::ColorOfLine(const ThemeConfig themeConfig) : value(getColorOfLine(themeConfig))
-{
-}
-
 std::string ColorOfLine::getInfo()
 {
     return std::string(
@@ -28,7 +24,8 @@ std::ostream& operator<<(std::ostream& os, const ColorOfLine &colorOfLine)
     return os;
 }
 
-Color ColorOfLine::getColorOfLine(const ThemeConfig themeConfig)
+template<>
+Color ColorOfLine::getColorOfLine<Mode::Analyzer>(const ThemeConfig themeConfig)
 {
     switch(themeConfig)
     {
@@ -44,7 +41,34 @@ Color ColorOfLine::getColorOfLine(const ThemeConfig themeConfig)
             return {0.2, 0.4, 1.0, 1.0};
         case ThemeConfig::Theme7:
             return {0.2, 0.4, 1.0, 1.0};
+        case ThemeConfig::Theme9:
+            return {0.35, 0.55, 1.0, 1.0};
+        case ThemeConfig::Theme10:
+            return {0.95, 0.85, 0.3, 1.0};
         default:
             return {1,0.15,0.15,1};
+    }
+}
+
+template<>
+Color ColorOfLine::getColorOfLine<Mode::Visualizer>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {1,0.15,0.15,1};
+    }
+}
+
+ColorOfLine::ColorOfLine(const ThemeConfig themeConfig, const Mode mode)
+{
+    switch(mode)
+    {
+    case Mode::Analyzer:
+        value = getColorOfLine<Mode::Analyzer>(themeConfig);
+        break;
+    case Mode::Visualizer:
+        value = getColorOfLine<Mode::Visualizer>(themeConfig);
+        break;
     }
 }
