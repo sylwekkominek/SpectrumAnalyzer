@@ -3,15 +3,15 @@
 
 ## Description
 
-**SpectrumAnalyzer** is a real-time frequency spectrum visualization tool written primarily in C++ for data processing and rendering, with optional Python-based audio acquisition.
+**SpectrumAnalyzer** is a real-time frequency spectrum visualization tool **written primarily in C++** for data processing and rendering, with **optional Python-based audio acquisition**.
 
-By default, the application captures audio from the microphone via PortAudio, computes its frequency spectrum using FFT, and visualizes the results with OpenGL graphics. When built with the -DENABLE_LOOPBACK=on flag, it can capture system playback audio (Spotify, YouTube, and other applications), allowing analysis of sounds being played on your system.
+By default, the application captures audio via PortAudio, computes its frequency spectrum using FFT, and visualizes it using OpenGL. **It supports multiple input sources, including microphones and system playback audio (e.g., Spotify, YouTube).**
 
 The architecture is flexible — although processing and visualization are done in C++, audioConfig.py lets users replace the default input with any Python-defined source, such as playback streams, virtual devices, or custom sensors.
 
-The app allows you to customize parameters — such as bar count, frequency ranges, and colors — using simple text configuration files stored in the config folder.
+**The app allows you to customize parameters** — such as bar count, frequency ranges, and colors — using simple text configuration files stored in the config folder.
 
-If something goes wrong, you can delete a file or the entire folder, and the app will recreate default settings. Each configuration file includes a description of its purpose. You can also create your own custom color themes if the default ones are not enough. For additional help, you can copy the file contents into ChatGPT for guidance.
+If something goes wrong, you can delete a file or the entire folder, and the app will recreate default settings. Each configuration file includes a description of its purpose. You can also create your own custom color themes if the default ones are not enough. For additional help, you can copy the file contents into **ChatGPT for guidance**.
 
 SpectrumAnalyzer is useful for learning, signal analysis, experimentation, and entertainment — whether analyzing live microphone input, playback audio, or other types of signals.
 This project is licensed under the **GNU General Public License v2 (GPLv2)**.
@@ -26,10 +26,10 @@ It also uses the following third-party libraries:
 
 ## A ready-to-download version for Windows is available here:
 
-- **Microphone input analysis**  
+- **Spectrum Analyzer**
   [Microsoft Store – Not Yet Another Spectrum Analyzer](https://apps.microsoft.com/detail/9ngnl3tjj7bg?hl=en-US&gl=US)
 
-- **Analysis of what is currently being played** (system audio such as Spotify, YouTube, etc.)  
+- **Music Visualizer**
   [Microsoft Store – Not Yet Another Music Visualizer](https://apps.microsoft.com/detail/9n6f33xks0k9?hl=en-US&gl=US)
 
 
@@ -37,9 +37,6 @@ It also uses the following third-party libraries:
 
 **Full documentation is available in the Wiki:** 
 [https://github.com/sylwekkominek/SpectrumAnalyzer/wiki](https://github.com/sylwekkominek/SpectrumAnalyzer/wiki)
-
-**Video on YouTube:** 
-[sylwekkominek/SpectrumAnalyzer – Fully Configurable Open Source Spectrum Analyzer](https://www.youtube.com/watch?v=Sjx05eXpgq4)
 
 <img width="1308" height="578" alt="Screenshot from 2026-02-22 15-48-11" src="https://github.com/user-attachments/assets/8cd85afe-9097-49ff-badf-b50a3f4afcfa" />
 <img width="1308" height="578" alt="Screenshot from 2026-02-22 15-49-38" src="https://github.com/user-attachments/assets/75e24b74-38a9-48e8-823d-94c5addb50f0" />
