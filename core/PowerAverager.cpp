@@ -14,7 +14,7 @@ PowerAverager::PowerAverager(const float scalingFactor, const float offsetFactor
 
 std::vector<float> PowerAverager::calculate(const std::vector<std::complex<float>>& data)
 {
-    return averagePowerInSpectrum(linearToDbfs(calculateMagnitude(data)));
+    return linearToDbfs(averagePowerInSpectrum(calculateMagnitude(data)));
 }
 
 std::vector<float> PowerAverager::averagePowerInSpectrum(const std::vector<float> &data)
