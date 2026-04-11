@@ -21,7 +21,7 @@ float FigureGeometryCalculator::getOffsetFromOffsetInPercents(const float offset
     const float xEnd = 1;
     const float fullScreenPercents = 100;
 
-    return ((xEnd - xBegin) * offsetInPercents /fullScreenPercents) -1;
+    return ((xEnd - xBegin) * offsetInPercents /fullScreenPercents) - 1;
 }
 
 float FigureGeometryCalculator::getWidthFromWidthInPercents(const float widthInPercents)
@@ -37,7 +37,7 @@ std::vector<std::pair<float, float>> FigureGeometryCalculator::horizontalRectang
 {
     const double xBeginOfZeroElement = getOffsetFromOffsetInPercents(xDrawOffsetInPercents);
 
-    const double numberOfGaps = numberOfRectangles ;
+    const double numberOfGaps = numberOfRectangles-1;
     const double xWidth =  (getWidthFromWidthInPercents(xDrawSizeInPercents)/(numberOfRectangles + numberOfGaps * gap));
 
     std::vector<std::pair<float, float>> rectangles;
@@ -54,13 +54,13 @@ std::vector<std::pair<float, float>> FigureGeometryCalculator::horizontalRectang
 }
 
 
-Line FigureGeometryCalculator::getHighlightedLine(const uint16_t numberOfRectangles, const uint16_t rectangleNumber)
+Line FigureGeometryCalculator::getHighlightedLine(const uint16_t numberOfRectangles, const float gap, const uint16_t rectangleNumber)
 {
     const double xBeginOfZeroElement = xDrawOffsetInPercents;
-    const double xWidth =  xDrawSizeInPercents/numberOfRectangles;
+    const double numberOfGaps = numberOfRectangles-1;
+    const double xWidth =  xDrawSizeInPercents/(numberOfRectangles + numberOfGaps * gap);
 
-
-    double xBegin =  xBeginOfZeroElement + rectangleNumber * xWidth;
+    double xBegin =  xBeginOfZeroElement + rectangleNumber * xWidth*(1.0 + gap);
     double xEnd = xBegin + xWidth;
     float midpoint = (xBegin + xEnd) / 2;
 
@@ -134,12 +134,14 @@ FigureGeometryCalculator::HorizontalLines FigureGeometryCalculator::getHorizonta
     return HorizontalLines{std::move(lines)};
 }
 
-FigureGeometryCalculator::VerticalLines FigureGeometryCalculator::getVerticalLines(const uint16_t numberOfRectangles, const std::vector<uint32_t> &indexes)
+FigureGeometryCalculator::VerticalLines FigureGeometryCalculator::getVerticalLines(const uint16_t numberOfRectangles, const float gap, const std::vector<uint32_t> &indexes)
 {
     const double fullScreenSize = xDrawSizeInPercents;
-    const double xWidth =  (fullScreenSize/numberOfRectangles);
+    const double numberOfGaps = numberOfRectangles-1;
+    const double xWidth =  (fullScreenSize/(numberOfRectangles + numberOfGaps * gap));
 
     const double xBeginOfLineZero = xDrawOffsetInPercents+xWidth/2;
+
 
     Lines lines{};
 
@@ -147,7 +149,7 @@ FigureGeometryCalculator::VerticalLines FigureGeometryCalculator::getVerticalLin
 
     for(auto & index : indexes)
     {
-        double x =  xBeginOfLineZero + index*xWidth;
+        double x =  xBeginOfLineZero + index*xWidth*(1.0 + gap);
 
         Line line;
         line.push_back(Point{static_cast<float>(x), static_cast<float>(0)});
@@ -158,10 +160,11 @@ FigureGeometryCalculator::VerticalLines FigureGeometryCalculator::getVerticalLin
     return VerticalLines{std::move(lines)};
 }
 
-FigureGeometryCalculator::VerticalLineTextPositions FigureGeometryCalculator::getVerticalLineTextPositions(const uint16_t numberOfRectangles, const std::vector<uint32_t> &indexes)
+FigureGeometryCalculator::VerticalLineTextPositions FigureGeometryCalculator::getVerticalLineTextPositions(const uint16_t numberOfRectangles, const float gap, const std::vector<uint32_t> &indexes)
 {
     const double fullScreenSize = xDrawSizeInPercents;
-    const double xWidth =  (fullScreenSize/numberOfRectangles);
+    const double numberOfGaps = numberOfRectangles-1;
+    const double xWidth =  (fullScreenSize/(numberOfRectangles + numberOfGaps * gap));
 
     const double xBeginOfLineZero = xDrawOffsetInPercents+xWidth/2;
 
@@ -171,7 +174,7 @@ FigureGeometryCalculator::VerticalLineTextPositions FigureGeometryCalculator::ge
 
     for(auto & index : indexes)
     {
-        positions.emplace_back((float)xBeginOfLineZero + index*xWidth);
+        positions.emplace_back((float)xBeginOfLineZero + index*xWidth*(1.0 + gap));
     }
 
     return VerticalLineTextPositions{std::move(positions)};
@@ -201,4 +204,10 @@ Lines FigureGeometryCalculator::getDynamicLines(const std::vector<float> &dataTo
     }
 
     return lines;
+}
+
+void FigureGeometryCalculator::setHorizontalDrawingArea(const float xDrawOffsetInPercents, const float xDrawSizeInPercents)
+{
+    FigureGeometryCalculator::xDrawOffsetInPercents = xDrawOffsetInPercents;
+    FigureGeometryCalculator::xDrawSizeInPercents = xDrawSizeInPercents;
 }

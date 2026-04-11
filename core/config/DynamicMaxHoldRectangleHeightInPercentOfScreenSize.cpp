@@ -38,6 +38,16 @@ float DynamicMaxHoldRectangleHeightInPercentOfScreenSize::getDynamicMaxHoldRecta
     }
 }
 
+template<>
+float DynamicMaxHoldRectangleHeightInPercentOfScreenSize::getDynamicMaxHoldRectangleHeightInPercentOfScreenSize<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return 0.8;
+    }
+}
+
 DynamicMaxHoldRectangleHeightInPercentOfScreenSize::DynamicMaxHoldRectangleHeightInPercentOfScreenSize(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -47,6 +57,9 @@ DynamicMaxHoldRectangleHeightInPercentOfScreenSize::DynamicMaxHoldRectangleHeigh
             break;
         case Mode::Visualizer:
             value = getDynamicMaxHoldRectangleHeightInPercentOfScreenSize<Mode::Visualizer>(themeConfig);
+            break;
+        case Mode::StereoRmsMeter:
+            value = getDynamicMaxHoldRectangleHeightInPercentOfScreenSize<Mode::StereoRmsMeter>(themeConfig);
             break;
     }
 }

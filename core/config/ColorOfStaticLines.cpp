@@ -44,6 +44,17 @@ Color ColorOfStaticLines::getColorOfStaticLines<Mode::Visualizer>(const ThemeCon
     }
 }
 
+template<>
+Color ColorOfStaticLines::getColorOfStaticLines<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {0.2, 0.2, 0.2, 1.00};
+    }
+}
+
+
 ColorOfStaticLines::ColorOfStaticLines(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -53,6 +64,9 @@ ColorOfStaticLines::ColorOfStaticLines(const ThemeConfig themeConfig, const Mode
         break;
     case Mode::Visualizer:
         value = getColorOfStaticLines<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getColorOfStaticLines<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

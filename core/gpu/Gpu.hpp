@@ -40,6 +40,7 @@ struct Gpu
     void drawDynamicLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines);
     void drawDynamicMaxHoldLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines);
     void drawHorizontalLineStaticTexts(const Lines &horizontalLinePositions, const WindowSize &windowSize, const float xDrawOffsetInPercents, const float xDrawSizeInPercents);
+    void drawHorizontalLineStaticTexts(const Lines &horizontalLinePositions, const WindowSize &windowSize);
     void drawVerticalLineStaticTexts(const Positions &verticalLineTextPositions, const WindowSize &windowSize);
     void drawDynamicMaxHoldRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition);
     void drawDynamicMaxHoldSecondaryRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition);

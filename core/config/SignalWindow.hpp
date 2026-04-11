@@ -13,10 +13,11 @@
 
 struct SignalWindow
 {
-    SignalWindow(uint16_t numberOfSamples);
+    SignalWindow(const Mode mode, uint16_t numberOfSamples);
     SignalWindow(const std::vector<float> &window);
     std::vector<float> getSignalWindow(uint16_t numberOfSamples);
     std::string getInfo();
+    Mode mode;
     std::vector<float> value;
     const std::string name{"SignalWindow"};
 };

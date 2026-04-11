@@ -54,6 +54,13 @@ uint32_t NumberOfSamples::getNumberOfSamples<Mode::Visualizer>(const ThemeConfig
     return 8192;
 }
 
+template<>
+uint32_t NumberOfSamples::getNumberOfSamples<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    return 4096;
+}
+
+
 NumberOfSamples::NumberOfSamples(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -63,6 +70,9 @@ NumberOfSamples::NumberOfSamples(const ThemeConfig themeConfig, const Mode mode)
         break;
     case Mode::Visualizer:
         value = getNumberOfSamples<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getNumberOfSamples<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

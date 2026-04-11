@@ -38,16 +38,25 @@ bool RectanglesVisibilityState::getRectanglesVisibilityState<Mode::Visualizer>(c
     return true;
 }
 
+template<>
+bool RectanglesVisibilityState::getRectanglesVisibilityState<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    return true;
+}
+
 RectanglesVisibilityState::RectanglesVisibilityState(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
     {
-    case Mode::Analyzer:
-        value = getRectanglesVisibilityState<Mode::Analyzer>(themeConfig);
-        break;
-    case Mode::Visualizer:
-        value = getRectanglesVisibilityState<Mode::Visualizer>(themeConfig);
-        break;
+        case Mode::Analyzer:
+            value = getRectanglesVisibilityState<Mode::Analyzer>(themeConfig);
+            break;
+        case Mode::Visualizer:
+            value = getRectanglesVisibilityState<Mode::Visualizer>(themeConfig);
+            break;
+        case Mode::StereoRmsMeter:
+            value = getRectanglesVisibilityState<Mode::StereoRmsMeter>(themeConfig);
+            break;
     }
 }
 

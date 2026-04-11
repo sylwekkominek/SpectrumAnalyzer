@@ -16,8 +16,20 @@ def initialize(dataLength, samplingRate):
     return True
 
 #The frequency 1001.29 Hz is chosen because the sampling rate (44100 Hz) divided by the data length (4096) is approximately 10.76 Hz. The value 1001.29 Hz is a multiple of this 10.76 Hz to minimize spectral leakage to other frequencies. This ensures that the amplitude aligns correctly with the scale in dBFS
-def getData():
+def getLeftChannelData():
     signalFrequency = 1001.293945313 #Hz
+    samplingPeriod = 1.0 / fs
+    fullScaleAmplitude = 32767
+    result = tuple()
+
+    for n in range(numberOfSamples):
+        y = fullScaleAmplitude * math.sin(2 * math.pi * n * signalFrequency * samplingPeriod)
+        result += (y,)
+
+    return result
+
+def getRightChannelData():
+    signalFrequency = 10 * 1001.293945313 #Hz
     samplingPeriod = 1.0 / fs
     fullScaleAmplitude = 32767
     result = tuple()

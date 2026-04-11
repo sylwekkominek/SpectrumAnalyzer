@@ -5,6 +5,7 @@
  */
 
 #include "core/AudioSpectrumAnalyzer.hpp"
+#include "core/StereoRmsMeter.hpp"
 #include "core/ConfigReader.hpp"
 #include <iostream>
 
@@ -52,6 +53,17 @@ void updateStates(ThemeConfig &theme, ApplicationState &state, const AppEvent &e
     }, event);
 }
 
+std::unique_ptr<SpectrumAnalyzerBase> createAnalyzer(Mode mode, const Configuration &config)
+{
+    switch(mode)
+    {
+        case Mode::StereoRmsMeter:
+            return std::make_unique<StereoRmsMeter>(config);
+        default:
+            return std::make_unique<AudioSpectrumAnalyzer>(config);
+    }
+}
+
 int main()
 {
     printLicense();
@@ -67,7 +79,7 @@ int main()
         const Configuration &config = configReader.getConfig();
         std::cout << config << std::endl;
 
-        std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = std::make_unique<AudioSpectrumAnalyzer>(config);
+        std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = createAnalyzer(mode, config);
 
         spectrumAnalyzer->init();
         spectrumAnalyzer->run();

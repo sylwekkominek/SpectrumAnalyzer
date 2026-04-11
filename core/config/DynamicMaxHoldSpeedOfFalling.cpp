@@ -38,6 +38,16 @@ float DynamicMaxHoldSpeedOfFalling::getDynamicMaxHoldSpeedOfFalling<Mode::Visual
     }
 }
 
+template<>
+float DynamicMaxHoldSpeedOfFalling::getDynamicMaxHoldSpeedOfFalling<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return 2000;
+    }
+}
+
 DynamicMaxHoldSpeedOfFalling::DynamicMaxHoldSpeedOfFalling(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -47,6 +57,9 @@ DynamicMaxHoldSpeedOfFalling::DynamicMaxHoldSpeedOfFalling(const ThemeConfig the
         break;
     case Mode::Visualizer:
         value = getDynamicMaxHoldSpeedOfFalling<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getDynamicMaxHoldSpeedOfFalling<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

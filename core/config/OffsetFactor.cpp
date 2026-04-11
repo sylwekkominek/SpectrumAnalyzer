@@ -38,6 +38,16 @@ float OffsetFactor::getOffsetFactor<Mode::Visualizer>(const ThemeConfig themeCon
     }
 }
 
+template<>
+float OffsetFactor::getOffsetFactor<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+    default:
+        return 0;
+    }
+}
+
 OffsetFactor::OffsetFactor(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -47,6 +57,9 @@ OffsetFactor::OffsetFactor(const ThemeConfig themeConfig, const Mode mode)
         break;
     case Mode::Visualizer:
         value = getOffsetFactor<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getOffsetFactor<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

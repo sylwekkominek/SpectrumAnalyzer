@@ -4,9 +4,9 @@
  * see file LICENSE in this source tree.
  */
 
-#include "core/AudioSpectrumAnalyzer.hpp"
+#include "core/dataSource/DataSourceBase.hpp"
+#include "core/StereoRmsMeter.hpp"
 #include "core/Stats.hpp"
-#include "dataSource/DataSourceBase.hpp"
 #include "helpers/TestHelpers.hpp"
 #include "helpers/WindowTestsBase.hpp"
 #include "helpers/ValuesChecker.hpp"
@@ -14,25 +14,26 @@
 #include <gtest/gtest.h>
 
 
-class AudioSpectrumAnalyzerTests : public ValuesChecker<-2>, public ::testing::Test
+class StereoRmsMeterTests : public ValuesChecker<-2>, public ::testing::Test
 {
 public:
     using Signal = std::vector<float>;
     using Signals = std::vector<Signal>;
 
-    class ModifiedAudioSpectrumAnalyzer : public AudioSpectrumAnalyzer
+    class ModifiedStereoRmsMeter : public StereoRmsMeter
     {
     public:
-        using AudioSpectrumAnalyzer::AudioSpectrumAnalyzer;
+        using StereoRmsMeter::StereoRmsMeter;
+
 
         void init() override
         {
             StatsManager::clear();
-            threads.push_back(std::thread(&ModifiedAudioSpectrumAnalyzer::samplesUpdater,this));
-            threads.push_back(std::thread(&AudioSpectrumAnalyzer::fftCalculator,this));
-            threads.push_back(std::thread(&AudioSpectrumAnalyzer::processing,this));
-            threads.push_back(std::thread(&ModifiedAudioSpectrumAnalyzer::drafter,this));
-            threads.push_back(std::thread(&ModifiedAudioSpectrumAnalyzer::flowController,this));
+            threads.push_back(std::thread(&ModifiedStereoRmsMeter::samplesUpdater,this));
+            threads.push_back(std::thread(&StereoRmsMeter::fftCalculator,this));
+            threads.push_back(std::thread(&StereoRmsMeter::processing,this));
+            threads.push_back(std::thread(&ModifiedStereoRmsMeter::drafter,this));
+            threads.push_back(std::thread(&ModifiedStereoRmsMeter::flowController,this));
         }
 
         void samplesUpdater() override
@@ -42,9 +43,10 @@ public:
             for(auto signalNo=0; signalNo < numberOfSignalsToBeTransferred; ++signalNo)
             {
                 statsManager.update();
-                const auto leftData = generateSignal(config.data.get<NumberOfSamples>().value,config.data.get<SamplingRate>().value,1000, dbFsToAmplitude(-signalNo));
-                const auto rightData = generateSignal(config.data.get<NumberOfSamples>().value,config.data.get<SamplingRate>().value,2000, dbFsToAmplitude(-signalNo));
-                dataExchanger.push_back(std::make_unique<std::any>(StereoData{std::move(leftData), std::move(rightData)}));
+                const auto leftSignal = generateSignal(config.data.get<NumberOfSamples>().value,config.data.get<SamplingRate>().value, 1000, dbFsToAmplitude(-signalNo));
+                const auto rightSignal = generateSignal(config.data.get<NumberOfSamples>().value,config.data.get<SamplingRate>().value, 2000, dbFsToAmplitude(-signalNo+offsetInDbBetweenLeftAndRight));
+
+                dataExchanger.push_back(std::make_unique<std::any>(StereoData{leftSignal, rightSignal}));
             }
 
             while(shouldProceed)
@@ -72,8 +74,9 @@ public:
 
                 statsManager.update();
 
-                valueChecker(std::any_cast<Data>(*data), prepareExpectedFreqDomainSignal(dbFs--));
+                valueChecker(std::any_cast<Data>(*data), prepareExpectedRmsData(dbFs--));
             }
+
             EXPECT_EQ(dbFs, -numberOfSignalsToBeTransferred);
         }
 
@@ -97,9 +100,10 @@ public:
         Configuration config{};
 
 
-        uint32_t numberOfSamples = 2048;
-        uint32_t sampleRate = 8000;
+        uint32_t numberOfSamples = 4096;
+        uint32_t sampleRate = 44100;
 
+        config.data.add(NumberOfRectangles{2});
         config.data.add(NumberOfSamples{numberOfSamples});
         config.data.add(SamplingRate{sampleRate});
         config.data.add(DesiredFrameRate{1});
@@ -110,59 +114,42 @@ public:
         config.data.add(SignalWindow{getSignalWindow(numberOfSamples)});
         config.data.add(ScalingFactor{1});
         config.data.add(OffsetFactor{0});
-        config.data.add(Freqs(getDemandedFrequencies(sampleRate, numberOfSamples, 0, numberOfSamples/2)));
+        config.data.add(Freqs({20,20000}));
         return config;
     }
 
 private:
 
-    static Signal prepareExpectedFreqDomainSignal(const float fullScaleOffset, const float defaultValue = -96.32)
+    static Signal prepareExpectedRmsData(const float fullScaleOffset)
     {
+        float leftExpectedValue = -8.17406 + fullScaleOffset;
+        float rightExpectedValue = -8.17406 + offsetInDbBetweenLeftAndRight + fullScaleOffset;
 
-        const std::vector<uint32_t> expectedFftPositions1000Hz = {254, 1790};
-        const std::vector<uint32_t> expectedFftPositions2000Hz = {510, 1534};
-        std::vector<uint32_t> expectedFftValuesPositions;
-
-        expectedFftValuesPositions.insert(expectedFftValuesPositions.end(),expectedFftPositions1000Hz.begin(),expectedFftPositions1000Hz.end());
-        expectedFftValuesPositions.insert(expectedFftValuesPositions.end(),expectedFftPositions2000Hz.begin(),expectedFftPositions2000Hz.end());
-
-        std::vector<float> fftValuesWithFullScale{-33.9599,-18.0616, -13.5599 ,-18.0614, -33.9593};
-
-        std::transform(fftValuesWithFullScale.begin(),fftValuesWithFullScale.end(),fftValuesWithFullScale.begin(),[&](const auto &el){
-            return el+fullScaleOffset;
-        });
-
-        std::vector<float> fftSignal(1024, defaultValue);
-
-        for(const auto &position: expectedFftValuesPositions)
-        {
-            std::copy(fftValuesWithFullScale.begin(), fftValuesWithFullScale.end(), fftSignal.begin() + position);
-        }
-
-        return fftSignal;
+        return {leftExpectedValue, rightExpectedValue};
     }
 
     static constexpr float numberOfSignalsToBeTransferred{40};
+    static constexpr float offsetInDbBetweenLeftAndRight = -6;
 };
 
-TEST_F(AudioSpectrumAnalyzerTests, checkCalculationsAndDataTransfer)
+TEST_F(StereoRmsMeterTests, checkCalculationsAndDataTransfer)
 {
-    std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = std::make_unique<ModifiedAudioSpectrumAnalyzer>(getConfig());
+    std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = std::make_unique<ModifiedStereoRmsMeter>(getConfig());
     spectrumAnalyzer->init();
     spectrumAnalyzer->run();
 }
 
-class AudioSpectrumAnalyzerTests2 : public WindowTestsBase, public ::testing::Test
+class StereoRmsMeterTests2 : public WindowTestsBase, public ::testing::Test
 {
 public:
     using Signal = std::vector<float>;
     using Signals = std::vector<Signal>;
 
-    class ModifiedAudioSpectrumAnalyzer : public AudioSpectrumAnalyzer
+    class ModifiedStereoRmsMeter : public StereoRmsMeter
     {
     public:
 
-        ModifiedAudioSpectrumAnalyzer(const Configuration &configuration): AudioSpectrumAnalyzer(configuration)
+        ModifiedStereoRmsMeter(const Configuration &configuration): StereoRmsMeter(configuration)
         {
             audioConfigFile="testAudioConfig";
         }
@@ -170,24 +157,24 @@ public:
         void init() override
         {
             StatsManager::clear();
-            threads.push_back(std::thread(&AudioSpectrumAnalyzer::samplesUpdater,this));
-            threads.push_back(std::thread(&AudioSpectrumAnalyzer::fftCalculator,this));
-            threads.push_back(std::thread(&AudioSpectrumAnalyzer::processing,this));
-            threads.push_back(std::thread(&AudioSpectrumAnalyzer::drafter,this));
-            threads.push_back(std::thread(&ModifiedAudioSpectrumAnalyzer::flowController,this));
+            threads.push_back(std::thread(&StereoRmsMeter::samplesUpdater,this));
+            threads.push_back(std::thread(&StereoRmsMeter::fftCalculator,this));
+            threads.push_back(std::thread(&StereoRmsMeter::processing,this));
+            threads.push_back(std::thread(&StereoRmsMeter::drafter,this));
+            threads.push_back(std::thread(&ModifiedStereoRmsMeter::flowController,this));
         }
 
         void flowController() override
         {
             while(shouldProceed)
             {
-               std::this_thread::sleep_for(50ms);
+                std::this_thread::sleep_for(50ms);
 
-               if(StatsManager::getStatsFor("drafter").getNumberOfCallsInLast(3000ms) < numberOfSignalsToBeTransferred)
-               {
-                  continue;
-               }
-               shouldProceed.store(false);
+                if(StatsManager::getStatsFor("drafter").getNumberOfCallsInLast(3000ms) < numberOfSignalsToBeTransferred)
+                {
+                    continue;
+                }
+                shouldProceed.store(false);
             }
         }
     };
@@ -197,9 +184,9 @@ public:
         Configuration config{};
 
         uint32_t numberOfSamples = 2048;
-        Frequencies frequencies = {992,996,1000,1004,1008};
+        Frequencies frequencies = {20,20000};
         const ThemeConfig theme = ThemeConfig::Theme1;
-        const Mode mode = Mode::StereoRmsMeter;
+        const Mode mode = Mode::Analyzer;
 
         config.data.add(Freqs{frequencies});
         config.data.add(VerticalLinePositions{Frequencies{}});
@@ -248,7 +235,7 @@ public:
     {
         expectCreateWindow();
         expectInitializeGPU(config.get<NumberOfRectangles>(), true);
-        expectDraw({-0.632012, -0.301901,  -0.208429,-0.301901, -0.632012}, true);
+        expectDraw({-0.169749, -0.294756}, true);
         expectCheckIfWindowShouldBeClosed();
         expectCheckIfWindowShouldRecreated();
         expectCheckIfThemeShouldBeChanged();
@@ -259,16 +246,14 @@ private:
     static constexpr float numberOfSignalsToBeTransferred{1};
 };
 
-
-TEST_F(AudioSpectrumAnalyzerTests2, checkCalculationsAndDataTransfer)
+TEST_F(StereoRmsMeterTests2, checkCalculationsAndDataTransfer)
 {
     auto config = getConfig();
 
     expectWindowDraw(config);
-    std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = std::make_unique<ModifiedAudioSpectrumAnalyzer>(config);
+    std::unique_ptr<SpectrumAnalyzerBase> spectrumAnalyzer = std::make_unique<ModifiedStereoRmsMeter>(getConfig());
     spectrumAnalyzer->init();
     spectrumAnalyzer->run();
 
     EXPECT_EQ(std::get<ApplicationState>(spectrumAnalyzer->getEvent()), ApplicationState::Shutdown);
 }
-

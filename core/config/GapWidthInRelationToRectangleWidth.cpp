@@ -37,6 +37,21 @@ float GapWidthInRelationToRectangleWidth::getGapWidthInRelationToRectangleWidth<
     }
 }
 
+template<>
+float GapWidthInRelationToRectangleWidth::getGapWidthInRelationToRectangleWidth<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        case ThemeConfig::Theme1:
+            return 1.0;
+        case ThemeConfig::Theme2:
+            return 1.0;
+        default:
+            return 0;
+    }
+}
+
+
 GapWidthInRelationToRectangleWidth::GapWidthInRelationToRectangleWidth(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -46,6 +61,9 @@ GapWidthInRelationToRectangleWidth::GapWidthInRelationToRectangleWidth(const The
         break;
     case Mode::Visualizer:
         value = getGapWidthInRelationToRectangleWidth<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getGapWidthInRelationToRectangleWidth<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

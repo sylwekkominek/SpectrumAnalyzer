@@ -54,6 +54,20 @@ ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldSecondaryRectangle::getColors
     return value;
 }
 
+template<>
+ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldSecondaryRectangle::getColorsOfDynamicMaxHoldSecondaryRectangle<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    const ColorsOfRectanglePerVertices value{
+        {0,{0.50, 0.50, 0.50, 0.4}},
+        {1,{0.00, 0.00, 0.00, 0.4}},
+        {2,{0.00, 0.00, 0.00, 0.4}},
+        {3,{0.50, 0.50, 0.50, 0.4}}
+    };
+
+    return value;
+}
+
+
 ColorsOfDynamicMaxHoldSecondaryRectangle::ColorsOfDynamicMaxHoldSecondaryRectangle(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -63,6 +77,9 @@ ColorsOfDynamicMaxHoldSecondaryRectangle::ColorsOfDynamicMaxHoldSecondaryRectang
         break;
     case Mode::Visualizer:
         value = getColorsOfDynamicMaxHoldSecondaryRectangle<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getColorsOfDynamicMaxHoldSecondaryRectangle<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

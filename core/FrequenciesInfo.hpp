@@ -15,7 +15,6 @@ using FrequencyIndex = uint32_t;
 
 using FrequencyIndexesPerRectangle = std::map<RectangleIndex, std::vector<FrequencyIndex>>;
 
-
 class FrequenciesInfo
 {
 public:
@@ -24,6 +23,7 @@ public:
     std::vector<RectangleIndex> getRectangleIndexesClosestToFrequencies(const Frequencies &demandedFrequencies);
     uint32_t numberOfFrequencies();
     FrequencyIndexesPerRectangle getAllFrequencyIndexes();
+    std::vector<FrequencyRange> getFrequencyRangeForEachRectangle();
 
 private:
     using ClosestFrequency = float;

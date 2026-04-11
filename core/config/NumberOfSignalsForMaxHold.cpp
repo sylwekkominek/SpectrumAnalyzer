@@ -36,6 +36,12 @@ uint32_t NumberOfSignalsForMaxHold::getNumberOfSignalsForMaxHold<Mode::Visualize
     return 5;
 }
 
+template<>
+uint32_t NumberOfSignalsForMaxHold::getNumberOfSignalsForMaxHold<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    return 3;
+}
+
 NumberOfSignalsForMaxHold::NumberOfSignalsForMaxHold(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -45,6 +51,9 @@ NumberOfSignalsForMaxHold::NumberOfSignalsForMaxHold(const ThemeConfig themeConf
         break;
     case Mode::Visualizer:
         value = getNumberOfSignalsForMaxHold<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getNumberOfSignalsForMaxHold<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

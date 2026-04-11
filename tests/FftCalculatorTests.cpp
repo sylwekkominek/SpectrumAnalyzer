@@ -1,21 +1,21 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
 
-#include "core/FFTCalculator.hpp"
+#include "core/FftCalculator.hpp"
 #include "helpers/TestHelpers.hpp"
 #include "helpers/ValuesChecker.hpp"
 #include <gtest/gtest.h>
 #include <cmath>
 
 
-class FFTCalculatorTestBase : public ValuesChecker<-4>, public ::testing::TestWithParam<FftType>
+class FftCalculatorTestBase : public ValuesChecker<-4>, public ::testing::TestWithParam<FftType>
 {
 public:
 
-    void verifyFftData(const FFTResult &dataInQueue, const std::map<Position,ExpectedValue> &expectedFftValues, const std::map<Position,ExpectedValue> &expectedFftValuesAfterNormalization, const std::map<Position,ExpectedValue> &expectedPhaseValues)
+    void verifyFftData(const FftResult &dataInQueue, const std::map<Position,ExpectedValue> &expectedFftValues, const std::map<Position,ExpectedValue> &expectedFftValuesAfterNormalization, const std::map<Position,ExpectedValue> &expectedPhaseValues)
     {
         const auto absSignal = calculateAbs(dataInQueue);
         const auto phaseSignal = calculatePhase(dataInQueue);
@@ -36,7 +36,7 @@ public:
     }
 };
 
-class FFTCalculatorTest : public FFTCalculatorTestBase
+class FftCalculatorTest : public FftCalculatorTestBase
 {
 public:
     const uint32_t numberOfSamples{8};
@@ -47,21 +47,21 @@ public:
         return generateSignal(numberOfSamples,samplingFrequency,signalFreqency, amplitude, phaseOffset);
     }
 
-    std::unique_ptr<FFTCalculatorBase> getCalculator(FftType fftType, uint32_t fftSize)
+    std::unique_ptr<FftCalculatorBase> getCalculator(FftType fftType, uint32_t fftSize)
     {
         return (fftType == FftType::Complex)
-                            ? std::unique_ptr<FFTCalculatorBase>(std::make_unique<ComplexFFTCalculator>(fftSize))
-                            : std::unique_ptr<FFTCalculatorBase>(std::make_unique<RealFFTCalculator>(fftSize));
+                            ? std::unique_ptr<FftCalculatorBase>(std::make_unique<ComplexFftCalculator>(fftSize))
+                            : std::unique_ptr<FftCalculatorBase>(std::make_unique<RealFftCalculator>(fftSize));
     }
 };
 
-TEST_F(FFTCalculatorTest, checkingRealAndComplexFft)
+TEST_F(FftCalculatorTest, checkingRealAndComplexFft)
 {
     const uint32_t signalFreqency{1234};
     const float amplitude{1};
 
-    RealFFTCalculator fftCalculatorReal(numberOfSamples);
-    ComplexFFTCalculator fftCalculatorComplex(numberOfSamples);
+    RealFftCalculator fftCalculatorReal(numberOfSamples);
+    ComplexFftCalculator fftCalculatorComplex(numberOfSamples);
 
     const auto inputData = generateTestSignal(signalFreqency, amplitude);
 
@@ -71,7 +71,7 @@ TEST_F(FFTCalculatorTest, checkingRealAndComplexFft)
     valueChecker(fftReal, fftComplex);
 }
 
-TEST_P(FFTCalculatorTest, checkingFftWithSignal1kHz)
+TEST_P(FftCalculatorTest, checkingFftWithSignal1kHz)
 {
     const uint32_t signalFreqency{1000};
     const float amplitude{1};
@@ -89,7 +89,7 @@ TEST_P(FFTCalculatorTest, checkingFftWithSignal1kHz)
     verifyFftData(fft, expectedFftValues, expectedFftValuesAfterNormalization, expectedPhaseValues);
 }
 
-TEST_P(FFTCalculatorTest, checkingFftWithSignal2kHzAndPhaseOffset)
+TEST_P(FftCalculatorTest, checkingFftWithSignal2kHzAndPhaseOffset)
 {
     const uint32_t signalFreqency{2000};
     const uint32_t phaseOffset{135};
@@ -106,7 +106,7 @@ TEST_P(FFTCalculatorTest, checkingFftWithSignal2kHzAndPhaseOffset)
     verifyFftData(fft, {}, expectedFftValuesAfterNormalization, expectedPhaseValues);
 }
 
-TEST_P(FFTCalculatorTest, checkingTwoSignalsAddedTogether)
+TEST_P(FftCalculatorTest, checkingTwoSignalsAddedTogether)
 {
     const uint32_t firstSignalFreqency{1000};
     const float firstSignalAmplitude{1};
@@ -131,12 +131,13 @@ TEST_P(FFTCalculatorTest, checkingTwoSignalsAddedTogether)
     verifyFftData(fft, expectedFftValues, expectedFftValuesAfterNormalization, expectedPhaseValues);
 }
 
+
 INSTANTIATE_TEST_SUITE_P(
     FFTCalculatorTest,
-    FFTCalculatorTest,
+    FftCalculatorTest,
     ::testing::Values(FftType::Real,FftType::Complex));
 
-class WelchCalculatorTest : public FFTCalculatorTestBase
+class WelchCalculatorTest : public FftCalculatorTestBase
 {
 public:
     const float marginOfError = exp(-6);
@@ -157,21 +158,19 @@ TEST_P(WelchCalculatorTest, checkingIfCalculatorWorksWellWith50PercentOverlappin
 
     std::vector<float> signal = generateSignal(numberOfSamples,numberOfSamples,signalAmplitude);
 
-    DataExchanger<std::unique_ptr<FFTResult>> queue(maxQueueValue);
-
     WelchCalculator welchCalculator(GetParam(), numberOfSamples, initialOverlapping, generateWindow(numberOfSamples));
     welchCalculator.updateOverlapping(overlapping);
     welchCalculator.updateBuffer(signal);
     welchCalculator.updateBuffer(signal);
-    welchCalculator.calculate(queue);
+    auto result = welchCalculator.calculate();
 
-    EXPECT_EQ(3, queue.getSize());
+    EXPECT_EQ(3, result.size());
 
     const std::map<Position,ExpectedValue> expectedFftValuesAfterNormalization = {{0,0}, {1,signalAmplitude}, {2,0},{3,0},{4,0},{5,0},{6,0}, {7,0}, {8,0},{9,0}, {10,0}, {11,0},{12,0},{13,0},{14,0}, {15,signalAmplitude}};
 
-    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
-    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,90}, {15,-90}});
-    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
+    verifyFftData(result.at(0), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
+    verifyFftData(result.at(1), {}, expectedFftValuesAfterNormalization, {{1,90}, {15,-90}});
+    verifyFftData(result.at(2), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
 }
 
 TEST_P(WelchCalculatorTest, checkingIfCalculatorWorksWellWith75PercentOverlapping)
@@ -180,22 +179,20 @@ TEST_P(WelchCalculatorTest, checkingIfCalculatorWorksWellWith75PercentOverlappin
 
     std::vector<float> signal = generateSignal(numberOfSamples,numberOfSamples,signalAmplitude);
 
-    DataExchanger<std::unique_ptr<FFTResult>> queue(maxQueueValue);
-
     WelchCalculator welchCalculator(GetParam(), numberOfSamples, overlapping, generateWindow(numberOfSamples));
     welchCalculator.updateBuffer(signal);
     welchCalculator.updateBuffer(signal);
-    welchCalculator.calculate(queue);
+    auto result =  welchCalculator.calculate();
 
-    EXPECT_EQ(5, queue.getSize());
+    EXPECT_EQ(5, result.size());
 
     const std::map<Position,ExpectedValue> expectedFftValuesAfterNormalization = {{0,0}, {1,signalAmplitude}, {2,0},{3,0},{4,0},{5,0},{6,0}, {7,0}, {8,0},{9,0}, {10,0}, {11,0},{12,0},{13,0},{14,0}, {15,signalAmplitude}};
 
-    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
-    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,0}, {15,0}});
-    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,90}, {15,-90}});
-    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,180}, {15,-180}});
-    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
+    verifyFftData(result.at(0), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
+    verifyFftData(result.at(1), {}, expectedFftValuesAfterNormalization, {{1,0}, {15,0}});
+    verifyFftData(result.at(2), {}, expectedFftValuesAfterNormalization, {{1,90}, {15,-90}});
+    verifyFftData(result.at(3), {}, expectedFftValuesAfterNormalization, {{1,180}, {15,-180}});
+    verifyFftData(result.at(4), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
 }
 
 TEST_P(WelchCalculatorTest, checkingIfCalculatorWorksWellWithOverlappingBelowProperRange)
@@ -205,19 +202,17 @@ TEST_P(WelchCalculatorTest, checkingIfCalculatorWorksWellWithOverlappingBelowPro
 
     std::vector<float> signal = generateSignal(numberOfSamples,numberOfSamples,signalAmplitude);
 
-    DataExchanger<std::unique_ptr<FFTResult>> queue(maxQueueValue);
-
     WelchCalculator welchCalculator(GetParam(), numberOfSamples, initialOverlapping, generateWindow(numberOfSamples));
     welchCalculator.updateOverlapping(overlappingBelowProperRange);
     welchCalculator.updateBuffer(signal);
     welchCalculator.updateBuffer(signal);
-    welchCalculator.calculate(queue);
+    auto result =  welchCalculator.calculate();
 
-    EXPECT_EQ(2, queue.getSize());
+    EXPECT_EQ(2, result.size());
 
     const std::map<Position,ExpectedValue> expectedFftValuesAfterNormalization = {{0,0}, {1,signalAmplitude}, {2,0},{3,0},{4,0},{5,0},{6,0}, {7,0}, {8,0},{9,0}, {10,0}, {11,0},{12,0},{13,0},{14,0}, {15,signalAmplitude}};
 
-    verifyFftData(*queue.get(), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
+    verifyFftData(result.at(0), {}, expectedFftValuesAfterNormalization, {{1,-90}, {15,90}});
 }
 
 TEST_P(WelchCalculatorTest, checkingIfCalculatorWorksWellWithOverlappingAboveProperRange)
@@ -226,17 +221,16 @@ TEST_P(WelchCalculatorTest, checkingIfCalculatorWorksWellWithOverlappingAbovePro
 
     std::vector<float> signal = generateSignal(numberOfSamples,numberOfSamples,signalAmplitude);
 
-    DataExchanger<std::unique_ptr<FFTResult>> queue(maxQueueValue);
-
     WelchCalculator welchCalculator(GetParam(), numberOfSamples, overlappingAboveProperRange, generateWindow(numberOfSamples));
     welchCalculator.updateBuffer(signal);
     welchCalculator.updateBuffer(signal);
-    welchCalculator.calculate(queue);
+    auto result =  welchCalculator.calculate();
 
-    EXPECT_EQ(17, queue.getSize());
+    EXPECT_EQ(17, result.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(
     WelchCalculatorTest,
     WelchCalculatorTest,
     ::testing::Values(FftType::Real,FftType::Complex));
+

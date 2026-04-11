@@ -63,6 +63,24 @@ ColorsOfRectanglePerVertices ColorsOfRectangle::getColorsOfRectangle<Mode::Visua
     }
 }
 
+
+template<>
+ColorsOfRectanglePerVertices ColorsOfRectangle::getColorsOfRectangle<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    const ColorsOfRectanglePerVertices defaultValue{
+        {0,{0.2, 0.2, 0.2,0.1}},
+        {1,{0,0,0,0.1}},
+        {2,{0,0,0,0.1}},
+        {3,{0.2, 0.2, 0.2,0.1}}
+    };
+
+    switch(themeConfig)
+    {
+        default:
+            return defaultValue;
+    }
+}
+
 ColorsOfRectangle::ColorsOfRectangle(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -72,6 +90,9 @@ ColorsOfRectangle::ColorsOfRectangle(const ThemeConfig themeConfig, const Mode m
         break;
     case Mode::Visualizer:
         value = getColorsOfRectangle<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getColorsOfRectangle<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

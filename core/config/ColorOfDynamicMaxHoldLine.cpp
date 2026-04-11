@@ -44,6 +44,16 @@ Color ColorOfDynamicMaxHoldLine::getColorOfDynamicMaxHoldLine<Mode::Visualizer>(
     }
 }
 
+template<>
+Color ColorOfDynamicMaxHoldLine::getColorOfDynamicMaxHoldLine<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {0.15,1,0.15,1};
+    }
+}
+
 ColorOfDynamicMaxHoldLine::ColorOfDynamicMaxHoldLine(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -53,6 +63,9 @@ ColorOfDynamicMaxHoldLine::ColorOfDynamicMaxHoldLine(const ThemeConfig themeConf
             break;
         case Mode::Visualizer:
             value = getColorOfDynamicMaxHoldLine<Mode::Visualizer>(themeConfig);
+            break;
+        case Mode::StereoRmsMeter:
+            value = getColorOfDynamicMaxHoldLine<Mode::StereoRmsMeter>(themeConfig);
             break;
     }
 }

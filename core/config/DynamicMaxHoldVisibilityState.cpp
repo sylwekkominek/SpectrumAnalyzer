@@ -51,6 +51,13 @@ bool DynamicMaxHoldVisibilityState::getDynamicMaxHoldVisibilityState<Mode::Visua
     return true;
 }
 
+template<>
+bool DynamicMaxHoldVisibilityState::getDynamicMaxHoldVisibilityState<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    return true;
+}
+
+
 DynamicMaxHoldVisibilityState::DynamicMaxHoldVisibilityState(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -61,5 +68,10 @@ DynamicMaxHoldVisibilityState::DynamicMaxHoldVisibilityState(const ThemeConfig t
     case Mode::Visualizer:
         value = getDynamicMaxHoldVisibilityState<Mode::Visualizer>(themeConfig);
         break;
+    case Mode::StereoRmsMeter:
+        value = getDynamicMaxHoldVisibilityState<Mode::StereoRmsMeter>(themeConfig);
+        break;
     }
+
 }
+

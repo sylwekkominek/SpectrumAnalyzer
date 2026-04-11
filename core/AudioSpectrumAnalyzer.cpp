@@ -5,19 +5,17 @@
  */
 
 #include "AudioSpectrumAnalyzer.hpp"
-#include "dataSource/SamplesCollector.hpp"
-#include "Window.hpp"
+#include "dataSource/DataSourceBase.hpp"
 #include "Stats.hpp"
 #include "Helpers.hpp"
 #include "CommonData.hpp"
 #include "DataCalculator.hpp"
 #include "FrequenciesInfo.hpp"
-#include "PowerAverager.hpp"
-#include <iostream>
+#include "FftBinCombiner.hpp"
 #include <optional>
 
 AudioSpectrumAnalyzer::AudioSpectrumAnalyzer(const Configuration &configuration, std::promise<AppEvent> &&appEvent):
-    SpectrumAnalyzerBase(configuration, std::move(appEvent))
+    AudioSpectrumAnalyzerBase(configuration, std::move(appEvent))
 {
 }
 
@@ -28,50 +26,6 @@ void AudioSpectrumAnalyzer::init()
     threads.push_back(std::thread(&AudioSpectrumAnalyzer::processing,this));
     threads.push_back(std::thread(&AudioSpectrumAnalyzer::drafter,this));
     threads.push_back(std::thread(&AudioSpectrumAnalyzer::flowController,this));
-}
-
-void AudioSpectrumAnalyzer::samplesUpdater()
-{
-    const uint32_t noOfSamplesToBeCollectedFromHwEachTime{128};
-    const std::string processName{"samplesUpdater"};
-    StatsManager statsManager(processName);
-
-    SamplesCollector samplesCollector(config.get<PythonDataSourceEnabled>(), config.get<LoopbackEnabled>(), audioConfigFile);
-
-    samplesCollector.initialize(noOfSamplesToBeCollectedFromHwEachTime, config.get<SamplingRate>());
-
-    while(shouldProceed)
-    {
-        statsManager.update();
-
-        if(samplesCollector.checkIfErrorOccured())
-        {
-            for(int i=0;i< config.get<DesiredFrameRate>();++i)
-            {
-                dataExchanger.push_back(std::make_unique<Data>(std::move(std::vector<float>(config.get<NumberOfSamples>(),getFloorDbFs16bit()))));
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000 / config.get<DesiredFrameRate>()));
-            }
-
-            std::cout<<"PLEASE ENABLE YOUR MICROPHONE OR ANOTHER AUDIO INPUT DEVICE."<<std::endl;
-
-            samplesCollector.initialize(noOfSamplesToBeCollectedFromHwEachTime, config.get<SamplingRate>());
-        }
-        else
-        {
-            auto data = samplesCollector.collectDataFromHw();
-
-            if(!data.empty())
-            {
-                dataExchanger.push_back(std::make_unique<Data>(std::move(data)));
-            }
-            else
-            {
-                dataExchanger.push_back(std::make_unique<Data>(std::move(std::vector<float>(config.get<NumberOfSamples>(), getFloorDbFs16bit()))));
-            }
-        }
-    }
-
-    dataExchanger.stop();
 }
 
 void AudioSpectrumAnalyzer::fftCalculator()
@@ -100,14 +54,22 @@ void AudioSpectrumAnalyzer::fftCalculator()
 
         statsManager.update();
 
+        auto stereoData = std::any_cast<StereoData>(*dataInTimeDomain);
+
         fft.updateOverlapping(overlapping);
-        fft.updateBuffer(*dataInTimeDomain);
-        fft.calculate(fftDataExchanger);
+        fft.updateBuffer(getAverage(stereoData.left, stereoData.right));
+
+        auto fftResult = fft.calculate();
+
+        for(uint32_t i=0; i<fftResult.size(); ++i)
+        {
+            fftDataExchanger.push_back(std::make_unique<std::any>(std::move(fftResult.at(i))));
+        }
+
     }
 
     fftDataExchanger.stop();
 }
-
 
 void AudioSpectrumAnalyzer::processing()
 {
@@ -119,7 +81,7 @@ void AudioSpectrumAnalyzer::processing()
     DataAverager dataAverager(frequenciesInfo.numberOfFrequencies(), config.get<NumberOfSignalsForAveraging>());
     DataSmoother dataSmoother(frequenciesInfo.numberOfFrequencies(), config.get<AlphaFactor>());
 
-    PowerAverager powerAverager(config.get<ScalingFactor>(), config.get<OffsetFactor>(), frequenciesInfo.getAllFrequencyIndexes());
+    FftBinCombiner fftBinCombiner(config.get<ScalingFactor>(), config.get<OffsetFactor>(), frequenciesInfo.getAllFrequencyIndexes());
 
 
     while(shouldProceed)
@@ -133,7 +95,7 @@ void AudioSpectrumAnalyzer::processing()
 
         statsManager.update();
 
-        dataMaxHolder.push_back(powerAverager.calculate(*fftResult));
+        dataMaxHolder.push_back(fftBinCombiner.combineMagnitudes(std::any_cast<FftResult>(*fftResult)));
 
         auto dataWithMaxValue = dataMaxHolder.calculate();
 
@@ -148,99 +110,12 @@ void AudioSpectrumAnalyzer::processing()
                 dataSmoother.push_back(averagedData);
                 auto smoothedData = dataSmoother.calculate();
 
-                processedDataExchanger.push_back(std::make_unique<Data>(smoothedData));
+                processedDataExchanger.push_back(std::make_unique<std::any>(smoothedData));
             }
         }
     }
 
     processedDataExchanger.stop();
-}
-
-void AudioSpectrumAnalyzer::drafter()
-{
-    const std::string processName{"drafter"};
-    StatsManager statsManager(processName);
-
-    bool isFullScreenEnabled = config.get<DefaultFullscreenState>();
-    std::unique_ptr<Window> window = std::make_unique<Window>(config, isFullScreenEnabled);
-    window->initializeGPU();
-
-    while(shouldProceed)
-    {
-        const auto &data = processedDataExchanger.get();
-
-        if(data == nullptr)
-        {
-            continue;
-        }
-
-        statsManager.update();
-
-        window->draw(*data);
-
-
-        if(window->checkIfWindowShouldBeRecreated())
-        {
-            isFullScreenEnabled = !isFullScreenEnabled;
-            window = std::make_unique<Window>(config, isFullScreenEnabled);
-            window->initializeGPU();
-        }
-
-        if(window->checkIfWindowShouldBeClosed())
-        {
-            appEventPromise.set_value(ApplicationState::Shutdown);
-            shouldProceed.store(false);
-        }
-
-        if (auto themeConfig = window->checkIfThemeShouldBeChanged())
-        {
-            appEventPromise.set_value(*themeConfig);
-            shouldProceed.store(false);
-        }
-    }
-}
-void AudioSpectrumAnalyzer::flowController()
-{
-    float coeffUsedInCaseWhenScreenFallsBehindIncomingData = -0.01;
-
-    auto previousTime = steady_clock::now();
-
-    // wait for 2 seconds to prevent overlapping updates
-    while (shouldProceed)
-    {
-        if (std::chrono::steady_clock::now() - previousTime >= 2s)
-            break;
-
-        std::this_thread::sleep_for(100ms);
-    }
-
-    while(shouldProceed)
-    {
-        std::this_thread::sleep_for(100ms);
-        auto numberOfFramesPerSecond = StatsManager::getStatsFor("drafter").getNumberOfCallsInLast(1000ms);
-        auto overlappingDiff = calculateOverlappingDiff(config.get<DesiredFrameRate>(), numberOfFramesPerSecond);
-        auto overlapping = calculateOverlapping(config.get<SamplingRate>(), config.get<NumberOfSamples>(), numberOfFramesPerSecond);
-
-        if(processedDataExchanger.getSize() > 1)
-        {
-            overlapping = overlapping + coeffUsedInCaseWhenScreenFallsBehindIncomingData;
-        }
-
-        overlapping = overlapping + overlappingDiff;
-
-        if((overlapping >=0) && (overlapping < 1))
-        {
-            flowControlDataExchanger.push_back(std::move(overlapping));
-        }
-        auto now = steady_clock::now();
-
-        if(now - previousTime >= seconds(1))
-        {
-            std::cout<<"Samples are updated: "<<StatsManager::getStatsFor("samplesUpdater").getNumberOfCallsInLast(1000ms)<<" per second"<< " queue size: "<<dataExchanger.getSize()<<std::endl;
-            std::cout<<"Plots are updated: "<<numberOfFramesPerSecond<<" per second"<<" queue size: "<<processedDataExchanger.getSize()<<std::endl;
-            previousTime = now;
-        }
-    }
 }
 
 AudioSpectrumAnalyzer::~AudioSpectrumAnalyzer()

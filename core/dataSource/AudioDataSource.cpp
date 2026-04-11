@@ -121,7 +121,7 @@ void AudioDataSource::updateBuffer()
     }
 }
 
-std::vector<float> AudioDataSource::collectDataFromHw()
+StereoData AudioDataSource::collectStereoDataFromHw()
 {
     if (isDataAvailable())
     {
@@ -129,17 +129,16 @@ std::vector<float> AudioDataSource::collectDataFromHw()
 
         if(buffer != std::nullopt)
         {
-            std::vector<float> leftChannel;
-            std::vector<float> rightChannel;
+            StereoData channels;
 
-            rightChannel.reserve(dataLength);
-            leftChannel.reserve(dataLength);
+            channels.left.reserve(dataLength);
+            channels.right.reserve(dataLength);
 
             for (uint32_t i = 0; i < buffer.value().size(); ++i)
             {
-                (i % 2) ? rightChannel.emplace_back(buffer.value()[i]) : leftChannel.emplace_back(buffer.value()[i]);
+                (i % 2) ? channels.right.emplace_back(buffer.value()[i]) : channels.left.emplace_back(buffer.value()[i]);
             }
-            return getAverage(leftChannel, rightChannel);
+            return channels;
         }
     }
 

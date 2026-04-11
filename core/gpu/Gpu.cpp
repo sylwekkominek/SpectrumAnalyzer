@@ -108,7 +108,7 @@ void Gpu::prepareHorizontalLineStaticTexts(const std::vector<float> &dbfsValues,
 {
     for(uint16_t i=0;i<dbfsValues.size();++i)
     {
-        horizontalLineStaticTexts.emplace_back(formatFloat(dbfsValues.at(i),4,2), colorOfStaticLines);
+        horizontalLineStaticTexts.emplace_back(formatFloat(dbfsValues[i],4,2), colorOfStaticLines);
     }
 }
 
@@ -116,7 +116,7 @@ void Gpu::prepareVerticalLineStaticTexts(const Frequencies &frequencies, const C
 {
     for(uint16_t i=0;i<frequencies.size();++i)
     {
-        verticalLineStaticTexts.emplace_back(formatFloat(frequencies.at(i),4,0), colorOfStaticLines);
+        verticalLineStaticTexts.emplace_back(formatFloat(frequencies[i],4,0), colorOfStaticLines);
     }
 }
 
@@ -174,7 +174,7 @@ void Gpu::drawDynamicLines(const Lines &dynamicLinePositions, const Color &color
 
     for(uint32_t i=0;i<numberOfElements;++i)
     {
-        dynamicLines.at(i).draw(dynamicLinePositions.at(i), colorOfDynamicLines);
+        dynamicLines[i].draw(dynamicLinePositions[i], colorOfDynamicLines);
     }
 }
 
@@ -214,6 +214,21 @@ void Gpu::drawHorizontalLineStaticTexts(const Lines &horizontalLinePositions, co
 
         horizontalLineStaticTexts[i].draw(HorizontalAligment::CENTER, VerticalAligment::CENTER, (leftCenterOfTheOffset - workaroundForNotPerfectlyAlignedFont) * windowSize.x ,textPositionInPixels);
         horizontalLineStaticTexts[i].draw(HorizontalAligment::CENTER, VerticalAligment::CENTER, (rightCenterOfTheOffset + workaroundForNotPerfectlyAlignedFont) * windowSize.x , textPositionInPixels);
+    }
+}
+
+void Gpu::drawHorizontalLineStaticTexts(const Lines &horizontalLinePositions, const WindowSize &windowSize)
+{
+    const float workaroundForNotPerfectlyAlignedFont = 0.001;
+
+    const uint32_t numberOfElements = std::min(horizontalLineStaticTexts.size(), horizontalLinePositions.size());
+
+
+    for(uint32_t i=0;i<numberOfElements;++i)
+    {
+        const auto textPositionInPixels = convertYPositionInPercentToPixels(horizontalLinePositions[i].front().y, windowSize.y);
+
+        horizontalLineStaticTexts[i].draw(HorizontalAligment::CENTER, VerticalAligment::CENTER, (0.5 + workaroundForNotPerfectlyAlignedFont) * windowSize.x ,textPositionInPixels);
     }
 }
 

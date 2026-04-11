@@ -41,6 +41,16 @@ uint32_t DesiredFrameRate::getDesiredFrameRate<Mode::Visualizer>(const ThemeConf
     }
 }
 
+template<>
+uint32_t DesiredFrameRate::getDesiredFrameRate<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return 55;
+    }
+}
+
 DesiredFrameRate::DesiredFrameRate(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -50,6 +60,9 @@ DesiredFrameRate::DesiredFrameRate(const ThemeConfig themeConfig, const Mode mod
         break;
     case Mode::Visualizer:
         value = getDesiredFrameRate<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getDesiredFrameRate<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

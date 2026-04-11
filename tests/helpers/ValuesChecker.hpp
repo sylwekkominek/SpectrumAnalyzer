@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
-template <int indexOfMarginOfError>
+template <int indexOfMarginOfError, int scaleOfMarginOfError=1>
 struct ValuesChecker
 {
     using Position = uint32_t;
@@ -25,7 +25,19 @@ struct ValuesChecker
         else
         {
             EXPECT_EQ(true, std::equal(expectedValues.begin(), expectedValues.end(), values.begin(), [&](const auto &first, const auto &second){
-                return (std::abs(first - second) < marginOfError);}));
+
+            if (std::abs(first - second) >= marginOfError)
+            {
+                std::cout << std::fixed << std::setprecision(8)
+                          << "valueChecker: expected: " << first
+                          << ", actual: " << second
+                          << ", diff: " << std::abs(first - second)
+                          << ", marginOfError: " << marginOfError
+                          << std::endl;
+                return false;
+            }
+
+            return true;}));
         }
 
     }
@@ -62,6 +74,6 @@ struct ValuesChecker
     static const float marginOfError;
 };
 
-template <int indexOfMarginOfError>
-const float ValuesChecker<indexOfMarginOfError>::marginOfError = std::pow(10,indexOfMarginOfError);
+template <int indexOfMarginOfError, int scaleOfMarginOfError>
+const float ValuesChecker<indexOfMarginOfError, scaleOfMarginOfError>::marginOfError = scaleOfMarginOfError * std::pow(10,indexOfMarginOfError);
 

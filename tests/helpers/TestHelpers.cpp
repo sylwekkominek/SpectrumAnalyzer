@@ -110,3 +110,27 @@ std::vector<float> getDemandedFrequencies(uint32_t samplingRate, uint32_t fftSiz
     return frequencies;
 }
 
+float rms(const std::vector<float>& signal)
+{
+    if (signal.empty())
+        return 0.0f;
+
+    float sum{};
+
+    for (float x : signal)
+        sum += x * x;
+
+    return std::sqrt(sum / signal.size());
+}
+
+std::vector<std::complex<float>> createFakeFft(uint16_t fftSize, const std::vector<std::pair<uint16_t, float>>& binsWithMagnitudes)
+{
+    std::vector<std::complex<float>> data(fftSize, {0.0f, 0.0f});
+
+    for (const auto &[binIndex, magnitude] : binsWithMagnitudes)
+    {
+        data.at(binIndex) = {magnitude * fftSize/2, 0.0f};
+    }
+
+    return data;
+}

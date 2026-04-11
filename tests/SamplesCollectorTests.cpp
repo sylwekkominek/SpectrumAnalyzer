@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -11,7 +11,7 @@
 #include <cmath>
 
 
-class PythonDataSourceTests : public ValuesChecker<-6>, public ::testing::Test
+class PythonDataSourceTests : public ValuesChecker<-1,2>, public ::testing::Test
 {
 public:
     const char *pythonFileName = "testAudioConfig";
@@ -19,16 +19,19 @@ public:
 
 TEST_F(PythonDataSourceTests, pythonDataSourceTest)
 {
-    const uint32_t numberOfSamples{32};
-    const float samplingFrequency{32};
-    const float singalFrequency{1000};
-    const uint32_t amplitude{32767};
+    const uint32_t numberOfSamples{1024};
+    const float samplingFrequency{44100};
 
-    const auto expectedSignal = generateSignal(numberOfSamples, samplingFrequency, singalFrequency, amplitude);
+    const uint32_t leftSignalAmplitude = 32767;
+    const uint32_t rightSignalAmplitude = 16384;
+
+    const auto expectedLeftSignal = generateSignal(numberOfSamples, samplingFrequency, 1000, leftSignalAmplitude);
+    const auto expectedRightSignal = generateSignal(numberOfSamples, samplingFrequency, 1000, rightSignalAmplitude);
 
     PythonDataSource pythonDataSource(pythonFileName);
     pythonDataSource.initialize(numberOfSamples,samplingFrequency);
-    pythonDataSource.collectDataFromHw();
+    auto stereoData = pythonDataSource.collectStereoDataFromHw();
 
-    valueChecker(expectedSignal, pythonDataSource.collectDataFromHw());
+    valueChecker(expectedLeftSignal, stereoData.left);
+    valueChecker(expectedRightSignal, stereoData.right);
 }

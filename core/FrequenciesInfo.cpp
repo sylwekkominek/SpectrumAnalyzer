@@ -104,7 +104,6 @@ void FrequenciesInfo::updateClosestFrequenciesMap(const Frequencies &demandedFre
     });
 }
 
-
 void FrequenciesInfo::updateAllFrequenciesMap(const Frequencies &demandedFrequencies)
 {
 
@@ -179,6 +178,26 @@ FrequencyIndexesPerRectangle FrequenciesInfo::getAllFrequencyIndexes()
     }
 
     return frequencyIndexesPerRectangle;
+}
+
+std::vector<FrequencyRange> FrequenciesInfo::getFrequencyRangeForEachRectangle()
+{
+    std::vector<FrequencyRange> frequencyRangePerRectangle;
+
+    for(const auto &[rectangleIndex, frequencyInfos] : allFrequenciesMap)
+    {
+        FrequencyRange frequencyRange{};
+
+        if(!frequencyInfos.empty())
+        {
+            frequencyRange.first = frequencyInfos.front().second;
+            frequencyRange.second = frequencyInfos.back().second;
+        }
+
+        frequencyRangePerRectangle.emplace_back(frequencyRange);
+    }
+
+    return frequencyRangePerRectangle;
 }
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -27,6 +27,7 @@ public:
         Index index;
         State state;
         Boundaries boundaries;
+        FrequencyRange frequencyRange;
     };
 
     struct HighlightData
@@ -35,13 +36,14 @@ public:
         Data previous;
     };
 
-    RectangleHighligther(const uint16_t numberOfRectangles);
+    RectangleHighligther(const uint16_t numberOfRectangles, const std::vector<FrequencyRange> &horizontalRectanglesFrequencyRanges);
     HighlightData getData(const WindowSize &windowSize, const CursorPosition& cursorPosition);
-    std::string getStringToBePrinted(const float frequency, const float averagedDBFs, const float maxHoldDbFs, const float peakDbFs);
+    std::string getStringToBePrinted(const FrequencyRange frequencyRange, const float averagedDBFs, const float maxHoldDbFs, const float peakDbFs);
 private:
 
     bool isMouseLocatedOverCurrentlyBeingUsedRectangle(const WindowSize& windowSize, const CursorPosition& cursorPosition, const double xRectangleBegin, const double xRectangleEnd);
     bool isMouseActive(const CursorPosition& cursorPosition);
+    std::vector<FrequencyRange> assignFrequencyRangeForAllRectangles(const uint16_t numberOfRectangles, const std::vector<FrequencyRange> &horizontalRectanglesFrequencyRanges);
 
     Data previous{};
 
@@ -49,7 +51,8 @@ private:
     time_point<steady_clock> lastMouseMoveTime;
     CursorPosition previousCursorPosition;
     const std::vector<Boundaries> horizontalRectanglesBoundaries;
-    static constexpr uint32_t mouseNotActiveThresholdInMs = 5000;
+    const std::vector<FrequencyRange> horizontalRectanglesFrequencyRanges;
+    static constexpr uint32_t mouseNotActiveThresholdInMs = 10000;
     static constexpr double someSmallMouseMoveThreshold = 3;
 
 };

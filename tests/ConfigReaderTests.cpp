@@ -77,6 +77,11 @@ public:
         valueChecker(config.get<FrequencyTextPositions>(),  Positions{20, 50,125, 250, 500, 1000, 2000, 4000, 8000.00, 16000});
         EXPECT_EQ(config.get<WindowTitle>(), "( Mode: Loopback    FFT: 8192    Fs: 48kHz    Log Scale: 20Hz – 16kHz )");
         EXPECT_TRUE(config.get<LoopbackEnabled>());
+        EXPECT_EQ(config.get<HorizontalDrawingArea>().first,5);
+        EXPECT_EQ(config.get<HorizontalDrawingArea>().second,90);
+        EXPECT_NEAR(config.get<VerticalDbfsRange>().first,-96.32, precision);
+        EXPECT_NEAR(config.get<VerticalDbfsRange>().second, 0, precision);
+        EXPECT_EQ(config.get<SingleScaleMode>(),  false);
     }
 };
 
@@ -98,6 +103,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     DefaultFullscreenState defaultFullscreenState{false};
     DynamicMaxHoldAccelerationStateOfFalling dynamicMaxHoldAccelerationStateOfFalling{false};
     DynamicMaxHoldVisibilityState dynamicMaxHoldVisibilityState{false};
+    SingleScaleMode singleScaleMode{true};
     AdvancedColorSettings advancedColorSettings{"some random string :D"};
     BackgroundColorSettings backgroundColorSettings{"some random string..."};
     MaximizedWindowSize maximizedWindowSize{{123,456}};
@@ -126,6 +132,8 @@ TEST_F(ConfigReaderTests, configReaderTest)
     ColorOfDynamicMaxHoldLine colorOfDynamicMaxHoldLine{{0.1,0.2,0.3,0.4}};
     ColorOfDynamicMaxHoldSecondaryLine colorOfDynamicMaxHoldSecondaryLine{{0.5,0.6,0.7,0.8}};
     ColorOfStaticText colorOfStaticText{{0.8, 0.7, 0.6, 5}};
+    VerticalDbfsRange verticalDbfsRange{{-10,-100}};
+    HorizontalDrawingArea horizontalDrawingArea{{101,102}};
     VerticalLinePositions verticalLinePositions{{1001,2002,3003,4004,5005}};
     FrequencyTextPositions frequencyTextPositions{{5005, 4004,3003,2002,1001}};
     WindowTitle windowTitle("some new string");
@@ -138,6 +146,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     configFileReader.writeBoolToFile("LinesVisibilityState", comment, linesVisibilityState.value);
     configFileReader.writeBoolToFile("RectanglesVisibilityState", comment, rectanglesVisibilityState.value);
     configFileReader.writeBoolToFile("LoopbackEnabled", comment, loopbackEnabled.value);
+    configFileReader.writeBoolToFile("SingleScaleMode", comment, singleScaleMode.value);
     configFileReader.writeStringToFile("AdvancedColorSettings", comment, advancedColorSettings.value);
     configFileReader.writeStringToFile("BackgroundColorSettings", comment, backgroundColorSettings.value);
     configFileReader.writeStringToFile("WindowTitle", comment, windowTitle.value);
@@ -162,12 +171,13 @@ TEST_F(ConfigReaderTests, configReaderTest)
     configFileReader.writeVectorToCsv("ColorOfDynamicMaxHoldLine", comment, colorOfDynamicMaxHoldLine.value);
     configFileReader.writeVectorToCsv("ColorOfDynamicMaxHoldSecondaryLine", comment, colorOfDynamicMaxHoldSecondaryLine.value);
     configFileReader.writeVectorToCsv("ColorOfStaticText", comment, colorOfStaticText.value);
+    configFileReader.writeVectorToCsv("VerticalDbfsRange", comment, {verticalDbfsRange.value.first, verticalDbfsRange.value.second});
+    configFileReader.writeVectorToCsv("HorizontalDrawingArea", comment, {horizontalDrawingArea.value.first, horizontalDrawingArea.value.second});
     configFileReader.writeVectorToCsv("VerticalLinePositions", comment, verticalLinePositions.value);
     configFileReader.writeVectorToCsv("FrequencyTextPositions", comment, frequencyTextPositions.value);
     configFileReader.writeMapToCsv("ColorsOfRectangle", comment, colorsOfRectangle.value);
     configFileReader.writeMapToCsv("ColorsOfDynamicMaxHoldRectangle", comment, colorsOfDynamicMaxHoldRectangle.value);
     configFileReader.writeMapToCsv("ColorsOfDynamicMaxHoldSecondaryRectangle", comment, colorsOfDynamicMaxHoldSecondaryRectangle.value);
-
 
     ConfigReader configReader(theme, mode, "modifiedConfigTest");
     const auto &config = configReader.getConfig();
@@ -179,6 +189,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     EXPECT_EQ(config.get<LinesVisibilityState>(), linesVisibilityState.value);
     EXPECT_EQ(config.get<RectanglesVisibilityState>(), rectanglesVisibilityState.value);
     EXPECT_EQ(config.get<LoopbackEnabled>(), loopbackEnabled.value);
+    EXPECT_EQ(config.get<SingleScaleMode>(), singleScaleMode.value);
     EXPECT_EQ(config.get<AdvancedColorSettings>(), advancedColorSettings.value);
     EXPECT_EQ(config.get<BackgroundColorSettings>(), backgroundColorSettings.value);
     EXPECT_EQ(config.get<WindowTitle>(), windowTitle.value);
@@ -203,6 +214,10 @@ TEST_F(ConfigReaderTests, configReaderTest)
     valueChecker(config.get<ColorOfDynamicMaxHoldLine>(), colorOfDynamicMaxHoldLine.value);
     valueChecker(config.get<ColorOfDynamicMaxHoldSecondaryLine>(), colorOfDynamicMaxHoldSecondaryLine.value);
     valueChecker(config.get<ColorOfStaticText>(), colorOfStaticText.value);
+    EXPECT_EQ(config.get<VerticalDbfsRange>().first, verticalDbfsRange.value.first);
+    EXPECT_EQ(config.get<VerticalDbfsRange>().second, verticalDbfsRange.value.second);
+    EXPECT_EQ(config.get<HorizontalDrawingArea>().first, horizontalDrawingArea.value.first);
+    EXPECT_EQ(config.get<HorizontalDrawingArea>().second, horizontalDrawingArea.value.second);
     valueChecker(config.get<VerticalLinePositions>(), verticalLinePositions.value);
     valueChecker(config.get<FrequencyTextPositions>(), frequencyTextPositions.value);
     EXPECT_EQ(config.get<SignalWindow>(), signalWindow.value);

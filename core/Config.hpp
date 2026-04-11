@@ -45,9 +45,12 @@
 #include "config/SamplingRate.hpp"
 #include "config/ScalingFactor.hpp"
 #include "config/SignalWindow.hpp"
+#include "config/VerticalDbfsRange.hpp"
 #include "config/VerticalLinePositions.hpp"
 #include "config/WindowTitle.hpp"
 #include "config/LoopbackEnabled.hpp"
+#include "config/SingleScaleMode.hpp"
+#include "config/HorizontalDrawingArea.hpp"
 
 #include <vector>
 #include <cstdint>

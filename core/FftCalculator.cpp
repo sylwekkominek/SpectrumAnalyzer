@@ -4,21 +4,21 @@
  * see file LICENSE in this source tree.
  */
 
-#include "FFTCalculator.hpp"
+#include "FftCalculator.hpp"
 #include "DataExchanger.hpp"
 #include <cstdint>
 
 
-FFTCalculatorBase::FFTCalculatorBase(uint32_t size) : outPtr(std::make_unique<std::vector<fftw_complex>>(size))
+FftCalculatorBase::FftCalculatorBase(uint32_t size) : outPtr(std::make_unique<std::vector<fftw_complex>>(size))
 {
 }
 
-RealFFTCalculator::RealFFTCalculator(uint32_t size): FFTCalculatorBase((size / 2)+ 1), inRealPtr(std::make_unique<std::vector<double>>(size))
+RealFftCalculator::RealFftCalculator(uint32_t size): FftCalculatorBase((size / 2)+ 1), inRealPtr(std::make_unique<std::vector<double>>(size))
 {
     p = fftw_plan_dft_r2c_1d(size, inRealPtr->data(), outPtr->data(), FFTW_MEASURE);
 }
 
-FFTResult RealFFTCalculator::calculate(const std::vector<float> &inputData)
+FftResult RealFftCalculator::calculate(const std::vector<float> &inputData)
 {
 
     for(uint32_t i =0; i<inRealPtr->size(); ++i)
@@ -48,12 +48,12 @@ FFTResult RealFFTCalculator::calculate(const std::vector<float> &inputData)
 }
 
 
-ComplexFFTCalculator::ComplexFFTCalculator(uint32_t size): FFTCalculatorBase(size), inComplexPtr(std::make_unique<std::vector<fftw_complex>>(size))
+ComplexFftCalculator::ComplexFftCalculator(uint32_t size): FftCalculatorBase(size), inComplexPtr(std::make_unique<std::vector<fftw_complex>>(size))
 {
     p = fftw_plan_dft_1d(size, inComplexPtr->data(), outPtr->data(), FFTW_FORWARD,  FFTW_MEASURE);
 }
 
-FFTResult ComplexFFTCalculator::calculate(const std::vector<float> &inputData)
+FftResult ComplexFftCalculator::calculate(const std::vector<float> &inputData)
 {
 
     for(uint32_t i =0; i<inComplexPtr->size(); ++i)
@@ -75,13 +75,11 @@ FFTResult ComplexFFTCalculator::calculate(const std::vector<float> &inputData)
     return outputData;
 }
 
-
-FFTCalculatorBase::~FFTCalculatorBase()
+FftCalculatorBase::~FftCalculatorBase()
 {
     fftw_destroy_plan(p);
     fftw_cleanup();
 }
-
 
 WelchCalculator::WelchCalculator(const FftType fftType, const uint32_t fftSize, const float overlapping, const std::vector<float> window) :
     overlapping(overlapping),
@@ -89,10 +87,9 @@ WelchCalculator::WelchCalculator(const FftType fftType, const uint32_t fftSize, 
     fftSize(fftSize), window(window)
 {
     fftCalculator = (fftType == FftType::Complex)
-                        ? std::unique_ptr<FFTCalculatorBase>(std::make_unique<ComplexFFTCalculator>(fftSize))
-                        : std::unique_ptr<FFTCalculatorBase>(std::make_unique<RealFFTCalculator>(fftSize));
+                        ? std::unique_ptr<FftCalculatorBase>(std::make_unique<ComplexFftCalculator>(fftSize))
+                        : std::unique_ptr<FftCalculatorBase>(std::make_unique<RealFftCalculator>(fftSize));
 }
-
 
 void WelchCalculator::updateBuffer(const std::vector<float> &inputData)
 {
@@ -106,8 +103,10 @@ void WelchCalculator::updateOverlapping(const float newOverlapping)
     numberOfSamplesToBeRemoved = calculateNumberOfSamplesToBeRemoved();
 }
 
-void WelchCalculator::calculate(DataExchanger<std::unique_ptr<FFTResult>> &queue)
+
+std::vector<FftResult> WelchCalculator::calculate()
 {
+    std::vector<FftResult> fftResults;
 
     while(bufforWithDataToBeConverted.size() >= fftSize)
     {
@@ -118,11 +117,13 @@ void WelchCalculator::calculate(DataExchanger<std::unique_ptr<FFTResult>> &queue
             dataInTimeDomain[i] = dataInTimeDomain[i] * window.at(i);
         }
 
-        FFTResult result = fftCalculator->calculate(dataInTimeDomain);
-        queue.push_back(std::make_unique<FFTResult>(std::move(result)));
+        fftResults.emplace_back(fftCalculator->calculate(dataInTimeDomain));
         bufforWithDataToBeConverted.erase(bufforWithDataToBeConverted.begin(), bufforWithDataToBeConverted.begin() + numberOfSamplesToBeRemoved);
     }
+
+    return fftResults;
 }
+
 
 uint32_t WelchCalculator::calculateNumberOfSamplesToBeRemoved()
 {

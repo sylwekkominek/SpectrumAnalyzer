@@ -50,6 +50,21 @@ Positions HorizontalLinePositions::getHorizontalLinePositions<Mode::Visualizer>(
     }
 }
 
+template<>
+Positions HorizontalLinePositions::getHorizontalLinePositions<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    const Positions defaultValue{-6.02, -12.04, -18.06, -24.08, -30.10, -36.12, -36.12, -42.14, -48.16, -54.18, -60.20, -66.22, -72.24, -78.26, -84.28, -90.30};
+
+    switch(themeConfig)
+    {
+        case ThemeConfig::Theme1:
+            return {-6.02, -12.04, -18.06, -24.08, -30.10, -36.12, -36.12, -42.14, -48.16, -54.18};
+        case ThemeConfig::Theme2:
+            return {-6.02, -12.04, -18.06, -24.08, -30.10, -36.12, -36.12, -42.14, -48.16, -54.18};
+        default:
+            return defaultValue;
+    }
+}
 
 HorizontalLinePositions::HorizontalLinePositions(const ThemeConfig themeConfig, const Mode mode)
 {
@@ -61,5 +76,9 @@ HorizontalLinePositions::HorizontalLinePositions(const ThemeConfig themeConfig, 
     case Mode::Visualizer:
         value = getHorizontalLinePositions<Mode::Visualizer>(themeConfig);
         break;
+    case Mode::StereoRmsMeter:
+        value = getHorizontalLinePositions<Mode::StereoRmsMeter>(themeConfig);
+        break;
+
     }
 }

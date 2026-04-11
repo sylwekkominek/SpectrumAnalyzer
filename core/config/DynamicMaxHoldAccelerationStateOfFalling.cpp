@@ -38,6 +38,16 @@ bool DynamicMaxHoldAccelerationStateOfFalling::getDynamicMaxHoldAccelerationStat
     }
 }
 
+template<>
+bool DynamicMaxHoldAccelerationStateOfFalling::getDynamicMaxHoldAccelerationStateOfFalling<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return true;
+    }
+}
+
 DynamicMaxHoldAccelerationStateOfFalling::DynamicMaxHoldAccelerationStateOfFalling(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -47,6 +57,9 @@ DynamicMaxHoldAccelerationStateOfFalling::DynamicMaxHoldAccelerationStateOfFalli
         break;
     case Mode::Visualizer:
         value = getDynamicMaxHoldAccelerationStateOfFalling<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getDynamicMaxHoldAccelerationStateOfFalling<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

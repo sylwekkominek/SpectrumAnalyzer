@@ -60,6 +60,16 @@ Color ColorOfLine::getColorOfLine<Mode::Visualizer>(const ThemeConfig themeConfi
     }
 }
 
+template<>
+Color ColorOfLine::getColorOfLine<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {1,0.15,0.15,1};
+    }
+}
+
 ColorOfLine::ColorOfLine(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -69,6 +79,9 @@ ColorOfLine::ColorOfLine(const ThemeConfig themeConfig, const Mode mode)
         break;
     case Mode::Visualizer:
         value = getColorOfLine<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getColorOfLine<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

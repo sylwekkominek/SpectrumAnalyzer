@@ -9,6 +9,12 @@
 #include <vector>
 #include <cstdint>
 
+struct StereoData
+{
+    std::vector<float> left;
+    std::vector<float> right;
+};
+
 class DataSourceBase
 {
 public:
@@ -16,7 +22,7 @@ public:
     virtual ~DataSourceBase()=default;
     bool virtual initialize(uint32_t numberOfSamples, uint32_t samplingRate)=0;
     bool virtual checkIfErrorOccured()=0;
-    std::vector<float> virtual collectDataFromHw()=0;
+    virtual StereoData collectStereoDataFromHw() =0;
 
 protected:
     uint8_t static constexpr numberOfChannels{2};

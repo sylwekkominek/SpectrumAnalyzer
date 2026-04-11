@@ -88,6 +88,12 @@ Frequencies Freqs::getFreqs<Mode::Visualizer>(const ThemeConfig themeConfig)
     return getLogFrequencies();
 }
 
+template<>
+Frequencies Freqs::getFreqs<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    return {20,20000};
+}
+
 Freqs::Freqs(const ThemeConfig themeConfig, const Mode mode, uint16_t sampleRate, uint16_t fftSize) : sampleRate(sampleRate), fftSize(fftSize)
 {
     switch(mode)
@@ -97,6 +103,9 @@ Freqs::Freqs(const ThemeConfig themeConfig, const Mode mode, uint16_t sampleRate
         break;
     case Mode::Visualizer:
         value = getFreqs<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getFreqs<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

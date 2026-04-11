@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -12,7 +12,8 @@
 PythonDataSource::PythonDataSource(const char *moduleName):
     PythonCodeRunner(moduleName,
                      {"initialize",
-                      "getData"})
+                      "getLeftChannelData",
+                      "getRightChannelData"})
 {
 }
 
@@ -42,9 +43,9 @@ bool PythonDataSource::initialize(uint32_t dataLength, uint32_t samplingRate)
     return true;
 }
 
-std::vector<float> PythonDataSource::collectDataFromHw()
+StereoData PythonDataSource::collectStereoDataFromHw()
 {
-    return getData();
+    return StereoData{getLeftChannelData(), getRightChannelData()};
 }
 
 bool PythonDataSource::checkIfErrorOccured()
@@ -57,7 +58,20 @@ PythonDataSource::~PythonDataSource()
     Py_Finalize();
 }
 
-std::vector<float> PythonDataSource::getData()
+std::vector<float> PythonDataSource::getLeftChannelData()
+{
+    try
+    {
+        return getValues(pointersToPythonFunctions.at(__func__));
+    }
+    catch(...)
+    {
+        errorOccured = true;
+    }
+    return std::vector<float>{};
+}
+
+std::vector<float> PythonDataSource::getRightChannelData()
 {
     try
     {

@@ -19,7 +19,7 @@ public:
 
     bool initialize(uint32_t numberOfSamples, uint32_t sampleRate);
     bool checkIfErrorOccured();
-    std::vector<float> collectDataFromHw();
+    StereoData collectStereoDataFromHw();
 
 private:
     std::unique_ptr<DataSourceBase> dataSourceImpl;

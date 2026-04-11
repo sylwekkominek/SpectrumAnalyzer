@@ -37,6 +37,16 @@ uint32_t MaxQueueSize::getMaxQueueSize<Mode::Visualizer>(const ThemeConfig theme
     }
 }
 
+template<>
+uint32_t MaxQueueSize::getMaxQueueSize<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return 20;
+    }
+}
+
 MaxQueueSize::MaxQueueSize(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -46,6 +56,9 @@ MaxQueueSize::MaxQueueSize(const ThemeConfig themeConfig, const Mode mode)
         break;
     case Mode::Visualizer:
         value = getMaxQueueSize<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getMaxQueueSize<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

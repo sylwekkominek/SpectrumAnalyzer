@@ -62,6 +62,24 @@ ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldRectangle::getColorsOfDynamic
     }
 }
 
+template<>
+ColorsOfRectanglePerVertices ColorsOfDynamicMaxHoldRectangle::getColorsOfDynamicMaxHoldRectangle<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    const ColorsOfRectanglePerVertices defaultValue{
+        {0,{0.2, 0.2, 0.2,0.1}},
+        {1,{0,0,0,0.1}},
+        {2,{0,0,0,0.1}},
+        {3,{0.2, 0.2, 0.2,0.1}}
+    };
+
+    switch(themeConfig)
+    {
+        default:
+            return defaultValue;
+    }
+}
+
+
 ColorsOfDynamicMaxHoldRectangle::ColorsOfDynamicMaxHoldRectangle(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -71,6 +89,9 @@ ColorsOfDynamicMaxHoldRectangle::ColorsOfDynamicMaxHoldRectangle(const ThemeConf
             break;
         case Mode::Visualizer:
             value = getColorsOfDynamicMaxHoldRectangle<Mode::Visualizer>(themeConfig);
+            break;
+        case Mode::StereoRmsMeter:
+            value = getColorsOfDynamicMaxHoldRectangle<Mode::StereoRmsMeter>(themeConfig);
             break;
     }
 }

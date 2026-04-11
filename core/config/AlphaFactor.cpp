@@ -37,6 +37,12 @@ float AlphaFactor::getAlphaFactor<Mode::Visualizer>(const ThemeConfig themeConfi
     return 0.25f;
 }
 
+template <>
+float AlphaFactor::getAlphaFactor<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    return 0.75f;
+}
+
 AlphaFactor::AlphaFactor(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -46,6 +52,9 @@ AlphaFactor::AlphaFactor(const ThemeConfig themeConfig, const Mode mode)
             break;
         case Mode::Visualizer:
             value = getAlphaFactor<Mode::Visualizer>(themeConfig);
+            break;
+        case Mode::StereoRmsMeter:
+            value = getAlphaFactor<Mode::StereoRmsMeter>(themeConfig);
             break;
     }
 }

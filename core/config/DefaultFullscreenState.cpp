@@ -38,6 +38,16 @@ bool DefaultFullscreenState::getDefaultFullscreenState<Mode::Visualizer>(const T
     }
 }
 
+template<>
+bool DefaultFullscreenState::getDefaultFullscreenState<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return false;
+    }
+}
+
 DefaultFullscreenState::DefaultFullscreenState(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -47,6 +57,9 @@ DefaultFullscreenState::DefaultFullscreenState(const ThemeConfig themeConfig, co
         break;
     case Mode::Visualizer:
         value = getDefaultFullscreenState<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getDefaultFullscreenState<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

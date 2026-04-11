@@ -38,6 +38,16 @@ uint32_t SamplingRate::getSamplingRate<Mode::Visualizer>(const ThemeConfig theme
     }
 }
 
+template<>
+uint32_t SamplingRate::getSamplingRate<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+    default:
+        return 48000;
+    }
+}
+
 SamplingRate::SamplingRate(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -47,6 +57,9 @@ SamplingRate::SamplingRate(const ThemeConfig themeConfig, const Mode mode)
         break;
     case Mode::Visualizer:
         value = getSamplingRate<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getSamplingRate<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

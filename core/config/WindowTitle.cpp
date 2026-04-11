@@ -74,15 +74,28 @@ std::string WindowTitle::getWindowTitle<Mode::Visualizer>(const ThemeConfig them
     }
 }
 
+template<>
+std::string WindowTitle::getWindowTitle<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return  "";
+    }
+}
+
 WindowTitle::WindowTitle(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
     {
-    case Mode::Analyzer:
-        value = getWindowTitle<Mode::Analyzer>(themeConfig);
-        break;
-    case Mode::Visualizer:
-        value = getWindowTitle<Mode::Visualizer>(themeConfig);
-        break;
+        case Mode::Analyzer:
+            value = getWindowTitle<Mode::Analyzer>(themeConfig);
+            break;
+        case Mode::Visualizer:
+            value = getWindowTitle<Mode::Visualizer>(themeConfig);
+            break;
+        case Mode::StereoRmsMeter:
+            value = getWindowTitle<Mode::StereoRmsMeter>(themeConfig);
+            break;
     }
 }

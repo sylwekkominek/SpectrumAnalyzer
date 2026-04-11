@@ -20,7 +20,7 @@ public:
     ~AudioDataSource();
     bool initialize(uint32_t numberOfSamples, uint32_t sampleRate) override;
     bool checkIfErrorOccured() override;
-    std::vector<float> collectDataFromHw() override;
+    StereoData collectStereoDataFromHw() override;
 
     AudioDataSource(AudioDataSource&) = delete;
     AudioDataSource(AudioDataSource&&) = delete;

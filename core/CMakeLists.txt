@@ -83,6 +83,7 @@ add_library(spectrum-analyzer-config STATIC
     config/Frequencies.cpp
     config/FrequencyTextPositions.cpp
     config/GapWidthInRelationToRectangleWidth.cpp
+    config/HorizontalDrawingArea.cpp
     config/HorizontalLinePositions.cpp
     config/LinesVisibilityState.cpp
     config/LoopbackEnabled.cpp
@@ -99,9 +100,10 @@ add_library(spectrum-analyzer-config STATIC
     config/SamplingRate.cpp
     config/ScalingFactor.cpp
     config/SignalWindow.cpp
+    config/SingleScaleMode.cpp
+    config/VerticalDbfsRange.cpp
     config/VerticalLinePositions.cpp
     config/WindowTitle.cpp
-
 )
 
 target_include_directories(spectrum-analyzer-config
@@ -110,24 +112,24 @@ target_include_directories(spectrum-analyzer-config
     "${CMAKE_INCLUDE_CURRENT_DIR}/config"
   )
 
-
-
 add_library(spectrum-analyzer-core STATIC
 
     ConfigFileReader.cpp
     Config.cpp
     ConfigReader.cpp
-    FFTCalculator.cpp
+    FftCalculator.cpp
     WindowBase.cpp
     Window.cpp
     FrequenciesInfo.cpp
     DataCalculator.cpp
     Stats.cpp
+    AudioSpectrumAnalyzerBase.cpp
     AudioSpectrumAnalyzer.cpp
     Helpers.cpp
     RectangleHighligther.cpp
     DynamicMaxHolder.cpp
-    PowerAverager.cpp
+    FftBinCombiner.cpp
+    StereoRmsMeter.cpp
     gpu/ElementInsideGpu.cpp
     gpu/LineInsideGpu.cpp
     gpu/RectangleInsideGpu.cpp

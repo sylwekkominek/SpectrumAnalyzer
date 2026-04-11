@@ -14,6 +14,7 @@
 #include <stdexcept>
 
 using Frequency = float;
+using FrequencyRange = std::pair<Frequency, Frequency>;
 using Position = float;
 using Frequencies = std::vector<Frequency>;
 using Positions = std::vector<Position>;
@@ -57,7 +58,8 @@ enum class ThemeConfig : int16_t
 enum class Mode : uint16_t
 {
     Analyzer =0,
-    Visualizer = 1
+    Visualizer = 1,
+    StereoRmsMeter =2
 };
 
 enum class ApplicationState : uint16_t
@@ -108,7 +110,7 @@ public:
     }
 
 private:
-    std::map<std::type_index, std::any> data;
+    std::unordered_map<std::type_index, std::any> data;
 };
 
 

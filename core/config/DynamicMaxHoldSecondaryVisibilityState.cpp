@@ -39,6 +39,16 @@ bool DynamicMaxHoldSecondaryVisibilityState::getDynamicMaxHoldSecondaryVisibilit
     }
 }
 
+template<>
+bool DynamicMaxHoldSecondaryVisibilityState::getDynamicMaxHoldSecondaryVisibilityState<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return true;
+    }
+}
+
 DynamicMaxHoldSecondaryVisibilityState::DynamicMaxHoldSecondaryVisibilityState(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -48,6 +58,9 @@ DynamicMaxHoldSecondaryVisibilityState::DynamicMaxHoldSecondaryVisibilityState(c
         break;
     case Mode::Visualizer:
         value = getDynamicMaxHoldSecondaryVisibilityState<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getDynamicMaxHoldSecondaryVisibilityState<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

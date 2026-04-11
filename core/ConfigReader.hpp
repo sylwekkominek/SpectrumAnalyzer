@@ -44,6 +44,7 @@ private:
     DynamicMaxHoldSecondarySpeedOfFalling getDynamicMaxHoldSecondarySpeedOfFalling();
     DynamicMaxHoldAccelerationStateOfFalling getDynamicMaxHoldAccelerationStateOfFalling();
     HorizontalLinePositions getHorizontalLinePositions();
+    VerticalDbfsRange getVerticalDbfsRange();
     VerticalLinePositions getVerticalLinePositions();
     FrequencyTextPositions getFrequencyTextPositions();
     ColorOfLine getColorOfLine();
@@ -59,6 +60,8 @@ private:
     BackgroundColorSettings getBackgroundColorSettings();
     WindowTitle getWindowTitle();
     LoopbackEnabled getLoopbackEnabled();
+    SingleScaleMode getSingleScaleMode();
+    HorizontalDrawingArea getHorizontalDrawingArea();
 
     Configuration config{};
 

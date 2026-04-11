@@ -30,12 +30,13 @@ struct FigureGeometryCalculator
     static std::vector<std::pair<float, float>> horizontalRectanglesBoundariesFactory(const uint16_t numberOfRectangles, const float gap=0, const float xDrawOffsetInPercents=FigureGeometryCalculator::xDrawOffsetInPercents, const float xDrawSizeInPercents=FigureGeometryCalculator::xDrawSizeInPercents);
     static Rectangles rectanglesFactory(const float heightInPercentOfScreenSize, const uint16_t numberOfRectangles, const float offsetInPercentOffScreenSize=0, const float gap=0, const float xDrawOffsetInPercents=FigureGeometryCalculator::xDrawOffsetInPercents, const float xDrawSizeInPercents=FigureGeometryCalculator::xDrawSizeInPercents);
     static HorizontalLines getHorizontalLines(const Positions &positions);
-    static VerticalLines getVerticalLines(const uint16_t numberOfRectangles, const std::vector<uint32_t> &indexes);
-    static VerticalLineTextPositions getVerticalLineTextPositions(const uint16_t numberOfRectangles, const std::vector<uint32_t> &indexes);
+    static VerticalLines getVerticalLines(const uint16_t numberOfRectangles, const float gap, const std::vector<uint32_t> &indexes);
+    static VerticalLineTextPositions getVerticalLineTextPositions(const uint16_t numberOfRectangles, const float gap, const std::vector<uint32_t> &indexes);
     static Lines getDynamicLines(const std::vector<float> &dataToBePrinted);
     static float getWidthFromWidthInPercents(const float widthInPercents);
     static float getOffsetFromOffsetInPercents(const float offsetInPercents);
-    static Line getHighlightedLine(const uint16_t numberOfRectangles, const uint16_t rectangleNumber);
+    static Line getHighlightedLine(const uint16_t numberOfRectangles, const float gap, const uint16_t rectangleNumber);
+    static void setHorizontalDrawingArea(const float xDrawOffsetInPercents, const float xDrawSizeInPercents);
 
     static float xDrawOffsetInPercents;
     static float xDrawSizeInPercents;

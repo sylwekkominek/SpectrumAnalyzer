@@ -43,6 +43,12 @@ float DynamicMaxHoldSecondarySpeedOfFalling::getDynamicMaxHoldSecondarySpeedOfFa
     return 1000;
 }
 
+template<>
+float DynamicMaxHoldSecondarySpeedOfFalling::getDynamicMaxHoldSecondarySpeedOfFalling<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    return 1000;
+}
+
 DynamicMaxHoldSecondarySpeedOfFalling::DynamicMaxHoldSecondarySpeedOfFalling(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -52,6 +58,9 @@ DynamicMaxHoldSecondarySpeedOfFalling::DynamicMaxHoldSecondarySpeedOfFalling(con
         break;
     case Mode::Visualizer:
         value = getDynamicMaxHoldSecondarySpeedOfFalling<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getDynamicMaxHoldSecondarySpeedOfFalling<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

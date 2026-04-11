@@ -38,6 +38,16 @@ std::pair<uint16_t, uint16_t> MaximizedWindowSize::getMaximizedWindowSize<Mode::
     }
 }
 
+template<>
+std::pair<uint16_t, uint16_t> MaximizedWindowSize::getMaximizedWindowSize<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {1920, 1080};
+    }
+}
+
 MaximizedWindowSize::MaximizedWindowSize(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -47,6 +57,9 @@ MaximizedWindowSize::MaximizedWindowSize(const ThemeConfig themeConfig, const Mo
         break;
     case Mode::Visualizer:
         value = getMaximizedWindowSize<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getMaximizedWindowSize<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

@@ -7,16 +7,17 @@ add_executable(spectrum-analyzer-tests
         helpers/TestHelpers.cpp
         helpers/WindowBaseMock.cpp
         helpers/PortAudioMock.cpp
-        FFTCalculatorTests.cpp
+        FftCalculatorTests.cpp
         DataCalculatorTests.cpp
         FrequenciesInfoTests.cpp
-        PowerAveragerTests.cpp
+        FftBinCombinerTests.cpp
         StatsTests.cpp
         ConfigFileReaderTests.cpp
         ConfigReaderTests.cpp
         SamplesCollectorTests.cpp
         WindowTests.cpp
         AudioSpectrumAnalyzerTests.cpp
+        StereoRmsMeterTests.cpp
         )
 
 target_include_directories(spectrum-analyzer-tests

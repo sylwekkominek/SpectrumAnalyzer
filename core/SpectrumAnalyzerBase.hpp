@@ -8,12 +8,13 @@
 
 #include "ConfigReader.hpp"
 #include "DataExchanger.hpp"
-#include "FFTCalculator.hpp"
+#include "FftCalculator.hpp"
 #include <vector>
 #include <thread>
 #include <atomic>
 #include <future>
 #include <variant>
+#include <any>
 
 using AppEvent = std::variant<ThemeConfig, ApplicationState>;
 
@@ -73,9 +74,9 @@ protected:
 
 
 
-    DataExchanger<std::unique_ptr<Data>> dataExchanger;
-    DataExchanger<std::unique_ptr<FFTResult>> fftDataExchanger;
-    DataExchanger<std::unique_ptr<Data>> processedDataExchanger;
+    DataExchanger<std::unique_ptr<std::any>> dataExchanger;
+    DataExchanger<std::unique_ptr<std::any>> fftDataExchanger;
+    DataExchanger<std::unique_ptr<std::any>> processedDataExchanger;
     DataExchanger<float> flowControlDataExchanger;
     std::vector<std::thread> threads;
 private:

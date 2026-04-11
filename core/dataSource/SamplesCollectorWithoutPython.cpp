@@ -22,9 +22,9 @@ bool SamplesCollector::initialize(uint32_t numberOfSamples, uint32_t sampleRate)
     return dataSourceImpl->initialize(numberOfSamples,sampleRate);
 }
 
-std::vector<float> SamplesCollector::collectDataFromHw()
+StereoData SamplesCollector::collectStereoDataFromHw()
 {
-    return dataSourceImpl->collectDataFromHw();
+    return dataSourceImpl->collectStereoDataFromHw();
 }
 
 bool SamplesCollector::checkIfErrorOccured()

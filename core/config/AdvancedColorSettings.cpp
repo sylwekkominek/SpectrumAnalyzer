@@ -480,6 +480,123 @@ void main()
     }
 }
 
+
+template<>
+std::string AdvancedColorSettings::getAdvancedColorSettings<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    const std::string str1 = R"(#version 330 core
+in vec4 calculatedPosition;
+in vec4 vertColor;
+out vec4 Color;
+uniform float timeInMilliSeconds;
+uniform vec2 boundary;
+uniform uint themeNumber;
+vec3 defaultNebulaBarColor(float y) {
+    vec3 violet  = vec3(0.4, 0.2, 0.7);
+    vec3 magenta = vec3(0.8, 0.1, 0.6);
+    vec3 red     = vec3(0.9, 0.2, 0.2);
+    vec3 orange  = vec3(1.0, 0.5, 0.1);
+    vec3 color = mix(violet, magenta, smoothstep(0.0, 0.33, y));
+    color = mix(color, red, smoothstep(0.33, 0.66, y));
+    return mix(color, orange, smoothstep(0.66, 1.0, y));
+}
+void main() {
+    float time = timeInMilliSeconds / 1000.0;
+    float y = (clamp(calculatedPosition.y, -1.0, 1.0) + 1.0) * 0.5;
+    vec3 barColor;
+    barColor = defaultNebulaBarColor(y);
+    vec4 baseColor = mix(vec4(barColor, 1.0), vertColor, 0.35);
+    float flicker = 1.0;
+    if (themeNumber <= 1u) {
+        flicker = 0.95 + 0.05 * sin(time * 0.5 + calculatedPosition.y * 5.0);
+    } else if (themeNumber <= 3u) {
+        flicker = 0.9 + 0.1 * sin(time * 2.0 + calculatedPosition.y * 15.0);
+    } else {
+        flicker = 0.85 + 0.15 * sin(time * 1.5 + calculatedPosition.y * 8.0);
+    }
+    baseColor.rgb *= flicker;
+    bool insideBoundary =
+        calculatedPosition.x > boundary.x &&
+        calculatedPosition.x < boundary.y;
+    if (insideBoundary) {
+        baseColor.rgb = min(baseColor.rgb * 1.5, vec3(1.0));
+    }
+    Color = baseColor;
+})";
+
+    const std::string str2 = R"(#version 330 core
+
+in vec4 calculatedPosition;
+in vec4 vertColor;
+out vec4 Color;
+
+uniform float bass;
+uniform float spectrum[64];
+
+vec3 winampBars(vec2 uv)
+{
+    float bars = 64.0;
+    float spacing = 0.25;
+
+    float xNorm = (uv.x + 1.0) * 0.5;
+    float barIndexF = xNorm * bars;
+    int barIndex = int(floor(barIndexF));
+    float localX = fract(barIndexF);
+
+    barIndex = clamp(barIndex, 0, 63);
+
+    if(localX < spacing || localX > 1.0 - spacing)
+        return vec3(0.0);
+
+    float height = spectrum[barIndex];
+    height *= (0.4 + bass * 2.0);
+    height = clamp(height, 0.0, 1.0);
+
+    float t = clamp(uv.y, -1.0, 1.0);
+    float yNorm = (t + 1.0) * 0.5;
+
+    float segments = 60.0;
+    float segY = fract(yNorm * segments);
+    if(segY < 0.25)
+        return vec3(0.0);
+
+    vec3 green  = vec3(0.0, 1.0, 0.0);
+    vec3 yellow = vec3(1.0, 1.0, 0.0);
+    vec3 orange = vec3(1.0, 0.5, 0.0);
+    vec3 red    = vec3(1.0, 0.0, 0.0);
+
+    vec3 color;
+    if(yNorm < 0.5)
+        color = mix(green, yellow, yNorm * 2.0);
+    else if(yNorm < 0.75)
+        color = mix(yellow, orange, (yNorm - 0.5) * 4.0);
+    else
+        color = mix(orange, red, (yNorm - 0.75) * 4.0);
+
+    return color;
+}
+
+void main()
+{
+    vec2 uv = calculatedPosition.xy;
+
+    vec3 finalColor = winampBars(uv);
+
+    Color = vec4(finalColor, 1.0);
+})";
+
+    switch(themeConfig)
+    {
+        case ThemeConfig::Theme1:
+            return str1;
+
+        case ThemeConfig::Theme2:
+            return str2;
+        default:
+            return str1;
+    }
+}
+
 AdvancedColorSettings::AdvancedColorSettings(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -489,6 +606,9 @@ AdvancedColorSettings::AdvancedColorSettings(const ThemeConfig themeConfig, cons
             break;
         case Mode::Visualizer:
             value = getAdvancedColorSettings<Mode::Visualizer>(themeConfig);
+            break;
+        case Mode::StereoRmsMeter:
+            value = getAdvancedColorSettings<Mode::StereoRmsMeter>(themeConfig);
             break;
     }
 }

@@ -4,20 +4,26 @@
  * see file LICENSE in this source tree.
  */
 
-#include "PowerAverager.hpp"
+#include "FftBinCombiner.hpp"
 #include "CommonData.hpp"
+#include "Helpers.hpp"
 
-PowerAverager::PowerAverager(const float scalingFactor, const float offsetFactor, const FrequencyIndexesPerRectangle &data)
+FftBinCombiner::FftBinCombiner(const float scalingFactor, const float offsetFactor, const FrequencyIndexesPerRectangle &data)
     : scalingFactor(scalingFactor), offsetFactor(offsetFactor), frequencyIndexesPerRectangle(data)
 {
 }
 
-std::vector<float> PowerAverager::calculate(const std::vector<std::complex<float>>& data)
+std::vector<float> FftBinCombiner::combineMagnitudes(const std::vector<std::complex<float>>& data)
 {
-    return linearToDbfs(averagePowerInSpectrum(calculateMagnitude(data)));
+    return linearToDbfs(averageMagnitudeInSpectrum(calculateMagnitude(data)));
 }
 
-std::vector<float> PowerAverager::averagePowerInSpectrum(const std::vector<float> &data)
+float FftBinCombiner::combineRmsValues(const std::vector<std::complex<float>>& data)
+{
+    return linearToDbfs({(float)std::sqrt(getSum(powerInSpectrum(calculateMagnitude(data))))}).at(0);
+}
+
+std::vector<float> FftBinCombiner::averageMagnitudeInSpectrum(const std::vector<float> &data)
 {
     std::vector<float> averagedValues;
     averagedValues.reserve(frequencyIndexesPerRectangle.size());
@@ -54,7 +60,46 @@ std::vector<float> PowerAverager::averagePowerInSpectrum(const std::vector<float
     return averagedValues;
 }
 
-std::vector<float> PowerAverager::linearToDbfs(const std::vector<float> &data)
+std::vector<double> FftBinCombiner::powerInSpectrum(const std::vector<float> &data)
+{
+    std::vector<double> result;
+    result.reserve(frequencyIndexesPerRectangle.size());
+
+    for(const auto &[rectangleIndex, frequencyIndexes] : frequencyIndexesPerRectangle)
+    {
+        const auto count = frequencyIndexes.size();
+
+        switch (count)
+        {
+        case 0:
+            result.push_back(getFloorDbFs16bit());
+            break;
+
+        case 1:
+            result.push_back((data[frequencyIndexes[0]] * data[frequencyIndexes[0]])/2);
+            break;
+
+        default:
+        {
+            double sum = 0;
+
+            for (const auto& info : frequencyIndexes)
+            {
+                sum += data[info]*data[info];
+            }
+
+            result.push_back(sum /2);
+            break;
+        }
+        }
+    }
+
+    return result;
+}
+
+
+
+std::vector<float> FftBinCombiner::linearToDbfs(const std::vector<float> &data)
 {
     static constexpr float fullScale16bit = 32767;
 
@@ -70,7 +115,7 @@ std::vector<float> PowerAverager::linearToDbfs(const std::vector<float> &data)
     return outputData;
 }
 
-std::vector<float> PowerAverager::calculateMagnitude(const std::vector<std::complex<float>> &data)
+std::vector<float> FftBinCombiner::calculateMagnitude(const std::vector<std::complex<float>> &data)
 {
     const uint32_t numberOfSamples = data.size();
     static constexpr float fullScale16bit = 32767;

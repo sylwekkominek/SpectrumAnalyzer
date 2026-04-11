@@ -38,6 +38,16 @@ std::pair<uint16_t, uint16_t> NormalWindowSize::getNormalWindowSize<Mode::Visual
     }
 }
 
+template<>
+std::pair<uint16_t, uint16_t> NormalWindowSize::getNormalWindowSize<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {256, 768};
+    }
+}
+
 NormalWindowSize::NormalWindowSize(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -47,6 +57,9 @@ NormalWindowSize::NormalWindowSize(const ThemeConfig themeConfig, const Mode mod
         break;
     case Mode::Visualizer:
         value = getNormalWindowSize<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getNormalWindowSize<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

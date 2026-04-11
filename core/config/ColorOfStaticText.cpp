@@ -44,6 +44,16 @@ Color ColorOfStaticText::getColorOfStaticText<Mode::Visualizer>(const ThemeConfi
     }
 }
 
+template<>
+Color ColorOfStaticText::getColorOfStaticText<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {0.50, 0.50, 0.50, 1.00};
+    }
+}
+
 ColorOfStaticText::ColorOfStaticText(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -53,6 +63,9 @@ ColorOfStaticText::ColorOfStaticText(const ThemeConfig themeConfig, const Mode m
         break;
     case Mode::Visualizer:
         value = getColorOfStaticText<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getColorOfStaticText<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

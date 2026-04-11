@@ -18,6 +18,8 @@ std::vector<float> addSignals(const std::vector<float> &signal1, const std::vect
 std::vector<float> calculatePhase(const std::vector<std::complex<float>> &signal);
 std::vector<float> getSignalWindow(uint32_t numberOfSamples);
 std::vector<float> getDemandedFrequencies(uint32_t samplingRate, uint32_t fftSize, uint32_t start, uint32_t stop);
+float rms(const std::vector<float>& signal);
+std::vector<std::complex<float>> createFakeFft(uint16_t fftSize, const std::vector<std::pair<uint16_t, float>>& binsWithMagnitudes);
 
 template <typename T>
 std::vector<float> calculateAbs(const std::vector<T> &signal)

@@ -36,15 +36,28 @@ bool PythonDataSourceEnabled::getPythonDataSourceEnabled<Mode::Visualizer>(const
     }
 }
 
+template<>
+bool PythonDataSourceEnabled::getPythonDataSourceEnabled<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return false;
+    }
+}
+
 PythonDataSourceEnabled::PythonDataSourceEnabled(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
     {
-    case Mode::Analyzer:
-        value = getPythonDataSourceEnabled<Mode::Analyzer>(themeConfig);
-        break;
-    case Mode::Visualizer:
-        value = getPythonDataSourceEnabled<Mode::Visualizer>(themeConfig);
-        break;
+        case Mode::Analyzer:
+            value = getPythonDataSourceEnabled<Mode::Analyzer>(themeConfig);
+            break;
+        case Mode::Visualizer:
+            value = getPythonDataSourceEnabled<Mode::Visualizer>(themeConfig);
+            break;
+        case Mode::StereoRmsMeter:
+            value = getPythonDataSourceEnabled<Mode::StereoRmsMeter>(themeConfig);
+            break;
     }
 }

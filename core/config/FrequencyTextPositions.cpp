@@ -68,6 +68,16 @@ Frequencies FrequencyTextPositions::getFrequencyTextPositions<Mode::Visualizer>(
     }
 }
 
+template<>
+Frequencies FrequencyTextPositions::getFrequencyTextPositions<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {};
+    }
+}
+
 FrequencyTextPositions::FrequencyTextPositions(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -77,6 +87,9 @@ FrequencyTextPositions::FrequencyTextPositions(const ThemeConfig themeConfig, co
         break;
     case Mode::Visualizer:
         value = getFrequencyTextPositions<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getFrequencyTextPositions<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

@@ -69,16 +69,30 @@ Frequencies VerticalLinePositions::getVerticalLinePositions<Mode::Visualizer>(co
     }
 }
 
+template<>
+Frequencies VerticalLinePositions::getVerticalLinePositions<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return {};
+    }
+}
+
+
 VerticalLinePositions::VerticalLinePositions(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
     {
-    case Mode::Analyzer:
-        value = getVerticalLinePositions<Mode::Analyzer>(themeConfig);
-        break;
-    case Mode::Visualizer:
-        value = getVerticalLinePositions<Mode::Visualizer>(themeConfig);
-        break;
+        case Mode::Analyzer:
+            value = getVerticalLinePositions<Mode::Analyzer>(themeConfig);
+            break;
+        case Mode::Visualizer:
+            value = getVerticalLinePositions<Mode::Visualizer>(themeConfig);
+            break;
+        case Mode::StereoRmsMeter:
+            value = getVerticalLinePositions<Mode::StereoRmsMeter>(themeConfig);
+            break;
     }
 }
 

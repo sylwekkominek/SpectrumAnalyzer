@@ -8,6 +8,7 @@
 #include "TextInsideGpuMock.hpp"
 #include "WindowBaseMock.hpp"
 #include "OpenGlMock.hpp"
+#include <iostream>
 #include <gtest/gtest.h>
 
 using::testing::_;
@@ -15,12 +16,20 @@ using::testing::Return;
 using ::testing::InSequence;
 using ::testing::AnyNumber;
 
-static const double marginOfError{exp(-3)};
+static const double marginOfError{0.001};
 
 MATCHER_P(isInRange, value, "")
 {
     if(std::abs(arg-value)>marginOfError)
     {
+        std::cout << std::fixed << std::setprecision(8)
+                  << "expected: " << value
+                  << ", actual: " << arg
+                  << ", diff: " << std::abs(value - arg)
+                  << ", marginOfError: " << marginOfError
+                  << std::endl;
+
+
         return false;
     }
 

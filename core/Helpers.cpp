@@ -1,17 +1,38 @@
 /*
- * Copyright (C) 2024, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
 
 #include "Helpers.hpp"
-#include "CommonData.hpp"
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
 #include <iomanip>
 #include <sstream>
 #include <numeric>
+
+
+double getSum(const std::vector<double> &data)
+{
+    if (data.empty())
+    {
+        return 0.0;
+    }
+
+    return std::accumulate(data.begin(), data.end(), 0.0);
+}
+
+float getAverage(const std::vector<float> &data)
+{
+    if (data.empty())
+    {
+        return 0.0f;
+    }
+
+    const float sum = std::accumulate(data.begin(), data.end(), 0.0f);
+    return sum / data.size();
+}
 
 std::vector<float> getAverage(const std::vector<float> &left, const std::vector<float> &right)
 {
@@ -68,23 +89,27 @@ std::string formatFloat(float value, int totalWidth, int precision)
     return oss.str();
 }
 
-std::vector<float> scaleDbfsToPercents(const std::vector<float> &signalInDbfs)
+// dBFS to Percent mapping:
+//
+// startDbFs (top = 100% of the screen)
+//        |
+//        |
+//        |
+// stopDbFs (bottom = 0% of the screen)
+
+std::vector<float> scaleDbfsToPercents(const std::vector<float> &dataInDbfs, float startDbFs, float stopDbFs)
 {
     const float hundredPercents = 100;
-    const float scallingFactor = hundredPercents/getDynamicRangeOf16bitSignal();
+    const float scallingFactor = hundredPercents/(startDbFs - stopDbFs);
+    const float offsetFactor = -stopDbFs;
 
-    std::vector<float> outputData(signalInDbfs.size());
-    std::transform(signalInDbfs.begin(), signalInDbfs.end(), outputData.begin(), [&scallingFactor](const auto &el){ return el*scallingFactor; });
+    std::vector<float> outputData(dataInDbfs.size());
+    std::transform(dataInDbfs.begin(), dataInDbfs.end(), outputData.begin(), [&scallingFactor, &offsetFactor](const auto &el){ return (el+offsetFactor)*scallingFactor; });
+
     return outputData;
 }
 
-std::vector<float> moveDbFsToPositiveValues(const std::vector<float> &signalInDbfs)
-{
-    std::vector<float> outputData(signalInDbfs.size());
 
-    std::transform(signalInDbfs.begin(), signalInDbfs.end(), outputData.begin(), [](const auto &el){ return el+getDynamicRangeOf16bitSignal(); });
-    return outputData;
-}
 
 
 

@@ -48,6 +48,16 @@ bool LoopbackEnabled::getLoopbackEnabled<Mode::Visualizer>(const ThemeConfig the
     }
 }
 
+template<>
+bool LoopbackEnabled::getLoopbackEnabled<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    switch(themeConfig)
+    {
+        default:
+            return true;
+    }
+}
+
 LoopbackEnabled::LoopbackEnabled(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -57,6 +67,9 @@ LoopbackEnabled::LoopbackEnabled(const ThemeConfig themeConfig, const Mode mode)
         break;
     case Mode::Visualizer:
         value = getLoopbackEnabled<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getLoopbackEnabled<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

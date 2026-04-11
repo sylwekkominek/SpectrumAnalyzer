@@ -36,6 +36,12 @@ uint32_t NumberOfSignalsForAveraging::getNumberOfSignalsForAveraging<Mode::Visua
     return 1;
 }
 
+template<>
+uint32_t NumberOfSignalsForAveraging::getNumberOfSignalsForAveraging<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    return 2;
+}
+
 NumberOfSignalsForAveraging::NumberOfSignalsForAveraging(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -45,6 +51,9 @@ NumberOfSignalsForAveraging::NumberOfSignalsForAveraging(const ThemeConfig theme
         break;
     case Mode::Visualizer:
         value = getNumberOfSignalsForAveraging<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getNumberOfSignalsForAveraging<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

@@ -47,6 +47,9 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
         config.data.add(GapWidthInRelationToRectangleWidth{theme, mode});
         config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{theme, mode});
         config.data.add(DynamicMaxHoldSecondaryVisibilityState{true});
+        config.data.add(HorizontalDrawingArea{{5,90}});
+        config.data.add(VerticalDbfsRange{{-96.32, 0}});
+        config.data.add(SingleScaleMode{false});
 
         return config;
     }

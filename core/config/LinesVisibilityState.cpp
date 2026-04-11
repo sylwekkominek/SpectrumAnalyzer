@@ -51,6 +51,12 @@ bool LinesVisibilityState::getLinesVisibilityState<Mode::Visualizer>(const Theme
     return false;
 }
 
+template<>
+bool LinesVisibilityState::getLinesVisibilityState<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
+{
+    return false;
+}
+
 LinesVisibilityState::LinesVisibilityState(const ThemeConfig themeConfig, const Mode mode)
 {
     switch(mode)
@@ -60,6 +66,9 @@ LinesVisibilityState::LinesVisibilityState(const ThemeConfig themeConfig, const 
         break;
     case Mode::Visualizer:
         value = getLinesVisibilityState<Mode::Visualizer>(themeConfig);
+        break;
+    case Mode::StereoRmsMeter:
+        value = getLinesVisibilityState<Mode::StereoRmsMeter>(themeConfig);
         break;
     }
 }

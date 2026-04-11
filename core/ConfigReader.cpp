@@ -5,6 +5,7 @@
  */
 
 #include "ConfigReader.hpp"
+#include "config/SingleScaleMode.hpp"
 #include <iostream>
 #include <unordered_set>
 
@@ -46,6 +47,7 @@ Configuration ConfigReader::getConfig()
         config.data.add(getDynamicMaxHoldAccelerationStateOfFalling());
         config.data.add(getHorizontalLinePositions());
         config.data.add(getVerticalLinePositions());
+        config.data.add(getVerticalDbfsRange());
         config.data.add(getFrequencyTextPositions());
         config.data.add(getColorOfLine());
         config.data.add(getColorOfStaticLines());
@@ -59,6 +61,8 @@ Configuration ConfigReader::getConfig()
         config.data.add(getBackgroundColorSettings());
         config.data.add(getWindowTitle());
         config.data.add(getLoopbackEnabled());
+        config.data.add(getSingleScaleMode());
+        config.data.add(getHorizontalDrawingArea());
     }
 
     return config;
@@ -108,7 +112,7 @@ SignalWindow ConfigReader::getSignalWindow()
 {
     auto numberOfSamples = getNumberOfSamples().value;
 
-    SignalWindow data(numberOfSamples);
+    SignalWindow data(mode, numberOfSamples);
 
     try
     {
@@ -455,6 +459,21 @@ HorizontalLinePositions ConfigReader::getHorizontalLinePositions()
     return data;
 }
 
+VerticalDbfsRange ConfigReader::getVerticalDbfsRange()
+{
+    VerticalDbfsRange data(themeConfig, mode);
+
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value.first, (float)data.value.second},2);
+
+    if(value)
+    {
+        data.value.first = value->at(0);
+        data.value.second = value->at(1);
+    }
+    return data;
+}
+
+
 VerticalLinePositions ConfigReader::getVerticalLinePositions()
 {
     VerticalLinePositions data(themeConfig, mode);
@@ -651,5 +670,30 @@ LoopbackEnabled ConfigReader::getLoopbackEnabled()
     return data;
 }
 
+SingleScaleMode ConfigReader::getSingleScaleMode()
+{
+    SingleScaleMode data(themeConfig, mode);
 
+    auto value = loadBoolConfig(data.name, data.getInfo(), data.value);
 
+    if(value)
+    {
+        data.value = *value;
+    }
+
+    return data;
+}
+
+HorizontalDrawingArea ConfigReader::getHorizontalDrawingArea()
+{
+    HorizontalDrawingArea data(themeConfig, mode);
+
+    auto value = loadVectorConfig(data.name, data.getInfo(), {(float)data.value.first, (float)data.value.second},2);
+
+    if(value)
+    {
+        data.value.first = value->at(0);
+        data.value.second = value->at(1);
+    }
+    return data;
+}
