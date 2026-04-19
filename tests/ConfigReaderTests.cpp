@@ -50,7 +50,7 @@ public:
         EXPECT_EQ(config.get<GapWidthInRelationToRectangleWidth>(), 0);
         EXPECT_EQ(config.get<NumberOfSignalsForAveraging>(), 1);
         EXPECT_EQ(config.get<NumberOfSignalsForMaxHold>(), 5);
-        EXPECT_EQ(config.get<MaxQueueSize>(), 20);
+        EXPECT_EQ(config.get<MaxQueueSize>(), 10);
         EXPECT_NEAR(config.get<AlphaFactor>(), 0.25, precision);
         EXPECT_NEAR(config.get<ScalingFactor>(), 2.000244, precision);
         EXPECT_NEAR(config.get<OffsetFactor>(), 0, precision);
@@ -114,7 +114,7 @@ TEST_F(ConfigReaderTests, configReaderTest)
     GapWidthInRelationToRectangleWidth gapWidthInRelationToRectangleWidth{0};
     NumberOfSignalsForAveraging numberOfSignalsForAveraging{3};
     NumberOfSignalsForMaxHold numberOfSignalsForMaxHold{1};
-    MaxQueueSize maxQueueSize{10};
+    MaxQueueSize maxQueueSize{20};
     AlphaFactor alphaFactor{0.3};
     OffsetFactor offsetFactor{0.6};
     DynamicMaxHoldRectangleHeightInPercentOfScreenSize dynamicMaxHoldRectangleHeightInPercentOfScreenSize{1.2};

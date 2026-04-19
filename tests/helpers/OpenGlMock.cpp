@@ -19,15 +19,19 @@ PFNGLCREATEVERTEXARRAYSPROC glad_glCreateVertexArrays = nullptr;
 PFNGLDELETEPROGRAMPROC glad_glDeleteProgram = nullptr;
 PFNGLDELETEPROGRAMPIPELINESPROC glad_glDeleteProgramPipelines = nullptr;
 PFNGLDRAWARRAYSPROC glad_glDrawArrays = nullptr;
+PFNGLDRAWARRAYSINSTANCEDPROC glad_glDrawArraysInstanced = nullptr;
 PFNGLENABLEVERTEXARRAYATTRIBPROC glad_glEnableVertexArrayAttrib = nullptr;
 PFNGLGETPROGRAMINFOLOGPROC glad_glGetProgramInfoLog = nullptr;
 PFNGLNAMEDBUFFERSTORAGEPROC glad_glNamedBufferStorage = nullptr;
+PFNGLNAMEDBUFFERSUBDATAPROC glad_glNamedBufferSubData = nullptr;
+
 PFNGLPROGRAMUNIFORM1UIPROC glad_glProgramUniform1ui = nullptr;
 PFNGLPROGRAMUNIFORM1FPROC glad_glProgramUniform1f = nullptr;
 PFNGLPROGRAMUNIFORM2FPROC glad_glProgramUniform2f = nullptr;
 PFNGLPROGRAMUNIFORM4FPROC glad_glProgramUniform4f = nullptr;
 PFNGLUSEPROGRAMSTAGESPROC glad_glUseProgramStages = nullptr;
 PFNGLVERTEXARRAYATTRIBBINDINGPROC glad_glVertexArrayAttribBinding = nullptr;
+PFNGLVERTEXARRAYBINDINGDIVISORPROC glad_glVertexArrayBindingDivisor = nullptr;
 PFNGLVERTEXARRAYATTRIBFORMATPROC glad_glVertexArrayAttribFormat = nullptr;
 PFNGLVERTEXARRAYVERTEXBUFFERPROC glad_glVertexArrayVertexBuffer = nullptr;
 PFNGLVIEWPORTPROC glad_glViewport = nullptr;
@@ -42,10 +46,13 @@ std::function<void(GLuint, GLbitfield, GLuint)> glUseProgramStagesFunction;
 std::function<void(GLsizei, GLuint *)> glCreateVertexArraysFunction;
 std::function<void(GLsizei, GLuint *)> glCreateBuffersFunction;
 std::function<void(GLuint, GLsizeiptr, const void *, GLbitfield)> glNamedBufferStorageFunction;
+std::function<void(GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data)> glNamedBufferSubDataFunction;
+
 std::function<void(GLuint, GLuint)> glEnableVertexArrayAttribFunction;
 std::function<void(GLuint, GLuint, GLint, GLenum, GLboolean, GLuint)> glVertexArrayAttribFormatFunction;
 std::function<void(GLuint, GLuint, GLuint, GLintptr, GLsizei)> glVertexArrayVertexBufferFunction;
 std::function<void(GLuint, GLuint, GLuint)> glVertexArrayAttribBindingFunction;
+std::function<void(GLuint, GLuint, GLuint)> glVertexArrayBindingDivisorFunction;
 std::function<void(GLuint)> glBindProgramPipelineFunction;
 std::function<void(GLuint)> glBindVertexArrayFunction;
 std::function<void(GLsizei, GLuint *)> glGenVertexArraysFunction;
@@ -55,6 +62,7 @@ std::function<void(GLuint, GLint, GLfloat)> glProgramUniform1fFunction;
 std::function<void(GLuint, GLint, GLfloat, GLfloat)> glProgramUniform2fFunction;
 std::function<void(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat)> glProgramUniform4fFunction;
 std::function<void(GLenum, GLint, GLsizei)> glDrawArraysFunction;
+std::function<void(GLenum, GLint, GLsizei, GLsizei)> glDrawArraysInstancedFunction;
 std::function<void(GLsizei, const GLuint *)> glDeleteProgramPipelinesFunction;
 std::function<void(GLuint)> glDeleteProgramFunction;
 std::function<void(GLfloat, GLfloat, GLfloat, GLfloat)> glClearColorFunction;
@@ -108,6 +116,11 @@ void glNamedBufferStorageMock(GLuint buffer, GLsizeiptr size, const void *data, 
     glNamedBufferStorageFunction(buffer, size, data, flags);
 }
 
+void glNamedBufferSubDataMock(GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data)
+{
+    glNamedBufferSubDataFunction(buffer, offset, size, data);
+}
+
 void glEnableVertexArrayAttribMock(GLuint vaobj, GLuint index)
 {
     glEnableVertexArrayAttribFunction(vaobj, index);
@@ -126,6 +139,11 @@ void glVertexArrayVertexBufferMock(GLuint vaobj, GLuint bindingindex, GLuint buf
 void glVertexArrayAttribBindingMock(GLuint vaobj, GLuint attribindex, GLuint bindingindex)
 {
     glVertexArrayAttribBindingFunction(vaobj, attribindex, bindingindex);
+}
+
+void glVertexArrayBindingDivisorMock(GLuint vaobj, GLuint bindingindex, GLuint divisor)
+{
+    glVertexArrayBindingDivisorFunction(vaobj, bindingindex, divisor);
 }
 
 void glBindProgramPipelineMock(GLuint pipeline)
@@ -170,6 +188,11 @@ void glProgramUniform4fMock(GLuint program, GLint location, GLfloat v0, GLfloat 
 void glDrawArraysMock(GLenum mode, GLint first, GLsizei count)
 {
     glDrawArraysFunction(mode, first, count);
+}
+
+void glDrawArraysInstancedMock(GLenum mode, GLint first, GLsizei count, GLsizei instancecount)
+{
+    glDrawArraysInstancedFunction(mode, first, count,instancecount);
 }
 
 void glDeleteProgramPipelinesMock(GLsizei n, const GLuint *pipelines)
@@ -218,10 +241,14 @@ OpenGlMock::OpenGlMock()
     ::glad_glCreateVertexArrays = glCreateVertexArraysMock;
     ::glad_glCreateBuffers = glCreateBuffersMock;
     ::glad_glNamedBufferStorage = glNamedBufferStorageMock;
+    ::glad_glNamedBufferSubData = glNamedBufferSubDataMock;
+
     ::glad_glEnableVertexArrayAttrib = glEnableVertexArrayAttribMock;
     ::glad_glVertexArrayAttribFormat = glVertexArrayAttribFormatMock;
     ::glad_glVertexArrayVertexBuffer = glVertexArrayVertexBufferMock;
     ::glad_glVertexArrayAttribBinding = glVertexArrayAttribBindingMock;
+    ::glad_glVertexArrayBindingDivisor = glVertexArrayBindingDivisorMock;
+
     ::glad_glBindProgramPipeline = glBindProgramPipelineMock;
     ::glad_glBindVertexArray = glBindVertexArrayMock;
     ::glad_glGenVertexArrays = glGenVertexArraysMock;
@@ -231,6 +258,7 @@ OpenGlMock::OpenGlMock()
     ::glad_glProgramUniform2f = glProgramUniform2fMock;
     ::glad_glProgramUniform4f = glProgramUniform4fMock;
     ::glad_glDrawArrays = glDrawArraysMock;
+    ::glad_glDrawArraysInstanced = glDrawArraysInstancedMock;
     ::glad_glDeleteProgramPipelines = glDeleteProgramPipelinesMock;
     ::glad_glDeleteProgram = glDeleteProgramMock;
     ::glad_glClearColor = glClearColorMock;
@@ -279,6 +307,11 @@ OpenGlMock::OpenGlMock()
         this->glNamedBufferStorage(buffer, size, data, flags);
     };
 
+    glNamedBufferSubDataFunction= [this](GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data)
+    {
+        this->glNamedBufferSubData(buffer, offset, size, data);
+    };
+
     glEnableVertexArrayAttribFunction= [this](GLuint vaobj, GLuint index)
     {
         this->glEnableVertexArrayAttrib(vaobj, index);
@@ -297,6 +330,11 @@ OpenGlMock::OpenGlMock()
     glVertexArrayAttribBindingFunction= [this](GLuint vaobj, GLuint attribindex, GLuint bindingindex)
     {
         this->glVertexArrayAttribBinding(vaobj, attribindex, bindingindex);
+    };
+
+    glVertexArrayBindingDivisorFunction= [this](GLuint vaobj, GLuint bindingindex, GLuint divisor)
+    {
+        this->glVertexArrayBindingDivisor(vaobj, bindingindex, divisor);
     };
 
     glBindProgramPipelineFunction = [this](GLuint pipeline)
@@ -342,6 +380,11 @@ OpenGlMock::OpenGlMock()
     glDrawArraysFunction = [this](GLenum mode, GLint first, GLsizei count)
     {
         this->glDrawArrays(mode, first, count);
+    };
+
+    glDrawArraysInstancedFunction = [this](GLenum mode, GLint first, GLsizei count, GLsizei instancecount)
+    {
+        this->glDrawArraysInstanced(mode, first, count, instancecount);
     };
 
     glDeleteProgramPipelinesFunction = [this](GLsizei n, const GLuint *pipelines)

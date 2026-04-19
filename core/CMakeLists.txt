@@ -131,8 +131,8 @@ add_library(spectrum-analyzer-core STATIC
     FftBinCombiner.cpp
     StereoRmsMeter.cpp
     gpu/ElementInsideGpu.cpp
-    gpu/LineInsideGpu.cpp
-    gpu/RectangleInsideGpu.cpp
+    gpu/LinesInsideGpu.cpp
+    gpu/RectanglesInsideGpu.cpp
     gpu/TextInsideGpu.cpp
     gpu/FigureGeometryCalculator.cpp
     gpu/Gpu.cpp

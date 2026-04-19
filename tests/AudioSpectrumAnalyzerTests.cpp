@@ -229,8 +229,11 @@ public:
         config.data.add(BackgroundColorSettings{theme, mode});
         config.data.add(GapWidthInRelationToRectangleWidth{theme, mode});
         config.data.add(DynamicMaxHoldRectangleHeightInPercentOfScreenSize{theme, mode});
-        config.data.add(ColorOfStaticLines{Color{}});
-        config.data.add(ColorOfStaticText{Color{}});
+        config.data.add(ColorOfStaticText{Color{1,1,1,1}});
+        config.data.add(ColorOfLine{Color{1,1,1,1}});
+        config.data.add(ColorOfStaticLines{Color{1,1,1,1}});
+        config.data.add(ColorOfDynamicMaxHoldLine{Color{1,1,1,1}});
+        config.data.add(ColorOfDynamicMaxHoldSecondaryLine{Color{1,1,1,1}});
         config.data.add(ColorsOfDynamicMaxHoldSecondaryRectangle{theme, mode});
         config.data.add(OffsetFactor{theme, mode});
         config.data.add(RectanglesVisibilityState{true});

@@ -19,10 +19,14 @@ public:
     MOCK_METHOD2(glCreateVertexArrays, void(GLsizei, GLuint *));
     MOCK_METHOD2(glCreateBuffers, void(GLsizei, GLuint *));
     MOCK_METHOD4(glNamedBufferStorage, void(GLuint, GLsizeiptr, const void *, GLbitfield));
+    MOCK_METHOD4(glNamedBufferSubData, void(GLuint, GLintptr, GLsizeiptr, const void *));
+
     MOCK_METHOD2(glEnableVertexArrayAttrib, void(GLuint, GLuint));
     MOCK_METHOD6(glVertexArrayAttribFormat, void(GLuint, GLuint, GLint, GLenum, GLboolean, GLuint));
     MOCK_METHOD5(glVertexArrayVertexBuffer, void(GLuint, GLuint, GLuint, GLintptr, GLsizei));
     MOCK_METHOD3(glVertexArrayAttribBinding, void(GLuint, GLuint, GLuint));
+    MOCK_METHOD3(glVertexArrayBindingDivisor, void(GLuint, GLuint, GLuint));
+
     MOCK_METHOD3(glCreateShaderProgramv, GLuint(GLenum, GLsizei, const GLchar *const*));
     MOCK_METHOD4(glGetProgramInfoLog, void(GLuint, GLsizei, GLsizei *, GLchar *));
     MOCK_METHOD3(glUseProgramStages, void(GLuint pipeline, GLbitfield stages, GLuint program));
@@ -35,6 +39,8 @@ public:
     MOCK_METHOD4(glProgramUniform2f, void(GLuint, GLint, GLfloat, GLfloat));
     MOCK_METHOD6(glProgramUniform4f, void(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat));
     MOCK_METHOD3(glDrawArrays, void(GLenum, GLint, GLsizei));
+    MOCK_METHOD4(glDrawArraysInstanced, void(GLenum, GLint, GLsizei, GLsizei));
+
     MOCK_METHOD2(glDeleteProgramPipelines, void(GLsizei, const GLuint *));
     MOCK_METHOD1(glDeleteProgram, void(GLuint));
     MOCK_METHOD2(glCreateProgramPipelines, void(GLsizei, GLuint*));
@@ -43,6 +49,7 @@ public:
     MOCK_METHOD4(glViewport, void(GLint , GLint ,GLsizei , GLsizei));
     MOCK_METHOD1(glEnable, void(GLenum));
     MOCK_METHOD2(glBlendFunc, void(GLenum, GLenum));
+
 };
 
 

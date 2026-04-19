@@ -42,15 +42,16 @@ void Window::initializeGPU()
     gpu.prepareRectangles(FigureGeometryCalculator::rectanglesFactory(100, config.get<NumberOfRectangles>(), 0, config.get<GapWidthInRelationToRectangleWidth>()), config.get<ColorsOfRectangle>());
     gpu.prepareDynamicMaxHoldSecondaryRectangles(FigureGeometryCalculator::rectanglesFactory(100, config.get<NumberOfRectangles>(), 0, config.get<GapWidthInRelationToRectangleWidth>()), config.get<ColorsOfDynamicMaxHoldSecondaryRectangle>());
     gpu.prepareDynamicMaxHoldRectangles(FigureGeometryCalculator::rectanglesFactory(config.get<DynamicMaxHoldRectangleHeightInPercentOfScreenSize>(), config.get<NumberOfRectangles>(), 50 + config.get<DynamicMaxHoldRectangleHeightInPercentOfScreenSize>()/2, config.get<GapWidthInRelationToRectangleWidth>()), config.get<ColorsOfDynamicMaxHoldRectangle>());
-    gpu.prepareHorizontalLines(config.get<HorizontalLinePositions>().size());
-    gpu.prepareVerticalLines(config.get<VerticalLinePositions>().size());
-    gpu.prepareDynamicLines(config.get<NumberOfRectangles>()-1);
-    gpu.prepareDynamicMaxHoldLines(config.get<NumberOfRectangles>()-1);
-    gpu.prepareDynamicMaxHoldSecondaryLines(config.get<NumberOfRectangles>()-1);
+    gpu.prepareHorizontalLines(config.get<HorizontalLinePositions>().size(), config.get<ColorOfStaticLines>());
+    gpu.prepareVerticalLines(config.get<VerticalLinePositions>().size(), config.get<ColorOfStaticLines>());
+    gpu.prepareDynamicLines(config.get<NumberOfRectangles>()-1, config.get<ColorOfLine>());
+    gpu.prepareDynamicMaxHoldLines(config.get<NumberOfRectangles>()-1, config.get<ColorOfDynamicMaxHoldLine>());
+    gpu.prepareDynamicMaxHoldSecondaryLines(config.get<NumberOfRectangles>()-1, config.get<ColorOfDynamicMaxHoldSecondaryLine>());
+    gpu.prepareHighlightedVerticalLine(Color{1,0,0,0.5});
     gpu.prepareHorizontalLineStaticTexts(config.get<HorizontalLinePositions>(), config.get<ColorOfStaticText>());
     gpu.prepareVerticalLineStaticTexts(config.get<FrequencyTextPositions>(), config.get<ColorOfStaticText>());
     gpu.prepareDynamicText();
-    gpu.prepareHighlightedVerticalLine();
+
 
     operations.emplace_back("prepareData", [&](){
 
@@ -73,11 +74,11 @@ void Window::initializeGPU()
     });
 
     operations.emplace_back("horizontalLines", [&](){
-        gpu.drawHorizontalLines(anyData.get<FigureGeometryCalculator::HorizontalLines>().lines, config.get<ColorOfStaticLines>());
+        gpu.drawHorizontalLines(anyData.get<FigureGeometryCalculator::HorizontalLines>().lines);
     });
 
     operations.emplace_back("verticalLines", [&](){
-        gpu.drawVerticalLines(anyData.get<FigureGeometryCalculator::VerticalLines>().lines, config.get<ColorOfStaticLines>());
+        gpu.drawVerticalLines(anyData.get<FigureGeometryCalculator::VerticalLines>().lines);
     });
 
     operations.emplace_back("horizontalLineStaticTexts", [&](){
@@ -91,25 +92,17 @@ void Window::initializeGPU()
             gpu.drawHorizontalLineStaticTexts(anyData.get<FigureGeometryCalculator::HorizontalLines>().lines, anyData.get<WindowSize>(), FigureGeometryCalculator::xDrawOffsetInPercents, FigureGeometryCalculator::xDrawSizeInPercents);
         }
 
-   });
+    });
 
     operations.emplace_back("verticalLineStaticTexts", [&](){
         gpu.drawVerticalLineStaticTexts(anyData.get<FigureGeometryCalculator::VerticalLineTextPositions>().positions, anyData.get<WindowSize>());
     });
 
-    if(config.get<RectanglesVisibilityState>() && config.get<DynamicMaxHoldSecondaryVisibilityState>())
-    {
-        operations.emplace_back("transparentDynamicMaxHold", [&](){
-            const auto dynamicMaxHoldElementsPosition = scaleDbfsToPercents(anyData.get<DynamicMaxHolders>().at(MaxHolderType::Transparent).get(), config.get<VerticalDbfsRange>().second, config.get<VerticalDbfsRange>().first);
-            gpu.drawDynamicMaxHoldSecondaryRectangles(dynamicMaxHoldElementsPosition);
-        });
-    }
-
     if(config.get<LinesVisibilityState>())
     {
         operations.emplace_back("dynamicLines", [&](){
             auto positions = scaleDbfsToPercents(anyData.get<std::vector<float>>(), config.get<VerticalDbfsRange>().second, config.get<VerticalDbfsRange>().first);
-            gpu.drawDynamicLines(FigureGeometryCalculator::getDynamicLines(positions), config.get<ColorOfLine>());
+            gpu.drawDynamicLines(FigureGeometryCalculator::getDynamicLines(positions));
         });
     }
 
@@ -117,7 +110,7 @@ void Window::initializeGPU()
     {
         operations.emplace_back("dynamicMaxHoldLines", [&](){
             const auto dynamicMaxHoldElementsPosition = scaleDbfsToPercents(anyData.get<DynamicMaxHolders>().at(MaxHolderType::Dynamic).get(), config.get<VerticalDbfsRange>().second, config.get<VerticalDbfsRange>().first);
-            gpu.drawDynamicMaxHoldLines(FigureGeometryCalculator::getDynamicLines(dynamicMaxHoldElementsPosition), config.get<ColorOfDynamicMaxHoldLine>());
+            gpu.drawDynamicMaxHoldLines(FigureGeometryCalculator::getDynamicLines(dynamicMaxHoldElementsPosition));
         });
     }
 
@@ -125,7 +118,7 @@ void Window::initializeGPU()
     {
         operations.emplace_back("dynamicMaxHoldTransparentLines", [&](){
             const auto dynamicMaxHoldElementsPosition = scaleDbfsToPercents(anyData.get<DynamicMaxHolders>().at(MaxHolderType::Transparent).get(), config.get<VerticalDbfsRange>().second, config.get<VerticalDbfsRange>().first);
-            gpu.drawDynamicMaxHoldSecondaryLines(FigureGeometryCalculator::getDynamicLines(dynamicMaxHoldElementsPosition), config.get<ColorOfDynamicMaxHoldSecondaryLine>());
+            gpu.drawDynamicMaxHoldSecondaryLines(FigureGeometryCalculator::getDynamicLines(dynamicMaxHoldElementsPosition));
         });
     }
 
@@ -149,7 +142,7 @@ void Window::initializeGPU()
                 gpu.drawText(dBFsHighlightedValues, (cursorPosition.x > windowSize.x -128) ? HorizontalAligment::RIGHT : HorizontalAligment::LEFT , cursorPosition.x, cursorPosition.y);
 
 
-                gpu.drawHighlightedVerticalLine(FigureGeometryCalculator::getHighlightedLine(config.get<NumberOfRectangles>(), config.get<GapWidthInRelationToRectangleWidth>(), hightlightData.current.index), Color{1,0,0,0.5});
+                gpu.drawHighlightedVerticalLine(FigureGeometryCalculator::getHighlightedLine(config.get<NumberOfRectangles>(), config.get<GapWidthInRelationToRectangleWidth>(), hightlightData.current.index));
             }
 
             gpu.updateHorizontalRectangleBoundaries(hightlightData.current.index, hightlightData.current.boundaries.first, hightlightData.current.boundaries.second);
@@ -160,6 +153,14 @@ void Window::initializeGPU()
         }
 
     });
+
+    if(config.get<RectanglesVisibilityState>() && config.get<DynamicMaxHoldSecondaryVisibilityState>())
+    {
+        operations.emplace_back("transparentDynamicMaxHold", [&](){
+            const auto dynamicMaxHoldElementsPosition = scaleDbfsToPercents(anyData.get<DynamicMaxHolders>().at(MaxHolderType::Transparent).get(), config.get<VerticalDbfsRange>().second, config.get<VerticalDbfsRange>().first);
+            gpu.drawDynamicMaxHoldSecondaryRectangles(dynamicMaxHoldElementsPosition);
+        });
+    }
 
     if(config.get<RectanglesVisibilityState>())
     {
@@ -183,15 +184,12 @@ void Window::initializeGPU()
 void Window::draw(const std::vector<float> &data)
 {
     anyData.add(data);
-
     for(auto &[name, operation]:operations)
     {
         operation();
     }
-
     swapBuffers();
 }
-
 
 Window::~Window()
 {

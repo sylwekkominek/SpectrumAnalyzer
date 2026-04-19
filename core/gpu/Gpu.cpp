@@ -20,7 +20,7 @@ void Gpu::enableTransparency()
 
 void Gpu::initLines()
 {
-    LineInsideGpu::initialize();
+    LinesInsideGpu::initialize();
 }
 
 void Gpu::initText()
@@ -30,78 +30,54 @@ void Gpu::initText()
 
 void Gpu::initRectangles(const std::string &backgroundConfig, const std::string &rectanglesConfig)
 {
-    RectangleInsideGpu<RectangleType::BACKGROUND>::initialize(backgroundConfig.c_str());
-    RectangleInsideGpu<RectangleType::BAR>::initialize(rectanglesConfig.c_str());
-    RectangleInsideGpu<RectangleType::SECONDARY_BAR>::initialize();
+    RectanglesInsideGpu<RectangleType::BACKGROUND>::initialize(backgroundConfig.c_str());
+    RectanglesInsideGpu<RectangleType::BAR>::initialize(rectanglesConfig.c_str());
+    RectanglesInsideGpu<RectangleType::SECONDARY_BAR>::initialize();
 }
 
 void Gpu::prepareBackground(const Rectangles &rectangles)
 {
-    background = std::make_unique<RectangleInsideGpu<RectangleType::BACKGROUND>>(rectangles.front());
+    background = std::make_unique<RectanglesInsideGpu<RectangleType::BACKGROUND>>(rectangles);
 }
 
 void Gpu::prepareRectangles(const Rectangles &rectangles, const ColorsOfRectanglePerVertices &colorsOfRectangle)
 {
-    for(const auto & rectangle : rectangles)
-    {
-        this->rectangles.emplace_back(RectangleInsideGpu<RectangleType::BAR>(rectangle, colorsOfRectangle));
-    }
+    this->rectangles = std::make_unique<RectanglesInsideGpu<RectangleType::BAR>>(rectangles,  colorsOfRectangle);
 }
 
 void Gpu::prepareDynamicMaxHoldRectangles(const Rectangles &rectangles, const ColorsOfRectanglePerVertices &colorsOfRectangle)
 {
-    for(const auto & rectangle : rectangles)
-    {
-        dynamicMaxHoldRectangles.emplace_back(RectangleInsideGpu<RectangleType::BAR>(rectangle,  colorsOfRectangle));
-    }
+    dynamicMaxHoldRectangles = std::make_unique<RectanglesInsideGpu<RectangleType::BAR>>(rectangles,  colorsOfRectangle);
 }
 
 void Gpu::prepareDynamicMaxHoldSecondaryRectangles(const Rectangles &rectangles, const ColorsOfRectanglePerVertices &colorsOfRectangle)
 {
-    for(const auto & rectangle : rectangles)
-    {
-        dynamicMaxHoldSecondaryRectangles.emplace_back(RectangleInsideGpu<RectangleType::SECONDARY_BAR>(rectangle,  colorsOfRectangle));
-    }
+    dynamicMaxHoldSecondaryRectangles = std::make_unique<RectanglesInsideGpu<RectangleType::SECONDARY_BAR>>(rectangles,  colorsOfRectangle);
 }
 
-void Gpu::prepareHorizontalLines(const uint16_t size)
+void Gpu::prepareHorizontalLines(const uint16_t size, const Color &colorOfStaticLines)
 {
-    for(uint16_t i=0;i<size;++i)
-    {
-        horizontalLines.emplace_back(LineInsideGpu());
-    }
+    horizontalLines = std::make_unique<LinesInsideGpu>(size, colorOfStaticLines);
 }
 
-void Gpu::prepareVerticalLines(const uint16_t size)
+void Gpu::prepareVerticalLines(const uint16_t size, const Color &colorOfStaticLines)
 {
-    for(uint16_t i=0;i<size;++i)
-    {
-        verticalLines.emplace_back(LineInsideGpu());
-    }
+    verticalLines = std::make_unique<LinesInsideGpu>(size, colorOfStaticLines);
 }
 
-void Gpu::prepareDynamicLines(const uint16_t size)
+void Gpu::prepareDynamicLines(const uint16_t size, const Color &colorOfDynamicLines)
 {
-    for(uint16_t i=0;i<size;++i)
-    {
-        dynamicLines.emplace_back(LineInsideGpu());
-    }
+    dynamicLines = std::make_unique<LinesInsideGpu>(size, colorOfDynamicLines);
 }
 
-void Gpu::prepareDynamicMaxHoldLines(const uint16_t size)
+void Gpu::prepareDynamicMaxHoldLines(const uint16_t size, const Color &colorOfDynamicLines)
 {
-    for(uint16_t i=0;i<size;++i)
-    {
-        dynamicMaxHoldLines.emplace_back(LineInsideGpu());
-    }
+    dynamicMaxHoldLines = std::make_unique<LinesInsideGpu>(size, colorOfDynamicLines);
 }
 
-void Gpu::prepareDynamicMaxHoldSecondaryLines(const uint16_t size)
+void Gpu::prepareDynamicMaxHoldSecondaryLines(const uint16_t size, const Color &colorOfDynamicLines)
 {
-    for(uint16_t i=0;i<size;++i)
-    {
-        dynamicMaxHoldSecondaryLines.emplace_back(LineInsideGpu());
-    }
+    dynamicMaxHoldSecondaryLines = std::make_unique<LinesInsideGpu>(size, colorOfDynamicLines);
 }
 
 void Gpu::prepareHorizontalLineStaticTexts(const std::vector<float> &dbfsValues, const Color &colorOfStaticLines)
@@ -120,9 +96,9 @@ void Gpu::prepareVerticalLineStaticTexts(const Frequencies &frequencies, const C
     }
 }
 
-void Gpu::prepareHighlightedVerticalLine()
+void Gpu::prepareHighlightedVerticalLine(const Color &color)
 {
-    highlightedVerticalLine = std::make_unique<LineInsideGpu>();
+    highlightedVerticalLine = std::make_unique<LinesInsideGpu>(1, color);
 }
 
 void Gpu::prepareDynamicText()
@@ -132,15 +108,9 @@ void Gpu::prepareDynamicText()
 
 void Gpu::updateTime(const float timeInMilliSeconds)
 {
-    RectangleInsideGpu<RectangleType::BAR>::updateTime(timeInMilliSeconds);
-    RectangleInsideGpu<RectangleType::SECONDARY_BAR>::updateTime(timeInMilliSeconds);
-    RectangleInsideGpu<RectangleType::BACKGROUND>::updateTime(timeInMilliSeconds);
-}
-
-void Gpu::updateThemeNumber(const uint16_t themeNumber)
-{
-    RectangleInsideGpu<RectangleType::BAR>::updateThemeNumber(themeNumber);
-    RectangleInsideGpu<RectangleType::BACKGROUND>::updateThemeNumber(themeNumber);
+    RectanglesInsideGpu<RectangleType::BAR>::updateTime(timeInMilliSeconds);
+    RectanglesInsideGpu<RectangleType::SECONDARY_BAR>::updateTime(timeInMilliSeconds);
+    RectanglesInsideGpu<RectangleType::BACKGROUND>::updateTime(timeInMilliSeconds);
 }
 
 void Gpu::drawBackground()
@@ -148,53 +118,43 @@ void Gpu::drawBackground()
     background->draw();
 }
 
-void Gpu::drawHorizontalLines(const Lines &horizontalLinePositions, const Color &colorOfStaticLines)
+void Gpu::drawHorizontalLines(const Lines &horizontalLinePositions)
 {
-    const uint32_t numberOfElements = std::min(horizontalLines.size(), horizontalLinePositions.size());
-
-    for(uint32_t i=0;i<numberOfElements;++i)
+    if(!horizontalLinePositions.empty())
     {
-        horizontalLines[i].draw(horizontalLinePositions[i], colorOfStaticLines);
+        horizontalLines->draw(horizontalLinePositions);
     }
 }
 
-void Gpu::drawVerticalLines(const Lines &verticalLinePositions, const Color &colorOfStaticLines)
+void Gpu::drawVerticalLines(const Lines &verticalLinePositions)
 {
-    const uint32_t numberOfElements = std::min(verticalLines.size(), verticalLinePositions.size());
-
-    for(uint32_t i = 0; i < numberOfElements; ++i)
+    if(!verticalLinePositions.empty())
     {
-        verticalLines[i].draw(verticalLinePositions[i], colorOfStaticLines);
+        verticalLines->draw(verticalLinePositions);
     }
 }
 
-void Gpu::drawDynamicLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines)
+void Gpu::drawDynamicLines(const Lines &dynamicLinePositions)
 {
-    const uint32_t numberOfElements = std::min(dynamicLines.size(), dynamicLinePositions.size());
-
-    for(uint32_t i=0;i<numberOfElements;++i)
+    if(!dynamicLinePositions.empty())
     {
-        dynamicLines[i].draw(dynamicLinePositions[i], colorOfDynamicLines);
+        dynamicLines->draw(dynamicLinePositions);
     }
 }
 
-void Gpu::drawDynamicMaxHoldLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines)
+void Gpu::drawDynamicMaxHoldLines(const Lines &dynamicLinePositions)
 {
-    const uint32_t numberOfElements = std::min(dynamicMaxHoldLines.size(), dynamicLinePositions.size());
-
-    for(uint32_t i=0;i<numberOfElements;++i)
+    if(!dynamicLinePositions.empty())
     {
-        dynamicMaxHoldLines[i].draw(dynamicLinePositions[i], colorOfDynamicLines);
+        dynamicMaxHoldLines->draw(dynamicLinePositions);
     }
 }
 
-void Gpu::drawDynamicMaxHoldSecondaryLines(const Lines &dynamicLinePositions, const Color &colorOfDynamicLines)
+void Gpu::drawDynamicMaxHoldSecondaryLines(const Lines &dynamicLinePositions)
 {
-    const uint32_t numberOfElements = std::min(dynamicMaxHoldSecondaryLines.size(), dynamicLinePositions.size());
-
-    for(uint32_t i=0;i<numberOfElements;++i)
+    if(!dynamicLinePositions.empty())
     {
-        dynamicMaxHoldSecondaryLines[i].draw(dynamicLinePositions[i], colorOfDynamicLines);
+        dynamicMaxHoldSecondaryLines->draw(dynamicLinePositions);
     }
 }
 
@@ -247,42 +207,36 @@ void Gpu::drawVerticalLineStaticTexts(const Positions &verticalLineTextPositions
 
 void Gpu::drawDynamicMaxHoldRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition)
 {
-    const uint32_t numberOfElements = std::min(dynamicMaxHoldRectangles.size(), dynamicMaxHoldElementsPosition.size());
-
-    for(uint32_t i=0;i<numberOfElements;++i)
+    if(!dynamicMaxHoldElementsPosition.empty())
     {
-        dynamicMaxHoldRectangles[i].move(dynamicMaxHoldElementsPosition[i]);
+        dynamicMaxHoldRectangles->move(dynamicMaxHoldElementsPosition);
     }
 }
 
 void Gpu::drawDynamicMaxHoldSecondaryRectangles(const std::vector<float> &dynamicMaxHoldElementsPosition)
 {
-    const uint32_t numberOfElements = std::min(dynamicMaxHoldSecondaryRectangles.size(), dynamicMaxHoldElementsPosition.size());
-
-    for(uint32_t i=0;i<numberOfElements;++i)
+    if(!dynamicMaxHoldElementsPosition.empty())
     {
-        dynamicMaxHoldSecondaryRectangles[i].move(dynamicMaxHoldElementsPosition[i]);
+        dynamicMaxHoldSecondaryRectangles->move(dynamicMaxHoldElementsPosition);
     }
 }
 
 void Gpu::drawRectangles(const std::vector<float> &rectaglesPositions)
 {
-    const uint32_t numberOfElements = std::min(rectangles.size(), rectaglesPositions.size());
-
-    for(uint32_t i=0;i<numberOfElements;++i)
+    if(!rectaglesPositions.empty())
     {
-        rectangles[i].move(rectaglesPositions[i]);
+        rectangles->move(rectaglesPositions);
     }
 }
 
 void Gpu::updateHorizontalRectangleBoundaries(const uint16_t indexOfRectangle, const float start, const float stop)
 {
-    rectangles.at(indexOfRectangle).updateBoundary(start, stop);
+    rectangles->updateBoundary(start, stop);
 }
 
-void Gpu::drawHighlightedVerticalLine(const Line &line, const Color &colorOfStaticLines)
+void Gpu::drawHighlightedVerticalLine(const Line &line)
 {
-    highlightedVerticalLine->draw(line, colorOfStaticLines);
+    highlightedVerticalLine->draw({line});
 }
 
 void Gpu::drawText(const std::string &str, const HorizontalAligment aligment, const float x, const float y)
@@ -297,10 +251,10 @@ void Gpu::clear()
 
 Gpu::~Gpu()
 {
-    RectangleInsideGpu<RectangleType::BACKGROUND>::finalize();
-    RectangleInsideGpu<RectangleType::SECONDARY_BAR>::finalize();
-    RectangleInsideGpu<RectangleType::BAR>::finalize();
-    LineInsideGpu::finalize();
+    RectanglesInsideGpu<RectangleType::BACKGROUND>::finalize();
+    RectanglesInsideGpu<RectangleType::SECONDARY_BAR>::finalize();
+    RectanglesInsideGpu<RectangleType::BAR>::finalize();
+    LinesInsideGpu::finalize();
     TextInsideGpu::finalize();
 }
 

@@ -18,33 +18,50 @@ enum class RectangleType
 };
 
 template<RectangleType rectangleType>
-class RectangleInsideGpu : public ElementInsideGpu
+class RectanglesInsideGpu : public ElementInsideGpu
 {
 public:
-    RectangleInsideGpu(const Rectangle &rectangle);
-    RectangleInsideGpu(const Rectangle &rectangle, const ColorsOfRectanglePerVertices &colorsOfRectangle);
-    void move(const float y);
+
+    RectanglesInsideGpu(const Rectangles &rectangles, const ColorsOfRectanglePerVertices &colorsOfRectangle={{0,{1,1,1,1}}, {1,{1,1,1,1}},{2,{1,1,1,1}},{3,{1,1,1,1}}});
+
+    void move(const std::vector<float> &positionsInPercents);
     void draw();
     static void updateTime(const float timeInMilliSeconds);
     static void updateBoundary(const float xBegin, const float xEnd);
-    static void updateThemeNumber(const uint16_t themeNumber);
     static void initialize(const char *fsConfig = getDefaultFragmentShader());
     static void finalize();
 private:
     float percentToPositon(float percent);
     static const char* getVertexShader();
 
+    struct Instance
+    {
+        float x, y;
+    };
+
+    struct Vertex
+    {
+        float x, y;
+        float r, g, b, t;
+    };
+
     GLuint vao;
     GLuint vertexBuffer;
-    GLuint colorBuffer;
+    GLuint instancesBuffer;
 
     const GLuint ATTR_POS = 0u;
     const GLuint ATTR_COLOR = 1u;
+    const GLuint ATTR_OFFSET = 2u;
+
+    std::vector<Instance> instances;
 
     static GLuint vs;
     static GLuint fs;
+
     static GLuint pipeline;
     static GLuint timeLoc;
     static GLuint boundaryLoc;
-    static GLuint themeNumberLoc;
+
+    static constexpr GLuint BINDING_VERTEX = 0;
+    static constexpr GLuint BINDING_INSTANCE = 1;
 };

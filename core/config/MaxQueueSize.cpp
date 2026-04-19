@@ -23,7 +23,7 @@ uint32_t MaxQueueSize::getMaxQueueSize<Mode::Analyzer>(const ThemeConfig themeCo
     switch(themeConfig)
     {
         default:
-            return 20;
+            return 10;
     }
 }
 
@@ -33,7 +33,7 @@ uint32_t MaxQueueSize::getMaxQueueSize<Mode::Visualizer>(const ThemeConfig theme
     switch(themeConfig)
     {
         default:
-            return 20;
+            return 10;
     }
 }
 
@@ -43,7 +43,7 @@ uint32_t MaxQueueSize::getMaxQueueSize<Mode::StereoRmsMeter>(const ThemeConfig t
     switch(themeConfig)
     {
         default:
-            return 20;
+            return 10;
     }
 }
 

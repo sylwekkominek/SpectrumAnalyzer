@@ -39,11 +39,13 @@ const char* ElementInsideGpu::getDefaultFragmentShader()
 {
     const char* fragmentShaderSrc = R"(
 #version 330 core
+
 in vec4 calculatedPosition;
 in vec4 vertColor;
 out vec4 Color;
 
-void main() {
+void main()
+{
     Color = vertColor;
 }
 )";

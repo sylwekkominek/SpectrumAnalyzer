@@ -21,7 +21,6 @@ using Lines = std::vector<Line>;
 using Rectangle = std::vector<Point>;
 using Rectangles = std::vector<Rectangle>;
 
-
 class ElementInsideGpu
 {
 public:

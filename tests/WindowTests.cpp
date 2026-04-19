@@ -27,7 +27,10 @@ struct WindowTests  : public WindowTestsBase, public ::testing::Test
         config.data.add(NumberOfRectangles{(uint16_t)frequencies.size()});
         config.data.add(NumberOfSamples{numberOfSamples});
         config.data.add(DesiredFrameRate{1});
-        config.data.add(ColorOfStaticLines{Color{}});
+        config.data.add(ColorOfLine{Color{1,1,1,1}});
+        config.data.add(ColorOfStaticLines{Color{1,1,1,1}});
+        config.data.add(ColorOfDynamicMaxHoldLine{Color{1,1,1,1}});
+        config.data.add(ColorOfDynamicMaxHoldSecondaryLine{Color{1,1,1,1}});
         config.data.add(ColorOfStaticText{Color{}});
         config.data.add(HorizontalLinePositions{Positions{}});
         config.data.add(SamplingRate{44100});

@@ -95,7 +95,7 @@ Rectangles FigureGeometryCalculator::rectanglesFactory(const float heightInPerce
         */
 
         Rectangle rectangle;
-        rectangles.reserve(6);
+        rectangles.reserve(4);
 
         const float xBegin = xBoundaries.at(i).first;
         const float xEnd = xBoundaries.at(i).second;
@@ -103,9 +103,6 @@ Rectangles FigureGeometryCalculator::rectanglesFactory(const float heightInPerce
         rectangle.push_back(Point{static_cast<float>(xBegin), static_cast<float>(yBegin)});     //0
         rectangle.push_back(Point{static_cast<float>(xEnd), static_cast<float>(yBegin)});       //1
         rectangle.push_back(Point{static_cast<float>(xEnd), static_cast<float>(yEnd)});         //2
-
-        rectangle.push_back(Point{static_cast<float>(xEnd), static_cast<float>(yEnd)});         //5
-        rectangle.push_back(Point{static_cast<float>(xBegin), static_cast<float>(yBegin)});     //4
         rectangle.push_back(Point{static_cast<float>(xBegin), static_cast<float>(yEnd)});       //3
 
         rectangles.emplace_back(std::move(rectangle));
