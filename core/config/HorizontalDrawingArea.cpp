@@ -45,9 +45,23 @@ std::pair<float, float> HorizontalDrawingArea::getHorizontalDrawingArea<Mode::St
     switch(themeConfig)
     {
         case ThemeConfig::Theme1:
-            return {10,80};
+            return {5,90};
         case ThemeConfig::Theme2:
+            return {5,90};
+        case ThemeConfig::Theme3:
             return {10,80};
+        case ThemeConfig::Theme4:
+            return {25,50};
+        case ThemeConfig::Theme5:
+            return {25,50};
+        case ThemeConfig::Theme6:
+            return {30,40};
+        case ThemeConfig::Theme7:
+            return {4,92};
+        case ThemeConfig::Theme8:
+            return {0,100};
+        case ThemeConfig::Theme9:
+            return {0,100};
         default:
             return {0,100};
     }

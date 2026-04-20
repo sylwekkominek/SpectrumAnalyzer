@@ -43,8 +43,15 @@ std::pair<uint16_t, uint16_t> NormalWindowSize::getNormalWindowSize<Mode::Stereo
 {
     switch(themeConfig)
     {
+        case ThemeConfig::Theme4:
+            return {256, 920};
+        case ThemeConfig::Theme8:
+            return {104, 800};
+        case ThemeConfig::Theme9:
+            return {104, 800};
         default:
             return {256, 768};
+
     }
 }
 

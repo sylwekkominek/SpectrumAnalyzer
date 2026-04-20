@@ -31,7 +31,17 @@ bool SingleScaleMode::getSingleScaleMode<Mode::Visualizer>(const ThemeConfig the
 template<>
 bool SingleScaleMode::getSingleScaleMode<Mode::StereoRmsMeter>(const ThemeConfig themeConfig)
 {
-    return true;
+    switch(themeConfig)
+    {
+        case ThemeConfig::Theme4:
+            return false;
+        case ThemeConfig::Theme5:
+            return false;
+        case ThemeConfig::Theme6:
+            return false;
+        default:
+            return true;
+    }
 }
 
 SingleScaleMode::SingleScaleMode(const ThemeConfig themeConfig, const Mode mode)

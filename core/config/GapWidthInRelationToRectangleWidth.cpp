@@ -46,6 +46,20 @@ float GapWidthInRelationToRectangleWidth::getGapWidthInRelationToRectangleWidth<
             return 1.0;
         case ThemeConfig::Theme2:
             return 1.0;
+        case ThemeConfig::Theme3:
+            return 0.7;
+        case ThemeConfig::Theme4:
+            return 1.0;
+        case ThemeConfig::Theme5:
+            return 0.2;
+        case ThemeConfig::Theme6:
+            return 0.5;
+        case ThemeConfig::Theme7:
+            return 1.5;
+        case ThemeConfig::Theme8:
+            return 0;
+        case ThemeConfig::Theme9:
+            return 0;
         default:
             return 0;
     }
