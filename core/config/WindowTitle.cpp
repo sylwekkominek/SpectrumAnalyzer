@@ -12,6 +12,12 @@ std::string WindowTitle::getInfo()
 )");
 }
 
+std::ostream& operator<<(std::ostream& os, const WindowTitle &windowTitle)
+{
+    os <<"windowTitle: "<<windowTitle.value<<std::endl;
+    return os;
+}
+
 template<>
 std::string WindowTitle::getWindowTitle<Mode::Analyzer>(const ThemeConfig themeConfig)
 {

@@ -57,7 +57,7 @@ PyObject * PythonCodeRunner::getPointerToFunction(const char* functionName)
 {
     PyObject *pFunction = PyObject_GetAttrString(pModule, functionName);
 
-    if ((pFunction == nullptr) or (not PyCallable_Check(pFunction)))
+    if ((pFunction == nullptr) or (!PyCallable_Check(pFunction)))
     {
 
       std::string error("Cannot find function: ");

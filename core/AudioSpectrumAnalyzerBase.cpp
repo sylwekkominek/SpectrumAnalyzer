@@ -45,7 +45,7 @@ void AudioSpectrumAnalyzerBase::samplesUpdater()
         {
             auto data = samplesCollector.collectStereoDataFromHw();
 
-            if(!data.left.empty() and !data.right.empty())
+            if(!data.left.empty() && !data.right.empty())
             {
                 dataExchanger.push_back(std::make_unique<std::any>(std::move(data)));
             }

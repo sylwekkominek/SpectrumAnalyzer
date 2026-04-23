@@ -12,6 +12,12 @@ std::string DynamicMaxHoldSecondarySpeedOfFalling::getInfo()
 )");
 }
 
+std::ostream& operator<<(std::ostream& os, const DynamicMaxHoldSecondarySpeedOfFalling &dynamicMaxHoldSecondarySpeedOfFalling)
+{
+    os <<"dynamicMaxHoldSecondarySpeedOfFalling: "<<dynamicMaxHoldSecondarySpeedOfFalling.value<<std::endl;
+    return os;
+}
+
 template<>
 float DynamicMaxHoldSecondarySpeedOfFalling::getDynamicMaxHoldSecondarySpeedOfFalling<Mode::Analyzer>(const ThemeConfig themeConfig)
 {

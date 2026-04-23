@@ -147,7 +147,7 @@ void Window::initializeGPU()
 
             gpu.updateHorizontalRectangleBoundaries(hightlightData.current.index, hightlightData.current.boundaries.first, hightlightData.current.boundaries.second);
         }
-        else if(hightlightData.previous.state && not hightlightData.current.state)
+        else if(hightlightData.previous.state && !hightlightData.current.state)
         {
             gpu.updateHorizontalRectangleBoundaries(hightlightData.previous.index, 0, 0);
         }

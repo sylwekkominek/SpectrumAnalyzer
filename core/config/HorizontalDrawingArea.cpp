@@ -20,9 +20,7 @@ std::string HorizontalDrawingArea::getInfo()
 
 std::ostream& operator<<(std::ostream& os, const HorizontalDrawingArea &horizontalDrawingArea)
 {
-
     os <<"horizontalDrawingArea: "<<horizontalDrawingArea.value.first<<" "<<horizontalDrawingArea.value.second<<std::endl;
-    os <<std::endl;
 
     return os;
 }

@@ -92,7 +92,7 @@ std::optional<std::string> ConfigFileReader::loadStringConfig(const std::string 
 {
     try
     {
-        if(not checkIfFileExists(fileName))
+        if(!checkIfFileExists(fileName))
         {
             writeStringToFile(fileName, info, defaultValue);
         }
@@ -109,7 +109,7 @@ std::optional<std::map<uint32_t, std::vector<float>>> ConfigFileReader::loadMapC
 {
     try
     {
-        if(not checkIfFileExists(fileName))
+        if(!checkIfFileExists(fileName))
         {
             writeMapToCsv(fileName, info, defaultValue, precision);
         }
@@ -126,7 +126,7 @@ std::optional<std::vector<float>> ConfigFileReader::loadVectorConfig(const std::
 {
     try
     {
-        if(not checkIfFileExists(fileName))
+        if(!checkIfFileExists(fileName))
         {
             writeVectorToCsv(fileName, info, defaultValue, precision);
         }
@@ -143,7 +143,7 @@ std::optional<bool> ConfigFileReader::loadBoolConfig(const std::string &fileName
 {
     try
     {
-        if(not checkIfFileExists(fileName))
+        if(!checkIfFileExists(fileName))
         {
             writeBoolToFile(fileName, info, defaultValue);
         }

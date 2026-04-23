@@ -8,6 +8,7 @@
 
 #include "../CommonTypes.hpp"
 #include <string>
+#include <ostream>
 
 struct WindowTitle
 {
@@ -22,3 +23,4 @@ private:
     std::string getWindowTitle(const ThemeConfig themeConfig);
 };
 
+std::ostream& operator<<(std::ostream& os, const WindowTitle &windowTitle);

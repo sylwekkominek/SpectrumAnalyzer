@@ -99,13 +99,13 @@ void AudioSpectrumAnalyzer::processing()
 
         auto dataWithMaxValue = dataMaxHolder.calculate();
 
-        if(not dataWithMaxValue.empty())
+        if(!dataWithMaxValue.empty())
         {
             dataAverager.push_back(dataWithMaxValue);
 
             auto averagedData = dataAverager.calculate();
 
-            if(not averagedData.empty())
+            if(!averagedData.empty())
             {
                 dataSmoother.push_back(averagedData);
                 auto smoothedData = dataSmoother.calculate();

@@ -9,7 +9,9 @@
 
 std::ostream& operator<<(std::ostream& os, const Configuration &config)
 {
+    os<<config.data.get<WindowTitle>();
     os<<config.data.get<PythonDataSourceEnabled>();
+    os<<config.data.get<LoopbackEnabled>();
     os<<config.data.get<DefaultFullscreenState>();
     os<<config.data.get<MaximizedWindowSize>();
     os<<config.data.get<NormalWindowSize>();
@@ -30,10 +32,16 @@ std::ostream& operator<<(std::ostream& os, const Configuration &config)
     os<<config.data.get<DynamicMaxHoldSecondaryVisibilityState>();
     os<<config.data.get<DynamicMaxHoldRectangleHeightInPercentOfScreenSize>();
     os<<config.data.get<DynamicMaxHoldAccelerationStateOfFalling>();
+    os<<config.data.get<DynamicMaxHoldSpeedOfFalling>();
+    os<<config.data.get<DynamicMaxHoldSecondarySpeedOfFalling>();
     os<<config.data.get<Freqs>();
     os<<config.data.get<SignalWindow>();
     os<<config.data.get<HorizontalLinePositions>();
     os<<config.data.get<VerticalLinePositions>();
+    os<<config.data.get<FrequencyTextPositions>();
+    os<<config.data.get<HorizontalDrawingArea>();
+    os<<config.data.get<SingleScaleMode>();
+    os<<config.data.get<VerticalDbfsRange>();
     os<<config.data.get<ColorOfLine>();
     os<<config.data.get<ColorOfStaticText>();
     os<<config.data.get<ColorOfStaticLines>();

@@ -78,7 +78,7 @@ bool RectangleHighligther::isMouseLocatedOverCurrentlyBeingUsedRectangle(const W
 {
     auto scalledMousePosition = 2*(cursorPosition.x/ windowSize.x)-1;
 
-    return ((scalledMousePosition > xRectangleBegin) and (scalledMousePosition< xRectangleEnd)) ? true : false;
+    return ((scalledMousePosition > xRectangleBegin) && (scalledMousePosition< xRectangleEnd)) ? true : false;
 }
 
 bool RectangleHighligther::isMouseActive(const CursorPosition& cursorPosition)

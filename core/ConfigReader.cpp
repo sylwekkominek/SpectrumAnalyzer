@@ -15,7 +15,7 @@ ConfigReader::ConfigReader(const ThemeConfig theme, const Mode mode, const std::
 
 Configuration ConfigReader::getConfig()
 {
-    std::cout<<"Reading config from: "<<getConfigPath()<<std::endl;
+    std::cout<<"Reading config from: "<<getConfigPath()<<"\n\n";
 
     if(config.data.empty())
     {
@@ -116,7 +116,7 @@ SignalWindow ConfigReader::getSignalWindow()
 
     try
     {
-        if(not checkIfFileExists(data.name))
+        if(!checkIfFileExists(data.name))
         {
             writeVectorToCsv(data.name, data.getInfo(), data.value);
             return data;

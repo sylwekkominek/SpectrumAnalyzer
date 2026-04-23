@@ -90,7 +90,7 @@ bool WindowBase::WindowBaseImpl::checkIfWindowShouldBeRecreated()
         return true;
     }
 
-    if((not isFullScreenEnabled && glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS))
+    if((!isFullScreenEnabled && glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS))
     {
         isFullScreenEnabled = true;
         return true;

@@ -67,7 +67,7 @@ void FrequenciesInfo::updateContainer(std::set<Frequency> availableFrequencies, 
         auto lowerFreq = upperFreq;
 
 
-        if((upperFreq != availableFrequencies.end()) and (upperFreq != availableFrequencies.begin()))
+        if((upperFreq != availableFrequencies.end()) && (upperFreq != availableFrequencies.begin()))
         {
             --lowerFreq;
 

@@ -17,11 +17,17 @@ std::string Freqs::getInfo()
 
 std::ostream& operator<<(std::ostream& os, const Freqs &freqs)
 {
-    os <<"frequencies: ";
-
-    for(const auto &el: freqs.value)
+    if(freqs.value.size() <100)
     {
-        os <<el<<" ";
+        os <<"frequencies: ";
+        for(const auto &el: freqs.value)
+        {
+            os <<el<<" ";
+        }
+    }
+    else
+    {
+        os <<"frequencies size: "<<freqs.value.size();
     }
 
     os <<std::endl;

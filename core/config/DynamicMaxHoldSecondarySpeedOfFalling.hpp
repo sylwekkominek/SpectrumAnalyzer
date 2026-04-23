@@ -7,7 +7,7 @@
 #pragma once
 #include "../CommonTypes.hpp"
 #include <string>
-
+#include <ostream>
 
 struct DynamicMaxHoldSecondarySpeedOfFalling
 {
@@ -20,3 +20,4 @@ struct DynamicMaxHoldSecondarySpeedOfFalling
     float getDynamicMaxHoldSecondarySpeedOfFalling(const ThemeConfig themeConfig);
 };
 
+std::ostream& operator<<(std::ostream& os, const DynamicMaxHoldSecondarySpeedOfFalling &dynamicMaxHoldSecondarySpeedOfFalling);

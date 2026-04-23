@@ -111,7 +111,7 @@ void StereoRmsMeter::processing()
         auto dataWithMaxValueLeft = dataMaxHolderLeft.calculate();
         auto dataWithMaxValueRight = dataMaxHolderRight.calculate();
 
-        if(not dataWithMaxValueLeft.empty() and not dataWithMaxValueRight.empty())
+        if(!dataWithMaxValueLeft.empty() && !dataWithMaxValueRight.empty())
         {
             dataAveragerLeft.push_back(dataWithMaxValueLeft);
             dataAveragerRight.push_back(dataWithMaxValueRight);
@@ -119,7 +119,7 @@ void StereoRmsMeter::processing()
             auto averagedDataLeft = dataAveragerLeft.calculate();
             auto averagedDataRight = dataAveragerRight.calculate();
 
-            if(not averagedDataLeft.empty() and not averagedDataRight.empty())
+            if(!averagedDataLeft.empty() && !averagedDataRight.empty())
             {
                 dataSmootherLeft.push_back(averagedDataLeft);
                 dataSmootherRight.push_back(averagedDataRight);

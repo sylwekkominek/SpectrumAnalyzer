@@ -16,10 +16,7 @@ std::string VerticalDbfsRange::getInfo()
 
 std::ostream& operator<<(std::ostream& os, const VerticalDbfsRange &verticalDbfsRange)
 {
-
     os <<"verticalDbfsRange: "<<verticalDbfsRange.value.first<<" "<<verticalDbfsRange.value.second<<std::endl;
-    os <<std::endl;
-
     return os;
 }
 
