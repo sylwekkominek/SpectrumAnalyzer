@@ -32,6 +32,8 @@ It also uses the following third-party libraries:
 - **Music Visualizer**
   [Microsoft Store – Not Yet Another Music Visualizer](https://apps.microsoft.com/detail/9n6f33xks0k9?hl=en-US&gl=US)
 
+- **Volume Meter**
+  [Microsoft Store – Not Yet Another Volume Meter](https://apps.microsoft.com/detail/9nvg7hg4d3hx?ocid=webpdpshare&hl=en-US&gl=US)
 
 ---
 
