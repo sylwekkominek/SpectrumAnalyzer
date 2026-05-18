@@ -10,6 +10,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <algorithm>
 
 AudioDataSource::AudioDataSource(bool loopbackEnabled) : loopbackEnabled(loopbackEnabled)
 {
