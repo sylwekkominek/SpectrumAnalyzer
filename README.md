@@ -7,6 +7,13 @@
 <img width="1308" height="578" alt="Screenshot from 2026-02-22 15-53-17" src="https://github.com/user-attachments/assets/44635e40-92f1-46e4-827a-c7a2a8329fd6" />
 <img width="1308" height="578" alt="Screenshot from 2026-02-22 16-00-45" src="https://github.com/user-attachments/assets/beabc067-7627-4fa9-bf95-6affd2f24b11" />
 
+
+---
+
+## Simplified Video Overview: How it works
+**This video provides a great, simplified explanation of how the application works under the hood:**
+
+[![Spectrum Analyzer Simplified Overview](https://img.youtube.com/vi/SboZ2SoYo7I/maxresdefault.jpg)](https://www.youtube.com/watch?v=SboZ2SoYo7I)
 ---
 
 ## A ready-to-download version for Windows is available in the official Microsoft Store:
