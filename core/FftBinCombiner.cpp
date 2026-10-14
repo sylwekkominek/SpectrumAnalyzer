@@ -15,7 +15,7 @@ FftBinCombiner::FftBinCombiner(const float scalingFactor, const float offsetFact
 
 std::vector<float> FftBinCombiner::combineMagnitudes(const std::vector<std::complex<float>>& data)
 {
-    return linearToDbfs(averageMagnitudeInSpectrum(calculateMagnitude(data)));
+    return linearToDbfs(maxMagnitudeInSpectrum(calculateMagnitude(data)));
 }
 
 float FftBinCombiner::combineRmsValues(const std::vector<std::complex<float>>& data)
@@ -35,7 +35,7 @@ std::vector<float> FftBinCombiner::averageMagnitudeInSpectrum(const std::vector<
         switch (count)
         {
             case 0:
-                averagedValues.push_back(getFloorDbFs16bit());
+                averagedValues.push_back(0);
                 break;
 
             case 1:
@@ -72,7 +72,7 @@ std::vector<double> FftBinCombiner::powerInSpectrum(const std::vector<float> &da
         switch (count)
         {
         case 0:
-            result.push_back(getFloorDbFs16bit());
+            result.push_back(0);
             break;
 
         case 1:
@@ -97,7 +97,42 @@ std::vector<double> FftBinCombiner::powerInSpectrum(const std::vector<float> &da
     return result;
 }
 
+std::vector<float> FftBinCombiner::maxMagnitudeInSpectrum(const std::vector<float> &data)
+{
+    std::vector<float> maxValues;
+    maxValues.reserve(frequencyIndexesPerRectangle.size());
 
+    for(const auto &[rectangleIndex, frequencyIndexes] : frequencyIndexesPerRectangle)
+    {
+        const auto count = frequencyIndexes.size();
+
+        switch (count)
+        {
+            case 0:
+                maxValues.push_back(0);
+                break;
+
+            case 1:
+                maxValues.push_back(data[frequencyIndexes[0]]);
+                break;
+
+            default:
+            {
+                float maxValue = data[frequencyIndexes[0]];
+
+                for (const auto& info : frequencyIndexes)
+                {
+                    maxValue = std::max(maxValue, data[info]);
+                }
+
+                maxValues.push_back(maxValue);
+                break;
+            }
+        }
+    }
+
+    return maxValues;
+}
 
 std::vector<float> FftBinCombiner::linearToDbfs(const std::vector<float> &data)
 {

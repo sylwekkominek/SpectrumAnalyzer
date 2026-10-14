@@ -23,6 +23,7 @@ protected:
     std::vector<float> calculateMagnitude(const std::vector<std::complex<float>>& data);
     std::vector<float> linearToDbfs(const std::vector<float> &data);
     std::vector<float> averageMagnitudeInSpectrum(const std::vector<float> &data);
+    std::vector<float> maxMagnitudeInSpectrum(const std::vector<float> &data);
     std::vector<double> powerInSpectrum(const std::vector<float> &data);
 
     const float scalingFactor;
