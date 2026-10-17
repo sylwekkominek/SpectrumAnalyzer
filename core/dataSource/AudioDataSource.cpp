@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025, Sylwester Kominek
+ * Copyright (C) 2024-2026, Sylwester Kominek
  * This file is part of SpectrumAnalyzer program licensed under GPLv2 or later,
  * see file LICENSE in this source tree.
  */
@@ -8,6 +8,7 @@
 #include "AudioDataSourceDevice.hpp"
 #include "../Helpers.hpp"
 #include <iostream>
+#include <sstream>
 #include <chrono>
 #include <thread>
 #include <algorithm>
@@ -32,10 +33,18 @@ AudioDataSource::AudioDataSource(bool loopbackEnabled) : loopbackEnabled(loopbac
 
     initFunctions.emplace_back("updateAudioInputDeviceParams", [&](){
 
+        auto deviceInfo = Pa_GetDeviceInfo(device);
+        if (!deviceInfo)
+        {
+            return paInvalidDevice;
+        }
+
+        realNumberOfChannels = (deviceInfo->maxInputChannels > 0) ? deviceInfo->maxInputChannels : numberOfChannels;
+
         inputParams.device = device;
-        inputParams.channelCount = numberOfChannels;
+        inputParams.channelCount = realNumberOfChannels;
         inputParams.sampleFormat = paInt16;
-        inputParams.suggestedLatency = Pa_GetDeviceInfo(device)->defaultLowInputLatency;
+        inputParams.suggestedLatency = deviceInfo->defaultLowInputLatency;
         inputParams.hostApiSpecificStreamInfo = nullptr;
 
         PaError err = Pa_IsFormatSupported(
@@ -46,7 +55,6 @@ AudioDataSource::AudioDataSource(bool loopbackEnabled) : loopbackEnabled(loopbac
 
         if(err != paNoError)
         {
-            auto deviceInfo = Pa_GetDeviceInfo(device);
             const auto supportedSampleRate = deviceInfo->defaultSampleRate;
             const char* deviceName = deviceInfo->name;
 
@@ -87,7 +95,7 @@ bool AudioDataSource::initialize(uint32_t numberOfSamples, uint32_t sampleRate)
     samplingRate = sampleRate;
     errorOccured = false;
 
-    buffer.emplace(std::vector<int16_t>(dataLength * numberOfChannels));
+    buffer.emplace(std::vector<int16_t>(dataLength * realNumberOfChannels));
 
     for(auto &[procedureName, procedure]: initFunctions)
     {
@@ -135,18 +143,21 @@ StereoData AudioDataSource::collectStereoDataFromHw()
             channels.left.reserve(dataLength);
             channels.right.reserve(dataLength);
 
-            for (uint32_t i = 0; i < buffer.value().size(); ++i)
+            const auto& buf = buffer.value();
+            const uint32_t rightChannelOffset = (realNumberOfChannels > 1) ? 1 : 0;
+
+            for (uint32_t i = 0; i < buf.size(); i += realNumberOfChannels)
             {
-                (i % 2) ? channels.right.emplace_back(buffer.value()[i]) : channels.left.emplace_back(buffer.value()[i]);
+                channels.left.emplace_back(buf[i]);
+                channels.right.emplace_back(buf[i + rightChannelOffset]);
             }
             return channels;
         }
     }
 
-    std::cout << "No input data " <<std::endl;
+    std::cout << "No input data " << std::endl;
     return {};
 }
-
 void AudioDataSource::checkIfCriticalErrorOccured(const PaError &err)
 {
     const PaError criticalErrors[] = {
@@ -198,7 +209,6 @@ bool AudioDataSource::isDataAvailable()
 
     return false;
 }
-
 
 AudioDataSource::~AudioDataSource()
 {

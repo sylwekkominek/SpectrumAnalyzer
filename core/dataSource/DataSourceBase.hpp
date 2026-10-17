@@ -26,7 +26,7 @@ public:
 
 protected:
     uint8_t static constexpr numberOfChannels{2};
+    uint32_t realNumberOfChannels{numberOfChannels};
     uint32_t dataLength{0};
 };
-
 
